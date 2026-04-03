@@ -1,21 +1,13 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { FilterBar } from '../components/filters/FilterBar';
 import { CongestionOverTimeChart } from '../components/charts/CongestionOverTimeChart';
 import { DayOfWeekChart } from '../components/charts/DayOfWeekChart';
 import { RushHourChart } from '../components/charts/RushHourChart';
 import { RouteRankingChart } from '../components/charts/RouteRankingChart';
 import { DistributionChart } from '../components/charts/DistributionChart';
+import { useExcludedNeighborhoods } from '../hooks/useExcludedNeighborhoods';
 import { cn } from '../lib/utils';
 import type { Filters } from '../lib/types';
-
-const DEFAULT_FILTERS: Filters = {
-  neighborhoods: [],
-  route_ids: [],
-  start_date: '',
-  end_date: '',
-  rush_hour_only: false,
-  day_of_week: [],
-};
 
 const TABS = [
   { key: 'time-series', label: 'Time Series' },
@@ -29,8 +21,24 @@ type TabKey = (typeof TABS)[number]['key'];
 
 const GRANULARITY_OPTIONS = ['15min', 'hour', 'day', 'week'] as const;
 
+const DEFAULT_FILTERS: Filters = {
+  neighborhoods: [],
+  route_ids: [],
+  start_date: '',
+  end_date: '',
+  rush_hour_only: false,
+  day_of_week: [],
+  exclude_neighborhoods: [],
+};
+
 export function ChartsPage() {
+  const excludeNeighborhoods = useExcludedNeighborhoods();
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+
+  const effectiveFilters = useMemo<Filters>(
+    () => ({ ...filters, exclude_neighborhoods: excludeNeighborhoods }),
+    [filters, excludeNeighborhoods]
+  );
   const [activeTab, setActiveTab] = useState<TabKey>('time-series');
   const [granularity, setGranularity] = useState('day');
 
@@ -77,13 +85,13 @@ export function ChartsPage() {
                   </button>
                 ))}
               </div>
-              <CongestionOverTimeChart filters={filters} granularity={granularity} />
+              <CongestionOverTimeChart filters={effectiveFilters} granularity={granularity} />
             </div>
           )}
-          {activeTab === 'day-of-week' && <DayOfWeekChart filters={filters} />}
-          {activeTab === 'rush-hour' && <RushHourChart filters={filters} />}
-          {activeTab === 'route-ranking' && <RouteRankingChart filters={filters} />}
-          {activeTab === 'distribution' && <DistributionChart filters={filters} />}
+          {activeTab === 'day-of-week' && <DayOfWeekChart filters={effectiveFilters} />}
+          {activeTab === 'rush-hour' && <RushHourChart filters={effectiveFilters} />}
+          {activeTab === 'route-ranking' && <RouteRankingChart filters={effectiveFilters} />}
+          {activeTab === 'distribution' && <DistributionChart filters={effectiveFilters} />}
         </div>
       </div>
     </div>

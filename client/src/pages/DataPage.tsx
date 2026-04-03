@@ -1,7 +1,8 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { FilterBar } from '../components/filters/FilterBar';
 import { getTrafficData, getExportUrl } from '../lib/api';
 import { formatCongestion } from '../lib/utils';
+import { useExcludedNeighborhoods } from '../hooks/useExcludedNeighborhoods';
 import { Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Filters, TrafficRecord } from '../lib/types';
 
@@ -12,6 +13,7 @@ const DEFAULT_FILTERS: Filters = {
   end_date: '',
   rush_hour_only: false,
   day_of_week: [],
+  exclude_neighborhoods: [],
 };
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
@@ -28,7 +30,13 @@ const COLUMNS = [
 ] as const;
 
 export function DataPage() {
+  const excludeNeighborhoods = useExcludedNeighborhoods();
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+
+  const effectiveFilters = useMemo<Filters>(
+    () => ({ ...filters, exclude_neighborhoods: excludeNeighborhoods }),
+    [filters, excludeNeighborhoods]
+  );
   const [data, setData] = useState<TrafficRecord[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
@@ -39,13 +47,13 @@ export function DataPage() {
 
   const fetchData = useCallback(() => {
     setLoading(true);
-    getTrafficData(filters, pageSize, offset, sortBy, sortOrder)
+    getTrafficData(effectiveFilters, pageSize, offset, sortBy, sortOrder)
       .then((response) => {
         setData(response.data);
         setTotal(response.total);
       })
       .finally(() => setLoading(false));
-  }, [filters, pageSize, offset, sortBy, sortOrder]);
+  }, [effectiveFilters, pageSize, offset, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchData();
@@ -83,14 +91,14 @@ export function DataPage() {
         <h1 className="text-2xl font-bold text-slate-900">Raw Data</h1>
         <div className="flex gap-2">
           <a
-            href={getExportUrl(filters, 'csv')}
+            href={getExportUrl(effectiveFilters, 'csv')}
             className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
           >
             <Download className="h-4 w-4" />
             CSV
           </a>
           <a
-            href={getExportUrl(filters, 'json')}
+            href={getExportUrl(effectiveFilters, 'json')}
             className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
           >
             <Download className="h-4 w-4" />

@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import type { Filters } from './types';
+import { EXCLUDED_NEIGHBORHOODS } from './consts';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -27,6 +28,7 @@ export function buildQueryParams(filters: Filters): URLSearchParams {
   if (filters.end_date) params.set('end_date', filters.end_date);
   if (filters.rush_hour_only) params.set('rush_hour_only', 'true');
   filters.day_of_week.forEach((day) => params.append('day_of_week', day));
+  filters.exclude_neighborhoods.forEach((neighborhood) => params.append('exclude_neighborhoods', neighborhood));
   return params;
 }
 
@@ -35,3 +37,7 @@ export function formatCongestion(value: number): string {
 }
 
 export const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+export function isExcludedNeighborhood(neighborhood: string): boolean {
+  return EXCLUDED_NEIGHBORHOODS.some((excluded) => neighborhood.startsWith(excluded));
+}

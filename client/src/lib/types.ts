@@ -101,4 +101,5 @@ export interface Filters {
   end_date: string;
   rush_hour_only: boolean;
   day_of_week: string[];
+  exclude_neighborhoods: string[];
 }

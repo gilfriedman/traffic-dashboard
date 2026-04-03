@@ -6,6 +6,7 @@ def build_filter(args):
 
     neighborhoods = args.getlist('neighborhoods')
     route_ids = args.getlist('route_ids')
+    exclude_neighborhoods = args.getlist('exclude_neighborhoods')
     start_date = args.get('start_date')
     end_date = args.get('end_date')
     rush_hour_only = args.get('rush_hour_only')
@@ -15,6 +16,14 @@ def build_filter(args):
         query['route_id'] = {'$in': route_ids}
     elif neighborhoods:
         query['route_id'] = {'$regex': build_neighborhood_regex(neighborhoods)}
+
+    if exclude_neighborhoods:
+        exclude_regex = build_neighborhood_regex(exclude_neighborhoods)
+        exclude_filter = {'route_id': {'$not': {'$regex': exclude_regex}}}
+        if 'route_id' in query:
+            query = {'$and': [query, exclude_filter]}
+        else:
+            query.update(exclude_filter)
 
     if start_date or end_date:
         date_filter = {}

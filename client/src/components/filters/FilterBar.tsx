@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getNeighborhoods, getRoutes } from '../../lib/api';
 import type { Filters, NeighborhoodInfo, RouteInfo } from '../../lib/types';
-import { DAYS_OF_WEEK } from '../../lib/utils';
+import { DAYS_OF_WEEK, isExcludedNeighborhood } from '../../lib/utils';
+import { useBeerShevaFilter } from '../../contexts/BeerShevaFilterContext';
 
 interface FilterBarProps {
   filters: Filters;
@@ -9,6 +10,7 @@ interface FilterBarProps {
 }
 
 export function FilterBar({ filters, onChange }: FilterBarProps) {
+  const { beerShevaOnly } = useBeerShevaFilter();
   const [neighborhoods, setNeighborhoods] = useState<NeighborhoodInfo[]>([]);
   const [routes, setRoutes] = useState<RouteInfo[]>([]);
 
@@ -17,9 +19,17 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
     getRoutes().then(setRoutes);
   }, []);
 
-  const filteredRoutes = filters.neighborhoods.length > 0
-    ? routes.filter((route) => filters.neighborhoods.includes(route.neighborhood))
+  const visibleNeighborhoods = beerShevaOnly
+    ? neighborhoods.filter((neighborhood) => !isExcludedNeighborhood(neighborhood.key))
+    : neighborhoods;
+
+  const visibleRoutes = beerShevaOnly
+    ? routes.filter((route) => !isExcludedNeighborhood(route.neighborhood))
     : routes;
+
+  const filteredRoutes = filters.neighborhoods.length > 0
+    ? visibleRoutes.filter((route) => filters.neighborhoods.includes(route.neighborhood))
+    : visibleRoutes;
 
   function update(partial: Partial<Filters>) {
     onChange({ ...filters, ...partial });
@@ -38,7 +48,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
           }}
           className="border border-slate-300 rounded-md px-2 py-1.5 text-sm min-w-[140px] h-[72px]"
         >
-          {neighborhoods.map((neighborhood) => (
+          {visibleNeighborhoods.map((neighborhood) => (
             <option key={neighborhood.key} value={neighborhood.key}>
               {neighborhood.display_name} ({neighborhood.route_count})
             </option>
@@ -114,7 +124,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
 
       <button
         onClick={() =>
-          onChange({ neighborhoods: [], route_ids: [], start_date: '', end_date: '', rush_hour_only: false, day_of_week: [] })
+          onChange({ neighborhoods: [], route_ids: [], start_date: '', end_date: '', rush_hour_only: false, day_of_week: [], exclude_neighborhoods: [] })
         }
         className="px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors"
       >
