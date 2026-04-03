@@ -1,11 +1,21 @@
 from server.database import get_collection
 from server.services.query_service import build_filter
-from server.utils.neighborhoods import extract_neighborhood, get_display_name
+from server.utils.neighborhoods import NEIGHBORHOOD_DISPLAY_NAMES, get_display_name
 
 
 def _match_stage(args):
     query = build_filter(args)
     return {'$match': query} if query else None
+
+
+def _neighborhood_field():
+    """Build a $switch expression to extract neighborhood from route_id.
+    Uses $indexOfCP (prefix match) instead of $regexpReplace for compatibility."""
+    branches = [
+        {'case': {'$eq': [{'$indexOfCP': ['$route_id', prefix]}, 0]}, 'then': prefix}
+        for prefix in sorted(NEIGHBORHOOD_DISPLAY_NAMES.keys(), key=len, reverse=True)
+    ]
+    return {'$switch': {'branches': branches, 'default': '$route_id'}}
 
 
 def congestion_over_time(args):
@@ -30,7 +40,7 @@ def congestion_over_time(args):
         }},
         {'$addFields': {
             'time_bucket': {'$dateToString': {'format': group_format, 'date': '$parsed_time'}},
-            'neighborhood': {'$regexpReplace': {'input': '$route_id', 'regex': r'\d+$', 'replacement': ''}},
+            'neighborhood': _neighborhood_field(),
         }},
         {'$group': {
             '_id': {'time': '$time_bucket', 'neighborhood': '$neighborhood'},
@@ -61,7 +71,7 @@ def neighborhood_comparison(args):
 
     pipeline.extend([
         {'$addFields': {
-            'neighborhood': {'$regexpReplace': {'input': '$route_id', 'regex': r'\d+$', 'replacement': ''}},
+            'neighborhood': _neighborhood_field(),
         }},
         {'$group': {
             '_id': '$neighborhood',
@@ -95,7 +105,7 @@ def day_of_week(args):
 
     pipeline.extend([
         {'$addFields': {
-            'neighborhood': {'$regexpReplace': {'input': '$route_id', 'regex': r'\d+$', 'replacement': ''}},
+            'neighborhood': _neighborhood_field(),
         }},
         {'$group': {
             '_id': {'day': '$day_of_week', 'neighborhood': '$neighborhood'},
@@ -129,7 +139,7 @@ def rush_hour_profile(args):
     pipeline.extend([
         {'$addFields': {
             'parsed_time': {'$dateFromString': {'dateString': '$local_time', 'format': '%Y-%m-%d %H:%M:%S'}},
-            'neighborhood': {'$regexpReplace': {'input': '$route_id', 'regex': r'\d+$', 'replacement': ''}},
+            'neighborhood': _neighborhood_field(),
         }},
         {'$addFields': {
             'time_slot': {'$dateToString': {'format': '%H:%M', 'date': '$parsed_time'}},
@@ -161,7 +171,7 @@ def route_ranking(args):
 
     pipeline.extend([
         {'$addFields': {
-            'neighborhood': {'$regexpReplace': {'input': '$route_id', 'regex': r'\d+$', 'replacement': ''}},
+            'neighborhood': _neighborhood_field(),
         }},
         {'$group': {
             '_id': {'route_id': '$route_id', 'route_name': '$route_name', 'neighborhood': '$neighborhood'},
@@ -193,7 +203,7 @@ def congestion_distribution(args):
 
     pipeline.extend([
         {'$addFields': {
-            'neighborhood': {'$regexpReplace': {'input': '$route_id', 'regex': r'\d+$', 'replacement': ''}},
+            'neighborhood': _neighborhood_field(),
         }},
         {'$bucket': {
             'groupBy': '$congestion_ratio',
