@@ -23,8 +23,8 @@ async function fetchJson<T>(url: string): Promise<T> {
   return response.json();
 }
 
-export function getHealth(): Promise<HealthInfo> {
-  return fetchJson('/api/health');
+export function getHealth(overrides: GlobalOverrides = {}): Promise<HealthInfo> {
+  return fetchJson(`/api/health?${buildGlobalParams(overrides)}`);
 }
 
 export function getRoutes(): Promise<RouteInfo[]> {

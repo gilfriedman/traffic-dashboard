@@ -1,5 +1,6 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from server.database import get_collection
+from server.services.query_service import build_filter
 from server.utils.neighborhoods import extract_neighborhood, get_display_name
 
 health_bp = Blueprint('health', __name__)
@@ -8,10 +9,11 @@ health_bp = Blueprint('health', __name__)
 @health_bp.route('/api/health')
 def health():
     collection = get_collection()
-    count = collection.count_documents({})
+    query = build_filter(request.args)
+    count = collection.count_documents(query)
 
-    last_doc = collection.find_one(sort=[('local_time', -1)])
-    first_doc = collection.find_one(sort=[('local_time', 1)])
+    last_doc = collection.find_one(query, sort=[('local_time', -1)])
+    first_doc = collection.find_one(query, sort=[('local_time', 1)])
 
     return jsonify({
         'status': 'ok',

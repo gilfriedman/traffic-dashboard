@@ -1,10 +1,15 @@
 import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
+import { useGlobalFilterOverrides } from '../../hooks/useGlobalFilterOverrides';
 import { getHealth } from '../../lib/api';
 import { Activity, MapPin, TrendingUp, Calendar } from 'lucide-react';
 
 export function StatsCards() {
-  const { data: health } = useChartData(() => getHealth());
+  const overrides = useGlobalFilterOverrides();
+  const { data: health } = useChartData(
+    () => getHealth(overrides),
+    [JSON.stringify(overrides)]
+  );
   const { t } = useTranslation();
 
   if (!health) return null;
