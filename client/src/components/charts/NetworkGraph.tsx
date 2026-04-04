@@ -13,6 +13,7 @@ const BOUNDARY_COLOR = '#EF4444';
 const EDGE_COLOR = '#AAAAAA';
 
 const ESRI_IMAGERY_BASE = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export';
+const ESRI_LABELS_BASE = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/export';
 
 interface Props {
   data: NetworkGraphData;
@@ -20,6 +21,7 @@ interface Props {
   height?: number;
   compact?: boolean;
   showAerial?: boolean;
+  showStreetNames?: boolean;
 }
 
 function toMercator(lng: number, lat: number): [number, number] {
@@ -143,22 +145,45 @@ function ExitLabels({
   );
 }
 
-function useAerialImage(url: string | null): 'loading' | 'loaded' | 'error' {
-  const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
-
-  useEffect(() => {
-    if (!url) { setStatus('loading'); return; }
-    setStatus('loading');
-    const img = new Image();
-    img.onload = () => setStatus('loaded');
-    img.onerror = () => setStatus('error');
-    img.src = url;
-  }, [url]);
-
-  return url ? status : 'loading';
+interface CachedImage {
+  status: 'loading' | 'loaded' | 'error';
+  blobUrl?: string;
 }
 
-export function NetworkGraph({ data, width = 500, height = 500, compact = false, showAerial = false }: Props) {
+const imageCache = new Map<string, CachedImage>();
+
+function useImageWithCache(url: string | null): { status: 'loading' | 'loaded' | 'error'; href: string | null } {
+  const cached = url ? imageCache.get(url) : undefined;
+  const [entry, setEntry] = useState<CachedImage>(cached ?? { status: 'loading' });
+
+  useEffect(() => {
+    if (!url) { setEntry({ status: 'loading' }); return; }
+    const existing = imageCache.get(url);
+    if (existing && existing.status !== 'loading') {
+      setEntry(existing);
+      return;
+    }
+    setEntry({ status: 'loading' });
+    imageCache.set(url, { status: 'loading' });
+    fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const blobUrl = URL.createObjectURL(blob);
+        const result: CachedImage = { status: 'loaded', blobUrl };
+        imageCache.set(url, result);
+        setEntry(result);
+      })
+      .catch(() => {
+        const result: CachedImage = { status: 'error' };
+        imageCache.set(url, result);
+        setEntry(result);
+      });
+  }, [url]);
+
+  return url ? { status: entry.status, href: entry.blobUrl ?? null } : { status: 'loading', href: null };
+}
+
+export function NetworkGraph({ data, width = 500, height = 500, compact = false, showAerial = false, showStreetNames = false }: Props) {
   const { t, i18n } = useTranslation();
   const isHebrew = i18n.language === 'he';
   const displayName = isHebrew ? data.name_he : data.name_en;
@@ -193,10 +218,25 @@ export function NetworkGraph({ data, width = 500, height = 500, compact = false,
     return `${ESRI_IMAGERY_BASE}?${params}`;
   }, [showAerial, mercatorBbox, width, height]);
 
-  const aerialStatus = useAerialImage(aerialUrl);
+  const labelsUrl = useMemo(() => {
+    if (!showStreetNames) return null;
+    const params = new URLSearchParams({
+      bbox: `${mercatorBbox.minX - aerialPad},${mercatorBbox.minY - aerialPad},${mercatorBbox.maxX + aerialPad},${mercatorBbox.maxY + aerialPad}`,
+      bboxSR: '3857',
+      imageSR: '3857',
+      size: `${width * 2},${height * 2}`,
+      format: 'png32',
+      transparent: 'true',
+      f: 'image',
+    });
+    return `${ESRI_LABELS_BASE}?${params}`;
+  }, [showStreetNames, mercatorBbox, width, height]);
 
-  const aerialImageCoords = useMemo(() => {
-    if (!showAerial) return null;
+  const aerial = useImageWithCache(aerialUrl);
+  const labels = useImageWithCache(labelsUrl);
+
+  const overlayCoords = useMemo(() => {
+    if (!showAerial && !showStreetNames) return null;
     const fakeMinLng = (mercatorBbox.minX - aerialPad) * 180 / 20037508.34;
     const fakeMaxLng = (mercatorBbox.maxX + aerialPad) * 180 / 20037508.34;
     const fakeMinLat = (Math.atan(Math.exp((mercatorBbox.minY - aerialPad) / 20037508.34 * Math.PI)) * 360 / Math.PI) - 90;
@@ -204,7 +244,7 @@ export function NetworkGraph({ data, width = 500, height = 500, compact = false,
     const [x1, y1] = project(fakeMinLng, fakeMaxLat);
     const [x2, y2] = project(fakeMaxLng, fakeMinLat);
     return { x: x1, y: y1, width: x2 - x1, height: y2 - y1 };
-  }, [showAerial, mercatorBbox, project]);
+  }, [showAerial, showStreetNames, mercatorBbox, project]);
 
   const boundaryPoints = useMemo(
     () => data.boundary.map((coord) => project(coord[0], coord[1]).join(',')).join(' '),
@@ -233,24 +273,35 @@ export function NetworkGraph({ data, width = 500, height = 500, compact = false,
         </marker>
       </defs>
 
-      {showAerial && aerialUrl && aerialImageCoords && (
+      {showAerial && overlayCoords && (
         <>
-          {aerialStatus === 'loading' && (
+          {aerial.status === 'loading' && (
             <text x={width / 2} y={height / 2} textAnchor="middle" fontSize={10} fill="#94a3b8">
               {t('common.loading')}
             </text>
           )}
-          {aerialStatus === 'loaded' && (
+          {aerial.status === 'loaded' && aerial.href && (
             <image
-              href={aerialUrl}
-              x={aerialImageCoords.x}
-              y={aerialImageCoords.y}
-              width={aerialImageCoords.width}
-              height={aerialImageCoords.height}
+              href={aerial.href}
+              x={overlayCoords.x}
+              y={overlayCoords.y}
+              width={overlayCoords.width}
+              height={overlayCoords.height}
               preserveAspectRatio="none"
             />
           )}
         </>
+      )}
+
+      {showStreetNames && overlayCoords && labels.status === 'loaded' && labels.href && (
+        <image
+          href={labels.href}
+          x={overlayCoords.x}
+          y={overlayCoords.y}
+          width={overlayCoords.width}
+          height={overlayCoords.height}
+          preserveAspectRatio="none"
+        />
       )}
 
       {data.edges.filter((edge) => !edge.is_exit_edge).map((edge, index) => {

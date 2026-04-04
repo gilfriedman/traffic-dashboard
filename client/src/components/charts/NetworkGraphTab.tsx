@@ -56,6 +56,7 @@ function NetworkGraphCard({
 export function NetworkGraphTab({ overrides }: { overrides: GlobalOverrides }) {
   const [selectedGraph, setSelectedGraph] = useState<NetworkGraphData | null>(null);
   const [showAerial, setShowAerial] = useState(false);
+  const [showStreetNames, setShowStreetNames] = useState(false);
   const { t } = useTranslation();
 
   const visibleKeys = useMemo(() => {
@@ -89,18 +90,29 @@ export function NetworkGraphTab({ overrides }: { overrides: GlobalOverrides }) {
             <ArrowLeft size={16} />
             {t('network.backToGrid')}
           </button>
-          <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={showAerial}
-              onChange={(event) => setShowAerial(event.target.checked)}
-              className="rounded border-slate-300"
-            />
-            {t('network.aerialView')}
-          </label>
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={showAerial}
+                onChange={(event) => setShowAerial(event.target.checked)}
+                className="rounded border-slate-300"
+              />
+              {t('network.aerialView')}
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={showStreetNames}
+                onChange={(event) => setShowStreetNames(event.target.checked)}
+                className="rounded border-slate-300"
+              />
+              {t('network.streetNames')}
+            </label>
+          </div>
         </div>
         <div className="flex justify-center">
-          <NetworkGraph data={selectedGraph} width={700} height={700} showAerial={showAerial} />
+          <NetworkGraph data={selectedGraph} width={700} height={700} showAerial={showAerial} showStreetNames={showStreetNames} />
         </div>
       </div>
     );
