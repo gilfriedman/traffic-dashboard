@@ -177,6 +177,38 @@ export interface BottleneckPoint {
   bottleneck_score: number;
 }
 
+export interface NetworkGraphNode {
+  lat: number;
+  lng: number;
+  classification: 'interior' | 'perimeter' | 'exterior';
+  is_exit_node: boolean;
+}
+
+export interface NetworkGraphEdge {
+  from_lat: number;
+  from_lng: number;
+  to_lat: number;
+  to_lng: number;
+  is_exit_edge: boolean;
+}
+
+export interface NetworkGraphExit {
+  street_name: string;
+  from_coords: [number, number];
+  to_coords: [number, number];
+}
+
+export interface NetworkGraphData {
+  neighborhood_key: string;
+  name_en: string;
+  name_he: string;
+  exit_count: number;
+  boundary: [number, number][];
+  nodes: NetworkGraphNode[];
+  edges: NetworkGraphEdge[];
+  exits: NetworkGraphExit[];
+}
+
 export interface Filters {
   neighborhoods: string[];
   route_ids: string[];

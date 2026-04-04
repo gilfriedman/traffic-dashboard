@@ -69,7 +69,11 @@
     "overview": "Overview",
     "congestionStructure": "Congestion vs Structure",
     "exitAnalysis": "Exit Analysis",
-    "bottlenecks": "Bottlenecks"
+    "bottlenecks": "Bottlenecks",
+    "graph": "Graph",
+    "backToGrid": "Back to all neighborhoods",
+    "exits": "exits",
+    "aerialView": "Aerial view"
   },
   "filters": {
     "neighborhoods": "Neighborhoods",
@@ -144,7 +148,8 @@
     "networkOverview": "Road network metrics for each neighborhood, computed from OpenStreetMap data via OSMnx.",
     "congestionStructure": "Scatter plot exploring relationships between road network structure metrics and traffic congestion levels. Each dot is a neighborhood.",
     "exitAnalysis": "Neighborhood exits matched to nearby traffic routes, ranked by average congestion.",
-    "bottlenecks": "High-centrality intersections near congested routes. Score = betweenness \u00d7 nearby congestion."
+    "bottlenecks": "High-centrality intersections near congested routes. Score = betweenness \u00d7 nearby congestion.",
+    "networkGraph": "Visual road network for each neighborhood. Blue = interior nodes, Orange = perimeter nodes, Gray = exterior nodes, Green arrows = exit edges. Red line marks the neighborhood boundary."
   },
   "metrics": {
     "node_count": {

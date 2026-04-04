@@ -22,3 +22,11 @@ def exit_congestion():
 @network_bp.route('/api/network/bottlenecks')
 def bottlenecks():
     return jsonify(network_service.bottleneck_nodes(request.args))
+
+
+@network_bp.route('/api/network/graph')
+def network_graph():
+    neighborhood = request.args.get('neighborhood')
+    if not neighborhood:
+        return jsonify({"error": "neighborhood parameter required"}), 400
+    return jsonify(network_service.get_network_graph(neighborhood))

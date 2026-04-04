@@ -4,12 +4,13 @@ import { NetworkMetricsTable } from '../components/charts/NetworkMetricsTable';
 import { CongestionStructureScatter } from '../components/charts/CongestionStructureScatter';
 import { ExitCongestionChart } from '../components/charts/ExitCongestionChart';
 import { BottleneckTable } from '../components/charts/BottleneckTable';
+import { NetworkGraphTab } from '../components/charts/NetworkGraphTab';
 import { ChartDescription } from '../components/ChartDescription';
 import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
 import { cn } from '../lib/utils';
 import type { GlobalOverrides } from '../lib/api';
 
-const TAB_KEYS = ['overview', 'congestion-structure', 'exit-analysis', 'bottlenecks'] as const;
+const TAB_KEYS = ['overview', 'congestion-structure', 'exit-analysis', 'bottlenecks', 'graph'] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
 const TAB_I18N_KEYS: Record<TabKey, string> = {
@@ -17,6 +18,7 @@ const TAB_I18N_KEYS: Record<TabKey, string> = {
   'congestion-structure': 'network.congestionStructure',
   'exit-analysis': 'network.exitAnalysis',
   'bottlenecks': 'network.bottlenecks',
+  'graph': 'network.graph',
 };
 
 const TAB_DESCRIPTION_KEYS: Record<TabKey, string> = {
@@ -24,6 +26,7 @@ const TAB_DESCRIPTION_KEYS: Record<TabKey, string> = {
   'congestion-structure': 'chartDescriptions.congestionStructure',
   'exit-analysis': 'chartDescriptions.exitAnalysis',
   'bottlenecks': 'chartDescriptions.bottlenecks',
+  'graph': 'chartDescriptions.networkGraph',
 };
 
 export function NetworkPage() {
@@ -63,6 +66,7 @@ export function NetworkPage() {
           {activeTab === 'congestion-structure' && <CongestionStructureScatter overrides={overrides} />}
           {activeTab === 'exit-analysis' && <ExitCongestionChart overrides={overrides} />}
           {activeTab === 'bottlenecks' && <BottleneckTable overrides={overrides} />}
+          {activeTab === 'graph' && <NetworkGraphTab overrides={overrides} />}
 
           <ChartDescription text={t(TAB_DESCRIPTION_KEYS[activeTab])} />
         </div>

@@ -216,6 +216,38 @@ def bottleneck_nodes(args):
     return results
 
 
+def get_network_graph(neighborhood_key):
+    db = get_db()
+
+    neighborhood_doc = db["network_neighborhoods"].find_one(
+        {"neighborhood_key": neighborhood_key},
+        {"_id": 0, "name_en": 1, "name_he": 1, "exit_count": 1, "boundary": 1, "exits": 1},
+    )
+    if not neighborhood_doc:
+        return {"error": "neighborhood not found"}
+
+    nodes = list(db["network_nodes"].find(
+        {"neighborhood_key": neighborhood_key},
+        {"_id": 0, "lat": 1, "lng": 1, "classification": 1, "is_exit_node": 1},
+    ))
+
+    edges = list(db["network_edges"].find(
+        {"neighborhood_key": neighborhood_key},
+        {"_id": 0, "from_lat": 1, "from_lng": 1, "to_lat": 1, "to_lng": 1, "is_exit_edge": 1},
+    ))
+
+    return {
+        "neighborhood_key": neighborhood_key,
+        "name_en": neighborhood_doc["name_en"],
+        "name_he": neighborhood_doc["name_he"],
+        "exit_count": neighborhood_doc["exit_count"],
+        "boundary": neighborhood_doc.get("boundary", []),
+        "nodes": nodes,
+        "edges": edges,
+        "exits": neighborhood_doc.get("exits", []),
+    }
+
+
 def _neighborhood_field():
     branches = [
         {"case": {"$eq": [{"$indexOfCP": ["$route_id", prefix]}, 0]}, "then": prefix}
