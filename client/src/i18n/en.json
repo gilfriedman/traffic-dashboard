@@ -1,0 +1,241 @@
+{
+  "header": {
+    "title": "Traffic Dashboard",
+    "beerShevaOnly": "Beer Sheva only",
+    "hideMidnight": "Hide midnight"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "charts": "Charts",
+    "data": "Data",
+    "network": "Network"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "neighborhoodComparison": "Neighborhood Comparison",
+    "rushHourProfile": "Rush Hour Profile (6:00-9:00)",
+    "congestionOverTime": "Congestion Over Time (Daily)"
+  },
+  "stats": {
+    "totalRecords": "Total Records",
+    "status": "Status",
+    "firstRecord": "First Record",
+    "lastRecord": "Last Record"
+  },
+  "charts": {
+    "title": "Charts",
+    "timeSeries": "Time Series",
+    "dayOfWeek": "Day of Week",
+    "rushHour": "Rush Hour",
+    "routeRanking": "Route Ranking",
+    "distribution": "Distribution",
+    "days": {
+      "Sunday": "Sunday",
+      "Monday": "Monday",
+      "Tuesday": "Tuesday",
+      "Wednesday": "Wednesday",
+      "Thursday": "Thursday",
+      "Friday": "Friday",
+      "Saturday": "Saturday"
+    },
+    "granularity": {
+      "15min": "15min",
+      "hour": "hour",
+      "day": "day",
+      "week": "week"
+    }
+  },
+  "dataPage": {
+    "title": "Raw Data",
+    "time": "Time",
+    "routeId": "Route ID",
+    "routeName": "Route Name",
+    "day": "Day",
+    "rushHour": "Rush Hour",
+    "duration": "Duration (s)",
+    "traffic": "Traffic (s)",
+    "congestion": "Congestion",
+    "loading": "Loading...",
+    "noData": "No data found",
+    "records": "records",
+    "perPage": "per page",
+    "page": "Page",
+    "of": "of",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "network": {
+    "title": "Network Analysis",
+    "overview": "Overview",
+    "congestionStructure": "Congestion vs Structure",
+    "exitAnalysis": "Exit Analysis",
+    "bottlenecks": "Bottlenecks"
+  },
+  "filters": {
+    "neighborhoods": "Neighborhoods",
+    "routes": "Routes",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "dayOfWeek": "Day of Week",
+    "rushHourOnly": "Rush hour only",
+    "clear": "Clear"
+  },
+  "networkTable": {
+    "neighborhood": "Neighborhood",
+    "nodes": "Nodes",
+    "edges": "Edges",
+    "streetDensity": "Street Density",
+    "avgDegree": "Avg Degree",
+    "circuity": "Circuity",
+    "connectivity": "Connectivity",
+    "avgBetweenness": "Avg Betweenness",
+    "exits": "Exits",
+    "area": "Area (km\u00b2)"
+  },
+  "bottleneckTable": {
+    "bottleneckScore": "Bottleneck Score",
+    "betweenness": "Betweenness",
+    "closeness": "Closeness",
+    "degree": "Degree",
+    "nearbyCongestion": "Nearby Congestion",
+    "nearbyRoutes": "Nearby Routes",
+    "exitNode": "Exit Node",
+    "coords": "Coords",
+    "noBottlenecks": "No bottlenecks found"
+  },
+  "scatter": {
+    "streetDensity": "Street Density (m/km\u00b2)",
+    "intersectionDensity": "Intersection Density (/km\u00b2)",
+    "avgNodeDegree": "Avg Node Degree",
+    "circuity": "Circuity",
+    "connectivity": "Connectivity",
+    "avgBetweenness": "Avg Betweenness",
+    "exitCount": "Exit Count",
+    "avgCongestion": "Avg Congestion",
+    "maxCongestion": "Max Congestion",
+    "samples": "samples"
+  },
+  "exitChart": {
+    "all": "All",
+    "avgCongestion": "Avg Congestion"
+  },
+  "neighborhoods": {
+    "old_city": "Old City",
+    "shchuna_bet": "Sh'chuna Bet",
+    "shchuna_he": "Sh'chuna He",
+    "ramot_bet": "Ramot Bet",
+    "neve_zeev": "Neve Ze'ev",
+    "rambam": "Rambam"
+  },
+  "common": {
+    "loading": "Loading...",
+    "noData": "No data",
+    "avgCongestion": "Avg Congestion"
+  },
+  "chartDescriptions": {
+    "neighborhoodComparison": "Compares average congestion ratios across neighborhoods. Higher values indicate more congested areas.",
+    "rushHourProfile": "Congestion patterns during morning rush hours (6:00\u20139:00), broken down by 15-minute intervals.",
+    "congestionOverTimeDaily": "Daily trend of average congestion ratios. Tracks how traffic conditions change over the data collection period.",
+    "timeSeries": "Congestion trends over time with configurable granularity (15-min, hourly, daily, weekly).",
+    "dayOfWeek": "Average congestion for each day of the week. Reveals weekly traffic patterns.",
+    "rushHourCharts": "Intra-day congestion profile showing how traffic varies throughout the day.",
+    "routeRanking": "Routes ranked by average congestion ratio. Identifies the most congested routes.",
+    "distribution": "Histogram showing how congestion ratio values are distributed across all measurements.",
+    "networkOverview": "Road network metrics for each neighborhood, computed from OpenStreetMap data via OSMnx.",
+    "congestionStructure": "Scatter plot exploring relationships between road network structure metrics and traffic congestion levels. Each dot is a neighborhood.",
+    "exitAnalysis": "Neighborhood exits matched to nearby traffic routes, ranked by average congestion.",
+    "bottlenecks": "High-centrality intersections near congested routes. Score = betweenness \u00d7 nearby congestion."
+  },
+  "metrics": {
+    "node_count": {
+      "label": "Node Count",
+      "description": "Total number of nodes (intersections and endpoints) in the road network graph."
+    },
+    "edge_count": {
+      "label": "Edge Count",
+      "description": "Total number of edges (road segments) connecting nodes in the network."
+    },
+    "total_street_length_m": {
+      "label": "Total Street Length (m)",
+      "description": "Sum of all road segment lengths in meters."
+    },
+    "avg_street_length_m": {
+      "label": "Avg Street Length (m)",
+      "description": "Average length of a single road segment in meters."
+    },
+    "intersection_count": {
+      "label": "Intersection Count",
+      "description": "Number of nodes where 3 or more roads meet (true intersections, not dead ends)."
+    },
+    "intersection_density_per_km2": {
+      "label": "Intersection Density (/km\u00b2)",
+      "description": "Number of intersections per square kilometer. Higher values indicate a denser street grid."
+    },
+    "street_density_m_per_km2": {
+      "label": "Street Density (m/km\u00b2)",
+      "description": "Total road length in meters per square kilometer of neighborhood area."
+    },
+    "avg_node_degree": {
+      "label": "Avg Node Degree",
+      "description": "Average number of roads connecting at each node. Higher values mean more connected intersections."
+    },
+    "circuity": {
+      "label": "Circuity",
+      "description": "Ratio of actual road distances to straight-line distances. Values near 1 mean direct routes; higher values mean more winding roads."
+    },
+    "betweenness_centrality": {
+      "label": "Betweenness Centrality",
+      "description": "Measures how often a node lies on the shortest paths between other nodes. High values indicate critical thoroughfare points that carry a lot of through-traffic."
+    },
+    "avg_betweenness": {
+      "label": "Avg Betweenness",
+      "description": "Average betweenness centrality across all nodes. Indicates how evenly through-traffic is distributed in the network."
+    },
+    "max_betweenness": {
+      "label": "Max Betweenness",
+      "description": "Highest betweenness centrality value in the network \u2014 the single most critical junction for through-traffic."
+    },
+    "closeness_centrality": {
+      "label": "Closeness Centrality",
+      "description": "Measures how close a node is to all other nodes via shortest paths. Higher values indicate more central, easily accessible locations."
+    },
+    "avg_closeness": {
+      "label": "Avg Closeness",
+      "description": "Average closeness centrality across all nodes. Higher values mean the neighborhood is overall more compact and accessible."
+    },
+    "max_closeness": {
+      "label": "Max Closeness",
+      "description": "Highest closeness centrality \u2014 the single most accessible point in the network."
+    },
+    "avg_node_connectivity": {
+      "label": "Avg Node Connectivity",
+      "description": "Average minimum number of nodes that must be removed to disconnect any pair of nodes. Higher values indicate a more resilient network."
+    },
+    "edge_connectivity": {
+      "label": "Edge Connectivity",
+      "description": "Minimum number of edges (roads) that must be removed to disconnect the graph. Higher values mean fewer single points of failure."
+    },
+    "exit_count": {
+      "label": "Exit Count",
+      "description": "Number of roads leading out of the neighborhood boundary."
+    },
+    "area_km2": {
+      "label": "Area (km\u00b2)",
+      "description": "Total area of the neighborhood in square kilometers."
+    }
+  },
+  "nodeClassification": {
+    "interior": {
+      "label": "Interior",
+      "description": "Nodes located inside the neighborhood boundary, representing internal intersections."
+    },
+    "perimeter": {
+      "label": "Perimeter",
+      "description": "Nodes on or near the neighborhood boundary, often connecting to adjacent areas."
+    },
+    "exterior": {
+      "label": "Exterior",
+      "description": "Nodes outside the neighborhood boundary, included for network completeness."
+    }
+  }
+}

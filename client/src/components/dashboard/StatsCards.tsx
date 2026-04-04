@@ -1,17 +1,19 @@
+import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { getHealth } from '../../lib/api';
 import { Activity, MapPin, TrendingUp, Calendar } from 'lucide-react';
 
 export function StatsCards() {
   const { data: health } = useChartData(() => getHealth());
+  const { t } = useTranslation();
 
   if (!health) return null;
 
   const cards = [
-    { label: 'Total Records', value: health.total_records.toLocaleString(), icon: Activity, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Status', value: health.status.toUpperCase(), icon: MapPin, color: 'text-green-600 bg-green-50' },
-    { label: 'First Record', value: health.first_record?.slice(0, 10) ?? 'N/A', icon: Calendar, color: 'text-amber-600 bg-amber-50' },
-    { label: 'Last Record', value: health.last_record?.slice(0, 10) ?? 'N/A', icon: TrendingUp, color: 'text-purple-600 bg-purple-50' },
+    { label: t('stats.totalRecords'), value: health.total_records.toLocaleString(), icon: Activity, color: 'text-blue-600 bg-blue-50' },
+    { label: t('stats.status'), value: health.status.toUpperCase(), icon: MapPin, color: 'text-green-600 bg-green-50' },
+    { label: t('stats.firstRecord'), value: health.first_record?.slice(0, 10) ?? 'N/A', icon: Calendar, color: 'text-amber-600 bg-amber-50' },
+    { label: t('stats.lastRecord'), value: health.last_record?.slice(0, 10) ?? 'N/A', icon: TrendingUp, color: 'text-purple-600 bg-purple-50' },
   ];
 
   return (

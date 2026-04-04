@@ -1,5 +1,7 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
+import { useChartDirection } from '../../hooks/useChartDirection';
 import { getRouteRanking } from '../../lib/api';
 import { getNeighborhoodColor } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
@@ -13,27 +15,31 @@ export function RouteRankingChart({ filters }: Props) {
     () => getRouteRanking(filters),
     [JSON.stringify(filters)]
   );
+  const { t } = useTranslation();
+  const { xAxisReversed, mirrorMargin } = useChartDirection();
 
-  if (loading) return <div className="h-80 flex items-center justify-center text-slate-400">Loading...</div>;
+  if (loading) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.loading')}</div>;
   if (error) return <div className="h-80 flex items-center justify-center text-red-500">{error}</div>;
-  if (!data?.length) return <div className="h-80 flex items-center justify-center text-slate-400">No data</div>;
+  if (!data?.length) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.noData')}</div>;
 
   const top20 = data.slice(0, 20);
   const height = Math.max(400, top20.length * 28);
 
   return (
+    <div dir="ltr">
     <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={top20} layout="vertical" margin={{ left: 120, right: 20, top: 10, bottom: 10 }}>
+      <BarChart data={top20} layout="vertical" margin={mirrorMargin({ left: 120, right: 20, top: 10, bottom: 10 })}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis type="number" domain={[0, 'auto']} />
+        <XAxis type="number" domain={[0, 'auto']} reversed={xAxisReversed} />
         <YAxis
           type="category"
           dataKey="route_name"
           width={120}
           tick={{ fontSize: 11 }}
+          orientation={xAxisReversed ? 'right' : 'left'}
         />
         <Tooltip
-          formatter={(value) => [Number(value).toFixed(3) + 'x', 'Avg Congestion']}
+          formatter={(value) => [Number(value).toFixed(3) + 'x', t('common.avgCongestion')]}
           labelFormatter={(label) => {
             const route = top20.find((route) => route.route_name === String(label));
             return `${label} (${route?.neighborhood_display ?? ''})`;
@@ -46,5 +52,6 @@ export function RouteRankingChart({ filters }: Props) {
         </Bar>
       </BarChart>
     </ResponsiveContainer>
+    </div>
   );
 }

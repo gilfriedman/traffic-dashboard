@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getNeighborhoods, getRoutes } from '../../lib/api';
 import type { Filters, NeighborhoodInfo, RouteInfo } from '../../lib/types';
 import { DAYS_OF_WEEK, isExcludedNeighborhood } from '../../lib/utils';
@@ -13,6 +14,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
   const { beerShevaOnly } = useGlobalFilters();
   const [neighborhoods, setNeighborhoods] = useState<NeighborhoodInfo[]>([]);
   const [routes, setRoutes] = useState<RouteInfo[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     getNeighborhoods().then(setNeighborhoods);
@@ -38,7 +40,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
   return (
     <div className="flex flex-wrap gap-3 items-end bg-white p-4 rounded-lg border border-slate-200">
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-slate-500">Neighborhoods</label>
+        <label className="text-xs font-medium text-slate-500">{t('filters.neighborhoods')}</label>
         <select
           multiple
           value={filters.neighborhoods}
@@ -57,7 +59,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-slate-500">Routes</label>
+        <label className="text-xs font-medium text-slate-500">{t('filters.routes')}</label>
         <select
           multiple
           value={filters.route_ids}
@@ -76,7 +78,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-slate-500">Start Date</label>
+        <label className="text-xs font-medium text-slate-500">{t('filters.startDate')}</label>
         <input
           type="date"
           value={filters.start_date}
@@ -86,7 +88,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-slate-500">End Date</label>
+        <label className="text-xs font-medium text-slate-500">{t('filters.endDate')}</label>
         <input
           type="date"
           value={filters.end_date}
@@ -96,7 +98,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
       </div>
 
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-slate-500">Day of Week</label>
+        <label className="text-xs font-medium text-slate-500">{t('filters.dayOfWeek')}</label>
         <select
           multiple
           value={filters.day_of_week}
@@ -107,7 +109,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
           className="border border-slate-300 rounded-md px-2 py-1.5 text-sm min-w-[120px] h-[72px]"
         >
           {DAYS_OF_WEEK.map((day) => (
-            <option key={day} value={day}>{day}</option>
+            <option key={day} value={day}>{t(`charts.days.${day}`)}</option>
           ))}
         </select>
       </div>
@@ -119,7 +121,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
           onChange={(event) => update({ rush_hour_only: event.target.checked })}
           className="rounded border-slate-300"
         />
-        Rush hour only
+        {t('filters.rushHourOnly')}
       </label>
 
       <button
@@ -128,7 +130,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
         }
         className="px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors"
       >
-        Clear
+        {t('filters.clear')}
       </button>
     </div>
   );

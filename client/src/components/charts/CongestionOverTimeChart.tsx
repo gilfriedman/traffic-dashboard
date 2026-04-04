@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
+import { useChartDirection } from '../../hooks/useChartDirection';
 import { getCongestionOverTime } from '../../lib/api';
 import { getNeighborhoodColor, getRouteColor } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
@@ -47,6 +49,8 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
     () => getCongestionOverTime(filters, granularity),
     [JSON.stringify(filters), granularity]
   );
+  const { t } = useTranslation();
+  const { yAxisOrientation, xAxisReversed, mirrorMargin } = useChartDirection();
 
   const { chartData, seriesKeys, seriesColors, byRoute } = useMemo(() => {
     if (!data?.length) return { chartData: [] as ChartRow[], seriesKeys: [], seriesColors: {} as Record<string, string>, byRoute: false };
@@ -106,13 +110,14 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
     return boundaries;
   }, [chartData, granularity]);
 
-  if (loading) return <div className="h-80 flex items-center justify-center text-slate-400">Loading...</div>;
+  if (loading) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.loading')}</div>;
   if (error) return <div className="h-80 flex items-center justify-center text-red-500">{error}</div>;
-  if (!chartData.length) return <div className="h-80 flex items-center justify-center text-slate-400">No data</div>;
+  if (!chartData.length) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.noData')}</div>;
 
   return (
+    <div dir="ltr">
     <ResponsiveContainer width="100%" height={350}>
-      <LineChart data={chartData} margin={{ left: 10, right: 20, top: 10, bottom: 10 }}>
+      <LineChart data={chartData} margin={mirrorMargin({ left: 10, right: 20, top: 10, bottom: 10 })}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
           dataKey="time"
@@ -120,9 +125,10 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
           angle={-30}
           textAnchor="end"
           height={60}
+          reversed={xAxisReversed}
           tickFormatter={(value) => isGapRow(value) ? '' : value}
         />
-        <YAxis domain={[0, 'auto']} />
+        <YAxis domain={[0, 'auto']} orientation={yAxisOrientation} />
         <Tooltip filterNull />
         <Legend formatter={(value) => byRoute ? (routeNameMap[value] ?? value) : value} />
         {dayBoundaries.map((boundary) => (
@@ -148,5 +154,6 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
         ))}
       </LineChart>
     </ResponsiveContainer>
+    </div>
   );
 }

@@ -1,24 +1,35 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { NetworkMetricsTable } from '../components/charts/NetworkMetricsTable';
 import { CongestionStructureScatter } from '../components/charts/CongestionStructureScatter';
 import { ExitCongestionChart } from '../components/charts/ExitCongestionChart';
 import { BottleneckTable } from '../components/charts/BottleneckTable';
+import { ChartDescription } from '../components/ChartDescription';
 import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
 import { cn } from '../lib/utils';
 import type { GlobalOverrides } from '../lib/api';
 
-const TABS = [
-  { key: 'overview', label: 'Overview' },
-  { key: 'congestion-structure', label: 'Congestion vs Structure' },
-  { key: 'exit-analysis', label: 'Exit Analysis' },
-  { key: 'bottlenecks', label: 'Bottlenecks' },
-] as const;
+const TAB_KEYS = ['overview', 'congestion-structure', 'exit-analysis', 'bottlenecks'] as const;
+type TabKey = (typeof TAB_KEYS)[number];
 
-type TabKey = (typeof TABS)[number]['key'];
+const TAB_I18N_KEYS: Record<TabKey, string> = {
+  'overview': 'network.overview',
+  'congestion-structure': 'network.congestionStructure',
+  'exit-analysis': 'network.exitAnalysis',
+  'bottlenecks': 'network.bottlenecks',
+};
+
+const TAB_DESCRIPTION_KEYS: Record<TabKey, string> = {
+  'overview': 'chartDescriptions.networkOverview',
+  'congestion-structure': 'chartDescriptions.congestionStructure',
+  'exit-analysis': 'chartDescriptions.exitAnalysis',
+  'bottlenecks': 'chartDescriptions.bottlenecks',
+};
 
 export function NetworkPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const globalOverrides = useGlobalFilterOverrides();
+  const { t } = useTranslation();
 
   const overrides: GlobalOverrides = {
     exclude_neighborhoods: globalOverrides.exclude_neighborhoods,
@@ -27,59 +38,33 @@ export function NetworkPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900">Network Analysis</h1>
+      <h1 className="text-2xl font-bold text-slate-900">{t('network.title')}</h1>
 
       <div className="bg-white rounded-lg border border-slate-200">
         <div className="flex gap-1 p-2 border-b border-slate-200 overflow-x-auto">
-          {TABS.map((tab) => (
+          {TAB_KEYS.map((tabKey) => (
             <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              key={tabKey}
+              onClick={() => setActiveTab(tabKey)}
               className={cn(
                 'px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap',
-                activeTab === tab.key
+                activeTab === tabKey
                   ? 'bg-blue-50 text-blue-700'
                   : 'text-slate-600 hover:bg-slate-50'
               )}
             >
-              {tab.label}
+              {t(TAB_I18N_KEYS[tabKey])}
             </button>
           ))}
         </div>
 
         <div className="p-4">
-          {activeTab === 'overview' && (
-            <div>
-              <p className="text-sm text-slate-500 mb-4">
-                Road network metrics for each neighborhood, computed from OpenStreetMap data via OSMnx.
-              </p>
-              <NetworkMetricsTable overrides={overrides} />
-            </div>
-          )}
-          {activeTab === 'congestion-structure' && (
-            <div>
-              <p className="text-sm text-slate-500 mb-4">
-                How does road network structure relate to traffic congestion? Each dot is a neighborhood.
-              </p>
-              <CongestionStructureScatter overrides={overrides} />
-            </div>
-          )}
-          {activeTab === 'exit-analysis' && (
-            <div>
-              <p className="text-sm text-slate-500 mb-4">
-                Neighborhood exits matched to nearby traffic routes, ranked by average congestion.
-              </p>
-              <ExitCongestionChart overrides={overrides} />
-            </div>
-          )}
-          {activeTab === 'bottlenecks' && (
-            <div>
-              <p className="text-sm text-slate-500 mb-4">
-                High-centrality intersections near congested routes. Score = betweenness × nearby congestion.
-              </p>
-              <BottleneckTable overrides={overrides} />
-            </div>
-          )}
+          {activeTab === 'overview' && <NetworkMetricsTable overrides={overrides} />}
+          {activeTab === 'congestion-structure' && <CongestionStructureScatter overrides={overrides} />}
+          {activeTab === 'exit-analysis' && <ExitCongestionChart overrides={overrides} />}
+          {activeTab === 'bottlenecks' && <BottleneckTable overrides={overrides} />}
+
+          <ChartDescription text={t(TAB_DESCRIPTION_KEYS[activeTab])} />
         </div>
       </div>
     </div>

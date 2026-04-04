@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
+import { useChartDirection } from '../../hooks/useChartDirection';
 import { getDayOfWeek } from '../../lib/api';
 import { getNeighborhoodColor, getRouteColor, DAYS_OF_WEEK } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
@@ -14,6 +16,8 @@ export function DayOfWeekChart({ filters }: Props) {
     () => getDayOfWeek(filters),
     [JSON.stringify(filters)]
   );
+  const { t } = useTranslation();
+  const { yAxisOrientation, xAxisReversed, mirrorMargin } = useChartDirection();
 
   const { chartData, seriesKeys, seriesColors, byRoute } = useMemo(() => {
     if (!data?.length) return { chartData: [], seriesKeys: [], seriesColors: {} as Record<string, string>, byRoute: false };
@@ -53,16 +57,17 @@ export function DayOfWeekChart({ filters }: Props) {
     return map;
   }, [data, byRoute]);
 
-  if (loading) return <div className="h-80 flex items-center justify-center text-slate-400">Loading...</div>;
+  if (loading) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.loading')}</div>;
   if (error) return <div className="h-80 flex items-center justify-center text-red-500">{error}</div>;
-  if (!chartData.length) return <div className="h-80 flex items-center justify-center text-slate-400">No data</div>;
+  if (!chartData.length) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.noData')}</div>;
 
   return (
+    <div dir="ltr">
     <ResponsiveContainer width="100%" height={350}>
-      <BarChart data={chartData} margin={{ left: 10, right: 20, top: 10, bottom: 10 }}>
+      <BarChart data={chartData} margin={mirrorMargin({ left: 10, right: 20, top: 10, bottom: 10 })}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="day" tick={{ fontSize: 12 }} />
-        <YAxis domain={[0, 'auto']} />
+        <XAxis dataKey="day" tick={{ fontSize: 12 }} reversed={xAxisReversed} />
+        <YAxis domain={[0, 'auto']} orientation={yAxisOrientation} />
         <Tooltip />
         <Legend formatter={(value) => byRoute ? (routeNameMap[value] ?? value) : value} />
         {seriesKeys.map((key) => (
@@ -76,5 +81,6 @@ export function DayOfWeekChart({ filters }: Props) {
         ))}
       </BarChart>
     </ResponsiveContainer>
+    </div>
   );
 }

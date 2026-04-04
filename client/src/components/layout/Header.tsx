@@ -1,14 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import { BarChart3, Table, LayoutDashboard, Network } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 import { useGlobalFilters } from '../../contexts/GlobalFiltersContext';
-
-const NAV_ITEMS = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/charts', label: 'Charts', icon: BarChart3 },
-  { to: '/data', label: 'Data', icon: Table },
-  { to: '/network', label: 'Network', icon: Network },
-];
 
 function ToggleSwitch({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {
   return (
@@ -17,6 +11,7 @@ function ToggleSwitch({ label, checked, onChange }: { label: string; checked: bo
       <button
         role="switch"
         aria-checked={checked}
+        dir="ltr"
         onClick={onChange}
         className={cn(
           'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
@@ -34,8 +29,34 @@ function ToggleSwitch({ label, checked, onChange }: { label: string; checked: bo
   );
 }
 
+function LanguageToggle() {
+  const { i18n } = useTranslation();
+  const isHebrew = i18n.language === 'he';
+
+  function toggle() {
+    i18n.changeLanguage(isHebrew ? 'en' : 'he');
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      className="px-2.5 py-1 text-xs font-semibold rounded-md border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors"
+    >
+      {isHebrew ? 'EN' : 'HE'}
+    </button>
+  );
+}
+
 export function Header() {
   const { beerShevaOnly, setBeerShevaOnly, hideMidnight, setHideMidnight } = useGlobalFilters();
+  const { t } = useTranslation();
+
+  const navItems = [
+    { to: '/', label: t('nav.dashboard'), icon: LayoutDashboard },
+    { to: '/charts', label: t('nav.charts'), icon: BarChart3 },
+    { to: '/data', label: t('nav.data'), icon: Table },
+    { to: '/network', label: t('nav.network'), icon: Network },
+  ];
 
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
@@ -43,13 +64,14 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
             <BarChart3 className="h-6 w-6 text-blue-600" />
-            <span className="text-lg font-semibold text-slate-900">Traffic Dashboard</span>
+            <span className="text-lg font-semibold text-slate-900">{t('header.title')}</span>
           </div>
           <div className="flex items-center gap-4">
-            <ToggleSwitch label="Beer Sheva only" checked={beerShevaOnly} onChange={() => setBeerShevaOnly(!beerShevaOnly)} />
-            <ToggleSwitch label="Hide midnight" checked={hideMidnight} onChange={() => setHideMidnight(!hideMidnight)} />
+            <LanguageToggle />
+            <ToggleSwitch label={t('header.beerShevaOnly')} checked={beerShevaOnly} onChange={() => setBeerShevaOnly(!beerShevaOnly)} />
+            <ToggleSwitch label={t('header.hideMidnight')} checked={hideMidnight} onChange={() => setHideMidnight(!hideMidnight)} />
             <nav className="flex gap-1">
-              {NAV_ITEMS.map((item) => (
+              {navItems.map((item) => (
                 <NavLink
                   key={item.to}
                   to={item.to}

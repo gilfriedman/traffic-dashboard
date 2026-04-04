@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FilterBar } from '../components/filters/FilterBar';
 import { getTrafficData, getExportUrl } from '../lib/api';
 import { formatCongestion } from '../lib/utils';
@@ -19,20 +20,23 @@ const DEFAULT_FILTERS: Filters = {
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
 
-const COLUMNS = [
-  { key: 'local_time', label: 'Time' },
-  { key: 'route_id', label: 'Route ID' },
-  { key: 'route_name', label: 'Route Name' },
-  { key: 'day_of_week', label: 'Day' },
-  { key: 'is_rush_hour', label: 'Rush Hour' },
-  { key: 'duration_seconds', label: 'Duration (s)' },
-  { key: 'traffic_seconds', label: 'Traffic (s)' },
-  { key: 'congestion_ratio', label: 'Congestion' },
-] as const;
+const COLUMN_I18N_KEYS: Record<string, string> = {
+  local_time: 'dataPage.time',
+  route_id: 'dataPage.routeId',
+  route_name: 'dataPage.routeName',
+  day_of_week: 'dataPage.day',
+  is_rush_hour: 'dataPage.rushHour',
+  duration_seconds: 'dataPage.duration',
+  traffic_seconds: 'dataPage.traffic',
+  congestion_ratio: 'dataPage.congestion',
+};
+
+const COLUMN_KEYS = ['local_time', 'route_id', 'route_name', 'day_of_week', 'is_rush_hour', 'duration_seconds', 'traffic_seconds', 'congestion_ratio'] as const;
 
 export function DataPage() {
   const globalOverrides = useGlobalFilterOverrides();
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const { t } = useTranslation();
 
   const effectiveFilters = useMemo<Filters>(
     () => ({ ...filters, ...globalOverrides }),
@@ -78,7 +82,7 @@ export function DataPage() {
       case 'duration_seconds': return String(record.duration?.seconds ?? '');
       case 'traffic_seconds': return String(record.duration_in_traffic?.seconds ?? '');
       case 'congestion_ratio': return formatCongestion(record.congestion_ratio);
-      case 'is_rush_hour': return record.is_rush_hour ? 'Yes' : 'No';
+      case 'is_rush_hour': return record.is_rush_hour ? t('dataPage.yes') : t('dataPage.no');
       default: return String((record as unknown as Record<string, unknown>)[column] ?? '');
     }
   }
@@ -89,7 +93,7 @@ export function DataPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-slate-900">Raw Data</h1>
+        <h1 className="text-2xl font-bold text-slate-900">{t('dataPage.title')}</h1>
         <div className="flex gap-2">
           <a
             href={getExportUrl(effectiveFilters, 'csv')}
@@ -115,15 +119,15 @@ export function DataPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                {COLUMNS.map((column) => (
+                {COLUMN_KEYS.map((columnKey) => (
                   <th
-                    key={column.key}
-                    onClick={() => handleSort(column.key)}
-                    className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700"
+                    key={columnKey}
+                    onClick={() => handleSort(columnKey)}
+                    className="px-4 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer hover:text-slate-700"
                   >
-                    {column.label}
-                    {sortBy === column.key && (
-                      <span className="ml-1">{sortOrder === 'asc' ? '\u2191' : '\u2193'}</span>
+                    {t(COLUMN_I18N_KEYS[columnKey])}
+                    {sortBy === columnKey && (
+                      <span className="ms-1">{sortOrder === 'asc' ? '\u2191' : '\u2193'}</span>
                     )}
                   </th>
                 ))}
@@ -132,24 +136,24 @@ export function DataPage() {
             <tbody className="divide-y divide-slate-100">
               {loading && (
                 <tr>
-                  <td colSpan={COLUMNS.length} className="px-4 py-8 text-center text-slate-400">
-                    Loading...
+                  <td colSpan={COLUMN_KEYS.length} className="px-4 py-8 text-center text-slate-400">
+                    {t('dataPage.loading')}
                   </td>
                 </tr>
               )}
               {!loading && data.length === 0 && (
                 <tr>
-                  <td colSpan={COLUMNS.length} className="px-4 py-8 text-center text-slate-400">
-                    No data found
+                  <td colSpan={COLUMN_KEYS.length} className="px-4 py-8 text-center text-slate-400">
+                    {t('dataPage.noData')}
                   </td>
                 </tr>
               )}
               {!loading &&
                 data.map((record) => (
                   <tr key={record._id} className="hover:bg-slate-50">
-                    {COLUMNS.map((column) => (
-                      <td key={column.key} className="px-4 py-2.5 text-slate-700 whitespace-nowrap">
-                        {getCellValue(record, column.key)}
+                    {COLUMN_KEYS.map((columnKey) => (
+                      <td key={columnKey} className="px-4 py-2.5 text-slate-700 whitespace-nowrap">
+                        {getCellValue(record, columnKey)}
                       </td>
                     ))}
                   </tr>
@@ -160,14 +164,14 @@ export function DataPage() {
 
         <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 bg-slate-50">
           <div className="flex items-center gap-3 text-sm text-slate-600">
-            <span>{total.toLocaleString()} records</span>
+            <span>{total.toLocaleString()} {t('dataPage.records')}</span>
             <select
               value={pageSize}
               onChange={(event) => setPageSize(Number(event.target.value))}
               className="border border-slate-300 rounded px-2 py-1 text-sm"
             >
               {PAGE_SIZE_OPTIONS.map((size) => (
-                <option key={size} value={size}>{size} per page</option>
+                <option key={size} value={size}>{size} {t('dataPage.perPage')}</option>
               ))}
             </select>
           </div>
@@ -177,17 +181,17 @@ export function DataPage() {
               disabled={offset === 0}
               className="p-1 rounded hover:bg-slate-200 disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-5 w-5 rtl:rotate-180" />
             </button>
             <span className="text-sm text-slate-600">
-              Page {currentPage} of {totalPages}
+              {t('dataPage.page')} {currentPage} {t('dataPage.of')} {totalPages}
             </span>
             <button
               onClick={() => setOffset(offset + pageSize)}
               disabled={offset + pageSize >= total}
               className="p-1 rounded hover:bg-slate-200 disabled:opacity-30 disabled:cursor-not-allowed"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-5 w-5 rtl:rotate-180" />
             </button>
           </div>
         </div>

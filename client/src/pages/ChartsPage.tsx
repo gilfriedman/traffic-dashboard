@@ -1,23 +1,34 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FilterBar } from '../components/filters/FilterBar';
 import { CongestionOverTimeChart } from '../components/charts/CongestionOverTimeChart';
 import { DayOfWeekChart } from '../components/charts/DayOfWeekChart';
 import { RushHourChart } from '../components/charts/RushHourChart';
 import { RouteRankingChart } from '../components/charts/RouteRankingChart';
 import { DistributionChart } from '../components/charts/DistributionChart';
+import { ChartDescription } from '../components/ChartDescription';
 import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
 import { cn } from '../lib/utils';
 import type { Filters } from '../lib/types';
 
-const TABS = [
-  { key: 'time-series', label: 'Time Series' },
-  { key: 'day-of-week', label: 'Day of Week' },
-  { key: 'rush-hour', label: 'Rush Hour' },
-  { key: 'route-ranking', label: 'Route Ranking' },
-  { key: 'distribution', label: 'Distribution' },
-] as const;
+const TAB_KEYS = ['time-series', 'day-of-week', 'rush-hour', 'route-ranking', 'distribution'] as const;
+type TabKey = (typeof TAB_KEYS)[number];
 
-type TabKey = (typeof TABS)[number]['key'];
+const TAB_I18N_KEYS: Record<TabKey, string> = {
+  'time-series': 'charts.timeSeries',
+  'day-of-week': 'charts.dayOfWeek',
+  'rush-hour': 'charts.rushHour',
+  'route-ranking': 'charts.routeRanking',
+  'distribution': 'charts.distribution',
+};
+
+const TAB_DESCRIPTION_KEYS: Record<TabKey, string> = {
+  'time-series': 'chartDescriptions.timeSeries',
+  'day-of-week': 'chartDescriptions.dayOfWeek',
+  'rush-hour': 'chartDescriptions.rushHourCharts',
+  'route-ranking': 'chartDescriptions.routeRanking',
+  'distribution': 'chartDescriptions.distribution',
+};
 
 const GRANULARITY_OPTIONS = ['15min', 'hour', 'day', 'week'] as const;
 
@@ -35,6 +46,7 @@ const DEFAULT_FILTERS: Filters = {
 export function ChartsPage() {
   const globalOverrides = useGlobalFilterOverrides();
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const { t } = useTranslation();
 
   const effectiveFilters = useMemo<Filters>(
     () => ({ ...filters, ...globalOverrides }),
@@ -45,24 +57,24 @@ export function ChartsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900">Charts</h1>
+      <h1 className="text-2xl font-bold text-slate-900">{t('charts.title')}</h1>
 
       <FilterBar filters={filters} onChange={setFilters} />
 
       <div className="bg-white rounded-lg border border-slate-200">
         <div className="flex gap-1 p-2 border-b border-slate-200 overflow-x-auto">
-          {TABS.map((tab) => (
+          {TAB_KEYS.map((tabKey) => (
             <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              key={tabKey}
+              onClick={() => setActiveTab(tabKey)}
               className={cn(
                 'px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap',
-                activeTab === tab.key
+                activeTab === tabKey
                   ? 'bg-blue-50 text-blue-700'
                   : 'text-slate-600 hover:bg-slate-50'
               )}
             >
-              {tab.label}
+              {t(TAB_I18N_KEYS[tabKey])}
             </button>
           ))}
         </div>
@@ -82,7 +94,7 @@ export function ChartsPage() {
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     )}
                   >
-                    {option}
+                    {t(`charts.granularity.${option}`)}
                   </button>
                 ))}
               </div>
@@ -93,6 +105,8 @@ export function ChartsPage() {
           {activeTab === 'rush-hour' && <RushHourChart filters={effectiveFilters} />}
           {activeTab === 'route-ranking' && <RouteRankingChart filters={effectiveFilters} />}
           {activeTab === 'distribution' && <DistributionChart filters={effectiveFilters} />}
+
+          <ChartDescription text={t(TAB_DESCRIPTION_KEYS[activeTab])} />
         </div>
       </div>
     </div>

@@ -1,18 +1,12 @@
 import { useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
+import { useChartDirection } from '../../hooks/useChartDirection';
 import { getExitCongestion, type GlobalOverrides } from '../../lib/api';
 import { getNeighborhoodColor, cn } from '../../lib/utils';
 
-const NEIGHBORHOODS = [
-  { key: '', label: 'All' },
-  { key: 'old_city', label: 'Old City' },
-  { key: 'shchuna_bet', label: "Sh'chuna Bet" },
-  { key: 'shchuna_he', label: "Sh'chuna He" },
-  { key: 'ramot_bet', label: 'Ramot Bet' },
-  { key: 'neve_zeev', label: "Neve Ze'ev" },
-  { key: 'rambam', label: 'Rambam' },
-];
+const NEIGHBORHOOD_KEYS = ['', 'old_city', 'shchuna_bet', 'shchuna_he', 'ramot_bet', 'neve_zeev', 'rambam'] as const;
 
 interface Props {
   overrides: GlobalOverrides;
@@ -24,10 +18,12 @@ export function ExitCongestionChart({ overrides }: Props) {
     () => getExitCongestion(overrides, neighborhood || undefined),
     [neighborhood, JSON.stringify(overrides)]
   );
+  const { t } = useTranslation();
+  const { xAxisReversed, mirrorMargin } = useChartDirection();
 
-  if (loading) return <div className="h-96 flex items-center justify-center text-slate-400">Loading...</div>;
+  if (loading) return <div className="h-96 flex items-center justify-center text-slate-400">{t('common.loading')}</div>;
   if (error) return <div className="h-96 flex items-center justify-center text-red-500">{error}</div>;
-  if (!data?.length) return <div className="h-96 flex items-center justify-center text-slate-400">No data</div>;
+  if (!data?.length) return <div className="h-96 flex items-center justify-center text-slate-400">{t('common.noData')}</div>;
 
   const top30 = data.slice(0, 30);
   const chartHeight = Math.max(400, top30.length * 28);
@@ -35,34 +31,36 @@ export function ExitCongestionChart({ overrides }: Props) {
   return (
     <div>
       <div className="flex flex-wrap gap-2 mb-4">
-        {NEIGHBORHOODS.map((option) => (
+        {NEIGHBORHOOD_KEYS.map((key) => (
           <button
-            key={option.key}
-            onClick={() => setNeighborhood(option.key)}
+            key={key}
+            onClick={() => setNeighborhood(key)}
             className={cn(
               'px-3 py-1 text-xs font-medium rounded-full transition-colors',
-              neighborhood === option.key
+              neighborhood === key
                 ? 'bg-blue-100 text-blue-700'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             )}
           >
-            {option.label}
+            {key === '' ? t('exitChart.all') : t(`neighborhoods.${key}`)}
           </button>
         ))}
       </div>
 
+      <div dir="ltr">
       <ResponsiveContainer width="100%" height={chartHeight}>
-        <BarChart data={top30} layout="vertical" margin={{ left: 140, right: 20, top: 10, bottom: 10 }}>
+        <BarChart data={top30} layout="vertical" margin={mirrorMargin({ left: 140, right: 20, top: 10, bottom: 10 })}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" domain={[0, 'auto']} />
+          <XAxis type="number" domain={[0, 'auto']} reversed={xAxisReversed} />
           <YAxis
             type="category"
             dataKey="exit_street_name"
             width={140}
             tick={{ fontSize: 11 }}
+            orientation={xAxisReversed ? 'right' : 'left'}
           />
           <Tooltip
-            formatter={(value) => [Number(value).toFixed(3) + 'x', 'Avg Congestion']}
+            formatter={(value) => [Number(value).toFixed(3) + 'x', t('exitChart.avgCongestion')]}
             labelFormatter={(label) => {
               const exit = top30.find((exit) => exit.exit_street_name === String(label));
               return `${label} → ${exit?.matched_route_name ?? ''} (${exit?.neighborhood_display ?? ''})`;
@@ -75,6 +73,7 @@ export function ExitCongestionChart({ overrides }: Props) {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+      </div>
     </div>
   );
 }
