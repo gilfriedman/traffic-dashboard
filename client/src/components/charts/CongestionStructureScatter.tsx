@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
@@ -21,6 +21,37 @@ const METRIC_I18N_KEYS: Record<MetricKey, string> = {
   exit_count: 'scatter.exitCount',
 };
 
+function computeLinearRegression(points: { x: number; y: number }[]) {
+  const n = points.length;
+  if (n < 2) return null;
+
+  let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+  for (const point of points) {
+    sumX += point.x;
+    sumY += point.y;
+    sumXY += point.x * point.y;
+    sumX2 += point.x * point.x;
+  }
+
+  const denominator = n * sumX2 - sumX * sumX;
+  if (denominator === 0) return null;
+
+  const slope = (n * sumXY - sumX * sumY) / denominator;
+  const intercept = (sumY - slope * sumX) / n;
+
+  const minX = Math.min(...points.map((point) => point.x));
+  const maxX = Math.max(...points.map((point) => point.x));
+
+  return {
+    slope,
+    intercept,
+    startX: minX,
+    startY: slope * minX + intercept,
+    endX: maxX,
+    endY: slope * maxX + intercept,
+  };
+}
+
 interface Props {
   overrides: GlobalOverrides;
 }
@@ -33,6 +64,14 @@ export function CongestionStructureScatter({ overrides }: Props) {
   const [metricKey, setMetricKey] = useState<MetricKey>('street_density');
   const { t } = useTranslation();
   const { yAxisOrientation, xAxisReversed, mirrorMargin } = useChartDirection();
+
+  const regression = useMemo(() => {
+    if (!data?.length) return null;
+    const points = data
+      .filter((point) => point[metricKey] != null)
+      .map((point) => ({ x: point[metricKey] as number, y: point.avg_congestion }));
+    return computeLinearRegression(points);
+  }, [data, metricKey]);
 
   if (loading) return <div className="h-96 flex items-center justify-center text-slate-400">{t('common.loading')}</div>;
   if (error) return <div className="h-96 flex items-center justify-center text-red-500">{error}</div>;
@@ -97,6 +136,18 @@ export function CongestionStructureScatter({ overrides }: Props) {
               <Cell key={entry.neighborhood_key} fill={getNeighborhoodColor(entry.neighborhood_key)} r={8} />
             ))}
           </Scatter>
+          {regression && (
+            <Scatter
+              data={[
+                { [metricKey]: regression.startX, avg_congestion: regression.startY },
+                { [metricKey]: regression.endX, avg_congestion: regression.endY },
+              ]}
+              line={{ stroke: '#94a3b8', strokeWidth: 2, strokeDasharray: '6 4' }}
+              fill="none"
+              legendType="none"
+              isAnimationActive={false}
+            />
+          )}
         </ScatterChart>
       </ResponsiveContainer>
       </div>

@@ -60,10 +60,17 @@ export function ExitCongestionChart({ overrides }: Props) {
             orientation={xAxisReversed ? 'right' : 'left'}
           />
           <Tooltip
-            formatter={(value) => [Number(value).toFixed(3) + 'x', t('exitChart.avgCongestion')]}
-            labelFormatter={(label) => {
-              const exit = top30.find((exit) => exit.exit_street_name === String(label));
-              return `${label} → ${exit?.matched_route_name ?? ''} (${exit?.neighborhood_display ?? ''})`;
+            content={({ payload }) => {
+              if (!payload?.length) return null;
+              const exit = payload[0].payload as (typeof top30)[number];
+              return (
+                <div className="bg-white border border-slate-200 rounded-lg shadow-lg p-3 text-sm" dir="auto">
+                  <p className="font-semibold">{exit.exit_street_name}</p>
+                  <p className="text-slate-600">{t('exitChart.avgCongestion')}: {exit.avg_congestion.toFixed(3)}x</p>
+                  <p className="text-slate-600">{exit.matched_route_name} ({exit.neighborhood_display})</p>
+                  <p className="text-slate-400 text-xs">{Math.round(exit.distance_meters)}m</p>
+                </div>
+              );
             }}
           />
           <Bar dataKey="avg_congestion" radius={[0, 4, 4, 0]}>

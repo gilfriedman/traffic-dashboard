@@ -119,14 +119,20 @@ def exit_congestion(args):
         for row in collection.aggregate(pipeline)
     }
 
+    unnamed_counter = {}
     results = []
     for ref in cross_refs:
         route_id = ref["matched_route_id"]
         congestion = congestion_by_route.get(route_id, {})
+        street_name = ref["exit_street_name"]
+        if not street_name or street_name == "unnamed":
+            key = ref["neighborhood_key"]
+            unnamed_counter[key] = unnamed_counter.get(key, 0) + 1
+            street_name = f"unnamed #{unnamed_counter[key]}"
         results.append({
             "neighborhood_key": ref["neighborhood_key"],
             "neighborhood_display": get_display_name(ref["neighborhood_key"]),
-            "exit_street_name": ref["exit_street_name"],
+            "exit_street_name": street_name,
             "matched_route_id": route_id,
             "matched_route_name": ref["matched_route_name"],
             "distance_meters": ref["distance_meters"],
