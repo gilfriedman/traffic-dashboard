@@ -137,110 +137,110 @@
     "avgCongestion": "Avg Congestion"
   },
   "chartDescriptions": {
-    "neighborhoodComparison": "Compares average congestion ratios across neighborhoods. Higher values indicate more congested areas.",
-    "rushHourProfile": "Congestion patterns during morning rush hours (6:00\u20139:00), broken down by 15-minute intervals.",
-    "congestionOverTimeDaily": "Daily trend of average congestion ratios. Tracks how traffic conditions change over the data collection period.",
-    "timeSeries": "Congestion trends over time with configurable granularity (15-min, hourly, daily, weekly).",
-    "dayOfWeek": "Average congestion for each day of the week. Reveals weekly traffic patterns.",
-    "rushHourCharts": "Intra-day congestion profile showing how traffic varies throughout the day.",
-    "routeRanking": "Routes ranked by average congestion ratio. Identifies the most congested routes.",
-    "distribution": "Histogram showing how congestion ratio values are distributed across all measurements.",
-    "networkOverview": "Road network metrics for each neighborhood, computed from OpenStreetMap data via OSMnx.",
-    "congestionStructure": "Scatter plot exploring relationships between road network structure metrics and traffic congestion levels. Each dot is a neighborhood.",
-    "exitAnalysis": "Neighborhood exits matched to nearby traffic routes, ranked by average congestion.",
-    "bottlenecks": "High-centrality intersections near congested routes. Score = betweenness \u00d7 nearby congestion.",
-    "networkGraph": "Visual road network for each neighborhood. Blue = interior nodes, Orange = perimeter nodes, Gray = exterior nodes, Green arrows = exit edges. Red line marks the neighborhood boundary."
+    "neighborhoodComparison": "Compares average congestion ratios across neighborhoods. Higher values indicate more congested areas. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
+    "rushHourProfile": "Congestion patterns during morning rush hours (6:00\u20139:00), broken down by 15-minute intervals. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
+    "congestionOverTimeDaily": "Daily trend of average congestion ratios. Tracks how traffic conditions change over the data collection period. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
+    "timeSeries": "Congestion trends over time with configurable granularity (15-min, hourly, daily, weekly). Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
+    "dayOfWeek": "Average congestion for each day of the week. Reveals weekly traffic patterns. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
+    "rushHourCharts": "Intra-day congestion profile showing how traffic varies throughout the day. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
+    "routeRanking": "Routes ranked by average congestion ratio. Identifies the most congested routes. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
+    "distribution": "Histogram showing how congestion ratio values are distributed across all measurements. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
+    "networkOverview": "Road network metrics for each neighborhood. Data source: OpenStreetMap, processed with OSMnx (graph extraction, centrality and connectivity analysis).",
+    "congestionStructure": "Scatter plot exploring relationships between road network structure metrics and traffic congestion levels. Each dot is a neighborhood. Data sources: OpenStreetMap/OSMnx (network metrics) and Google Maps Routes API (congestion).",
+    "exitAnalysis": "Neighborhood exits matched to nearby traffic routes, ranked by average congestion. Data sources: OpenStreetMap/OSMnx (exit identification) and Google Maps Routes API (congestion).",
+    "bottlenecks": "High-centrality intersections near congested routes. Score = betweenness \u00d7 nearby congestion. Data sources: OpenStreetMap/OSMnx (centrality analysis) and Google Maps Routes API (congestion).",
+    "networkGraph": "Visual road network for each neighborhood. Blue = interior nodes, Orange = perimeter nodes, Gray = exterior nodes, Green arrows = exit edges. Red line marks the neighborhood boundary. Data source: OpenStreetMap, processed with OSMnx. Aerial imagery: Esri World Imagery (ArcGIS)."
   },
   "metrics": {
     "node_count": {
       "label": "Node Count",
-      "description": "Total number of nodes (intersections and endpoints) in the road network graph."
+      "description": "Total number of nodes (intersections and endpoints) in the road network graph. Data source: OpenStreetMap via OSMnx."
     },
     "edge_count": {
       "label": "Edge Count",
-      "description": "Total number of edges (road segments) connecting nodes in the network."
+      "description": "Total number of edges (road segments) connecting nodes in the network. Data source: OpenStreetMap via OSMnx."
     },
     "total_street_length_m": {
       "label": "Total Street Length (m)",
-      "description": "Sum of all road segment lengths in meters."
+      "description": "Sum of all road segment lengths in meters. Data source: OpenStreetMap via OSMnx."
     },
     "avg_street_length_m": {
       "label": "Avg Street Length (m)",
-      "description": "Average length of a single road segment in meters."
+      "description": "Average length of a single road segment in meters. Data source: OpenStreetMap via OSMnx."
     },
     "intersection_count": {
       "label": "Intersection Count",
-      "description": "Number of nodes where 3 or more roads meet (true intersections, not dead ends)."
+      "description": "Number of nodes where 3 or more roads meet (true intersections, not dead ends). Data source: OpenStreetMap via OSMnx."
     },
     "intersection_density_per_km2": {
       "label": "Intersection Density (/km\u00b2)",
-      "description": "Number of intersections per square kilometer. Higher values indicate a denser street grid."
+      "description": "Number of intersections per square kilometer. Higher values indicate a denser street grid. Data source: OpenStreetMap via OSMnx."
     },
     "street_density_m_per_km2": {
       "label": "Street Density (m/km\u00b2)",
-      "description": "Total road length in meters per square kilometer of neighborhood area."
+      "description": "Total road length in meters per square kilometer of neighborhood area. Data source: OpenStreetMap via OSMnx."
     },
     "avg_node_degree": {
       "label": "Avg Node Degree",
-      "description": "Average number of roads connecting at each node. Higher values mean more connected intersections."
+      "description": "Average number of roads connecting at each node. Higher values mean more connected intersections. Data source: OpenStreetMap via OSMnx."
     },
     "circuity": {
       "label": "Circuity",
-      "description": "Ratio of actual road distances to straight-line distances. Values near 1 mean direct routes; higher values mean more winding roads."
+      "description": "Ratio of actual road distances to straight-line distances. Values near 1 mean direct routes; higher values mean more winding roads. Data source: OpenStreetMap via OSMnx."
     },
     "betweenness_centrality": {
       "label": "Betweenness Centrality",
-      "description": "Measures how often a node lies on the shortest paths between other nodes. High values indicate critical thoroughfare points that carry a lot of through-traffic."
+      "description": "Measures how often a node lies on the shortest paths between other nodes. High values indicate critical thoroughfare points that carry a lot of through-traffic. Data source: OpenStreetMap via OSMnx."
     },
     "avg_betweenness": {
       "label": "Avg Betweenness",
-      "description": "Average betweenness centrality across all nodes. Indicates how evenly through-traffic is distributed in the network."
+      "description": "Average betweenness centrality across all nodes. Indicates how evenly through-traffic is distributed in the network. Data source: OpenStreetMap via OSMnx."
     },
     "max_betweenness": {
       "label": "Max Betweenness",
-      "description": "Highest betweenness centrality value in the network \u2014 the single most critical junction for through-traffic."
+      "description": "Highest betweenness centrality value in the network. Data source: OpenStreetMap via OSMnx \u2014 the single most critical junction for through-traffic."
     },
     "closeness_centrality": {
       "label": "Closeness Centrality",
-      "description": "Measures how close a node is to all other nodes via shortest paths. Higher values indicate more central, easily accessible locations."
+      "description": "Measures how close a node is to all other nodes via shortest paths. Higher values indicate more central, easily accessible locations. Data source: OpenStreetMap via OSMnx."
     },
     "avg_closeness": {
       "label": "Avg Closeness",
-      "description": "Average closeness centrality across all nodes. Higher values mean the neighborhood is overall more compact and accessible."
+      "description": "Average closeness centrality across all nodes. Higher values mean the neighborhood is overall more compact and accessible. Data source: OpenStreetMap via OSMnx."
     },
     "max_closeness": {
       "label": "Max Closeness",
-      "description": "Highest closeness centrality \u2014 the single most accessible point in the network."
+      "description": "Highest closeness centrality. Data source: OpenStreetMap via OSMnx \u2014 the single most accessible point in the network."
     },
     "avg_node_connectivity": {
       "label": "Avg Node Connectivity",
-      "description": "Average minimum number of nodes that must be removed to disconnect any pair of nodes. Higher values indicate a more resilient network."
+      "description": "Average minimum number of nodes that must be removed to disconnect any pair of nodes. Higher values indicate a more resilient network. Data source: OpenStreetMap via OSMnx."
     },
     "edge_connectivity": {
       "label": "Edge Connectivity",
-      "description": "Minimum number of edges (roads) that must be removed to disconnect the graph. Higher values mean fewer single points of failure."
+      "description": "Minimum number of edges (roads) that must be removed to disconnect the graph. Higher values mean fewer single points of failure. Data source: OpenStreetMap via OSMnx."
     },
     "exit_count": {
       "label": "Exit Count",
-      "description": "Number of roads leading out of the neighborhood boundary."
+      "description": "Number of roads leading out of the neighborhood boundary. Data source: OpenStreetMap via OSMnx."
     },
     "area_km2": {
       "label": "Area (km\u00b2)",
-      "description": "Total area of the neighborhood in square kilometers."
+      "description": "Total area of the neighborhood in square kilometers. Data source: OpenStreetMap via OSMnx."
     }
   },
   "nodeClassification": {
     "interior": {
       "label": "Interior",
-      "description": "Nodes located inside the neighborhood boundary, representing internal intersections."
+      "description": "Nodes located inside the neighborhood boundary, representing internal intersections. Data source: OpenStreetMap via OSMnx."
     },
     "perimeter": {
       "label": "Perimeter",
-      "description": "Nodes on or near the neighborhood boundary, often connecting to adjacent areas."
+      "description": "Nodes on or near the neighborhood boundary, often connecting to adjacent areas. Data source: OpenStreetMap via OSMnx."
     },
     "exterior": {
       "label": "Exterior",
-      "description": "Nodes outside the neighborhood boundary, included for network completeness."
+      "description": "Nodes outside the neighborhood boundary, included for network completeness. Data source: OpenStreetMap via OSMnx."
     }
   }
 }
