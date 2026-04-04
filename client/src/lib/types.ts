@@ -100,6 +100,83 @@ export interface DistributionPoint {
   count: number;
 }
 
+export interface NetworkNeighborhoodMetrics {
+  neighborhood_key: string;
+  neighborhood_display: string;
+  name_en: string;
+  name_he: string;
+  basic_stats: {
+    node_count: number;
+    edge_count: number;
+    total_street_length_m: number;
+    avg_street_length_m: number;
+    intersection_count: number;
+    intersection_density_per_km2: number;
+    street_density_m_per_km2: number;
+    avg_node_degree: number;
+    circuity: number | null;
+  };
+  connectivity: {
+    avg_node_connectivity: number;
+    edge_connectivity: number;
+  };
+  centrality_summary: {
+    avg_betweenness: number;
+    max_betweenness: number;
+    avg_closeness: number;
+    max_closeness: number;
+  };
+  exit_count: number;
+  area_km2: number;
+}
+
+export interface CongestionVsStructurePoint {
+  neighborhood_key: string;
+  neighborhood_display: string;
+  avg_congestion: number;
+  max_congestion: number;
+  sample_count: number;
+  node_count: number;
+  edge_count: number;
+  street_density: number;
+  intersection_density: number;
+  avg_node_degree: number;
+  circuity: number | null;
+  avg_street_length: number;
+  connectivity: number;
+  exit_count: number;
+  area_km2: number;
+  avg_betweenness: number;
+  max_betweenness: number;
+}
+
+export interface ExitCongestionPoint {
+  neighborhood_key: string;
+  neighborhood_display: string;
+  exit_street_name: string;
+  matched_route_id: string;
+  matched_route_name: string;
+  distance_meters: number;
+  avg_congestion: number;
+  max_congestion: number;
+  sample_count: number;
+}
+
+export interface BottleneckPoint {
+  osm_node_id: number;
+  neighborhood_key: string;
+  neighborhood_display: string;
+  lat: number;
+  lng: number;
+  betweenness_centrality: number;
+  closeness_centrality: number;
+  degree: number;
+  is_exit_node: boolean;
+  nearby_avg_congestion: number;
+  nearby_route_count: number;
+  bottleneck_score: number;
+}
+
 export interface Filters {
   neighborhoods: string[];
   route_ids: string[];

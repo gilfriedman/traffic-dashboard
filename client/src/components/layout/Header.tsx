@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { BarChart3, Table, LayoutDashboard } from 'lucide-react';
+import { BarChart3, Table, LayoutDashboard, Network } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useGlobalFilters } from '../../contexts/GlobalFiltersContext';
 
@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/charts', label: 'Charts', icon: BarChart3 },
   { to: '/data', label: 'Data', icon: Table },
+  { to: '/network', label: 'Network', icon: Network },
 ];
 
 function ToggleSwitch({ label, checked, onChange }: { label: string; checked: boolean; onChange: () => void }) {

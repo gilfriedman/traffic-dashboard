@@ -10,6 +10,10 @@ import type {
   RouteRankingPoint,
   DistributionPoint,
   Filters,
+  NetworkNeighborhoodMetrics,
+  CongestionVsStructurePoint,
+  ExitCongestionPoint,
+  BottleneckPoint,
 } from './types';
 import { buildQueryParams } from './utils';
 
@@ -70,6 +74,38 @@ export function getRouteRanking(filters: Filters): Promise<RouteRankingPoint[]> 
 
 export function getCongestionDistribution(filters: Filters): Promise<DistributionPoint[]> {
   return fetchJson(`/api/charts/congestion-distribution?${buildQueryParams(filters)}`);
+}
+
+export interface GlobalOverrides {
+  exclude_neighborhoods?: string[];
+  exclude_hours?: number[];
+}
+
+function buildGlobalParams(overrides: GlobalOverrides): URLSearchParams {
+  const params = new URLSearchParams();
+  overrides.exclude_neighborhoods?.forEach((neighborhood) => params.append('exclude_neighborhoods', neighborhood));
+  overrides.exclude_hours?.forEach((hour) => params.append('exclude_hours', String(hour)));
+  return params;
+}
+
+export function getNetworkNeighborhoods(overrides: GlobalOverrides = {}): Promise<NetworkNeighborhoodMetrics[]> {
+  return fetchJson(`/api/network/neighborhoods?${buildGlobalParams(overrides)}`);
+}
+
+export function getCongestionVsStructure(overrides: GlobalOverrides = {}): Promise<CongestionVsStructurePoint[]> {
+  return fetchJson(`/api/network/congestion-vs-structure?${buildGlobalParams(overrides)}`);
+}
+
+export function getExitCongestion(overrides: GlobalOverrides = {}, neighborhood?: string): Promise<ExitCongestionPoint[]> {
+  const params = buildGlobalParams(overrides);
+  if (neighborhood) params.set('neighborhood', neighborhood);
+  return fetchJson(`/api/network/exit-congestion?${params}`);
+}
+
+export function getBottlenecks(neighborhood: string, overrides: GlobalOverrides = {}): Promise<BottleneckPoint[]> {
+  const params = buildGlobalParams(overrides);
+  params.set('neighborhood', neighborhood);
+  return fetchJson(`/api/network/bottlenecks?${params}`);
 }
 
 export function getExportUrl(filters: Filters, format: 'csv' | 'json'): string {

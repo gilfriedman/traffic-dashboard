@@ -1,3 +1,4 @@
+import certifi
 from pymongo import MongoClient
 from server.config import MONGODB_URI, DATABASE_NAME, COLLECTION_NAME
 
@@ -8,7 +9,7 @@ _db = None
 def get_db():
     global _client, _db
     if _db is None:
-        _client = MongoClient(MONGODB_URI)
+        _client = MongoClient(MONGODB_URI, tlsCAFile=certifi.where())
         _db = _client[DATABASE_NAME]
     return _db
 

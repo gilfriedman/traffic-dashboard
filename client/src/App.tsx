@@ -3,6 +3,7 @@ import { Layout } from './components/layout/Layout';
 import { DashboardPage } from './pages/DashboardPage';
 import { ChartsPage } from './pages/ChartsPage';
 import { DataPage } from './pages/DataPage';
+import { NetworkPage } from './pages/NetworkPage';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/charts" element={<ChartsPage />} />
           <Route path="/data" element={<DataPage />} />
+          <Route path="/network" element={<NetworkPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

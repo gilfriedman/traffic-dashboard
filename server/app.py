@@ -7,6 +7,7 @@ from server.routes.health import health_bp
 from server.routes.traffic import traffic_bp
 from server.routes.export import export_bp
 from server.routes.charts import charts_bp
+from server.routes.network import network_bp
 
 cache = Cache(config={'CACHE_TYPE': 'SimpleCache', 'CACHE_DEFAULT_TIMEOUT': 300})
 
@@ -20,6 +21,7 @@ def create_app():
     app.register_blueprint(traffic_bp)
     app.register_blueprint(export_bp)
     app.register_blueprint(charts_bp)
+    app.register_blueprint(network_bp)
 
     client_dist = os.path.join(os.path.dirname(__file__), '..', 'client', 'dist')
 
