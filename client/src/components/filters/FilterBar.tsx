@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getNeighborhoods, getRoutes } from '../../lib/api';
 import type { Filters, NeighborhoodInfo, RouteInfo } from '../../lib/types';
 import { DAYS_OF_WEEK, isExcludedNeighborhood } from '../../lib/utils';
-import { useBeerShevaFilter } from '../../contexts/BeerShevaFilterContext';
+import { useGlobalFilters } from '../../contexts/GlobalFiltersContext';
 
 interface FilterBarProps {
   filters: Filters;
@@ -10,7 +10,7 @@ interface FilterBarProps {
 }
 
 export function FilterBar({ filters, onChange }: FilterBarProps) {
-  const { beerShevaOnly } = useBeerShevaFilter();
+  const { beerShevaOnly } = useGlobalFilters();
   const [neighborhoods, setNeighborhoods] = useState<NeighborhoodInfo[]>([]);
   const [routes, setRoutes] = useState<RouteInfo[]>([]);
 
@@ -124,7 +124,7 @@ export function FilterBar({ filters, onChange }: FilterBarProps) {
 
       <button
         onClick={() =>
-          onChange({ neighborhoods: [], route_ids: [], start_date: '', end_date: '', rush_hour_only: false, day_of_week: [], exclude_neighborhoods: [] })
+          onChange({ neighborhoods: [], route_ids: [], start_date: '', end_date: '', rush_hour_only: false, day_of_week: [], exclude_neighborhoods: [], exclude_hours: [] })
         }
         className="px-3 py-1.5 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-colors"
       >

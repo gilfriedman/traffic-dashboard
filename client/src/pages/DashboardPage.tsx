@@ -3,11 +3,11 @@ import { StatsCards } from '../components/dashboard/StatsCards';
 import { NeighborhoodComparisonChart } from '../components/charts/NeighborhoodComparisonChart';
 import { CongestionOverTimeChart } from '../components/charts/CongestionOverTimeChart';
 import { RushHourChart } from '../components/charts/RushHourChart';
-import { useExcludedNeighborhoods } from '../hooks/useExcludedNeighborhoods';
+import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
 import type { Filters } from '../lib/types';
 
 export function DashboardPage() {
-  const excludeNeighborhoods = useExcludedNeighborhoods();
+  const globalOverrides = useGlobalFilterOverrides();
 
   const filters = useMemo<Filters>(() => ({
     neighborhoods: [],
@@ -16,8 +16,8 @@ export function DashboardPage() {
     end_date: '',
     rush_hour_only: false,
     day_of_week: [],
-    exclude_neighborhoods: excludeNeighborhoods,
-  }), [excludeNeighborhoods]);
+    ...globalOverrides,
+  }), [globalOverrides]);
 
   return (
     <div className="space-y-6">

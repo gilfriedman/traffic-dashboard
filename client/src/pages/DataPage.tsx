@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { FilterBar } from '../components/filters/FilterBar';
 import { getTrafficData, getExportUrl } from '../lib/api';
 import { formatCongestion } from '../lib/utils';
-import { useExcludedNeighborhoods } from '../hooks/useExcludedNeighborhoods';
+import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
 import { Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Filters, TrafficRecord } from '../lib/types';
 
@@ -14,6 +14,7 @@ const DEFAULT_FILTERS: Filters = {
   rush_hour_only: false,
   day_of_week: [],
   exclude_neighborhoods: [],
+  exclude_hours: [],
 };
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
@@ -30,12 +31,12 @@ const COLUMNS = [
 ] as const;
 
 export function DataPage() {
-  const excludeNeighborhoods = useExcludedNeighborhoods();
+  const globalOverrides = useGlobalFilterOverrides();
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
 
   const effectiveFilters = useMemo<Filters>(
-    () => ({ ...filters, exclude_neighborhoods: excludeNeighborhoods }),
-    [filters, excludeNeighborhoods]
+    () => ({ ...filters, ...globalOverrides }),
+    [filters, globalOverrides]
   );
   const [data, setData] = useState<TrafficRecord[]>([]);
   const [total, setTotal] = useState(0);

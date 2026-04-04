@@ -25,21 +25,42 @@ def build_filter(args):
         else:
             query.update(exclude_filter)
 
+    exclude_hours = args.getlist('exclude_hours')
+    if exclude_hours:
+        hour_patterns = '|'.join(f' {int(h):02d}:' for h in exclude_hours)
+        hour_filter = {'local_time': {'$not': {'$regex': hour_patterns}}}
+        if isinstance(query, dict) and '$and' in query:
+            query['$and'].append(hour_filter)
+        elif isinstance(query, dict):
+            query = {'$and': [query, hour_filter]} if query else hour_filter
+        else:
+            query.update(hour_filter)
+
     if start_date or end_date:
         date_filter = {}
         if start_date:
             date_filter['$gte'] = start_date
         if end_date:
             date_filter['$lte'] = end_date + ' 23:59:59'
-        query['local_time'] = date_filter
+        if isinstance(query, dict) and '$and' in query:
+            query['$and'].append({'local_time': date_filter})
+        else:
+            query['local_time'] = date_filter
 
     if rush_hour_only == 'true':
-        query['is_rush_hour'] = True
+        _add_condition(query, {'is_rush_hour': True})
 
     if day_of_week:
-        query['day_of_week'] = {'$in': day_of_week}
+        _add_condition(query, {'day_of_week': {'$in': day_of_week}})
 
     return query
+
+
+def _add_condition(query, condition):
+    if '$and' in query:
+        query['$and'].append(condition)
+    else:
+        query.update(condition)
 
 
 def build_neighborhood_regex(neighborhoods):

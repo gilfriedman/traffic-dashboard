@@ -46,8 +46,10 @@ export interface HealthInfo {
 
 export interface CongestionOverTimePoint {
   time: string;
-  neighborhood: string;
-  neighborhood_display: string;
+  neighborhood?: string;
+  neighborhood_display?: string;
+  route_id?: string;
+  route_name?: string;
   avg_congestion: number;
   max_congestion: number;
   count: number;
@@ -64,16 +66,20 @@ export interface NeighborhoodComparisonPoint {
 
 export interface DayOfWeekPoint {
   day: string;
-  neighborhood: string;
-  neighborhood_display: string;
+  neighborhood?: string;
+  neighborhood_display?: string;
+  route_id?: string;
+  route_name?: string;
   avg_congestion: number;
   count: number;
 }
 
 export interface RushHourPoint {
   time_slot: string;
-  neighborhood: string;
-  neighborhood_display: string;
+  neighborhood?: string;
+  neighborhood_display?: string;
+  route_id?: string;
+  route_name?: string;
   avg_congestion: number;
   count: number;
 }
@@ -102,4 +108,5 @@ export interface Filters {
   rush_hour_only: boolean;
   day_of_week: string[];
   exclude_neighborhoods: string[];
+  exclude_hours: number[];
 }

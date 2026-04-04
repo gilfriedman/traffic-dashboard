@@ -29,6 +29,7 @@ export function buildQueryParams(filters: Filters): URLSearchParams {
   if (filters.rush_hour_only) params.set('rush_hour_only', 'true');
   filters.day_of_week.forEach((day) => params.append('day_of_week', day));
   filters.exclude_neighborhoods.forEach((neighborhood) => params.append('exclude_neighborhoods', neighborhood));
+  filters.exclude_hours.forEach((hour) => params.append('exclude_hours', String(hour)));
   return params;
 }
 
@@ -40,4 +41,13 @@ export const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursd
 
 export function isExcludedNeighborhood(neighborhood: string): boolean {
   return EXCLUDED_NEIGHBORHOODS.some((excluded) => neighborhood.startsWith(excluded));
+}
+
+const ROUTE_COLORS = [
+  '#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899',
+  '#06b6d4', '#f97316', '#84cc16', '#6366f1', '#14b8a6', '#e11d48',
+];
+
+export function getRouteColor(index: number): string {
+  return ROUTE_COLORS[index % ROUTE_COLORS.length];
 }

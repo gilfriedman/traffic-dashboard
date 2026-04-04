@@ -5,7 +5,7 @@ import { DayOfWeekChart } from '../components/charts/DayOfWeekChart';
 import { RushHourChart } from '../components/charts/RushHourChart';
 import { RouteRankingChart } from '../components/charts/RouteRankingChart';
 import { DistributionChart } from '../components/charts/DistributionChart';
-import { useExcludedNeighborhoods } from '../hooks/useExcludedNeighborhoods';
+import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
 import { cn } from '../lib/utils';
 import type { Filters } from '../lib/types';
 
@@ -29,15 +29,16 @@ const DEFAULT_FILTERS: Filters = {
   rush_hour_only: false,
   day_of_week: [],
   exclude_neighborhoods: [],
+  exclude_hours: [],
 };
 
 export function ChartsPage() {
-  const excludeNeighborhoods = useExcludedNeighborhoods();
+  const globalOverrides = useGlobalFilterOverrides();
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
 
   const effectiveFilters = useMemo<Filters>(
-    () => ({ ...filters, exclude_neighborhoods: excludeNeighborhoods }),
-    [filters, excludeNeighborhoods]
+    () => ({ ...filters, ...globalOverrides }),
+    [filters, globalOverrides]
   );
   const [activeTab, setActiveTab] = useState<TabKey>('time-series');
   const [granularity, setGranularity] = useState('day');

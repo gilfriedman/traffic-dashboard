@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useChartData } from '../../hooks/useChartData';
 import { getRushHourProfile } from '../../lib/api';
-import { getNeighborhoodColor } from '../../lib/utils';
+import { getNeighborhoodColor, getRouteColor } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
 
 interface Props {
@@ -15,15 +15,20 @@ export function RushHourChart({ filters }: Props) {
     [JSON.stringify(filters)]
   );
 
-  const { chartData, neighborhoods } = useMemo(() => {
-    if (!data?.length) return { chartData: [], neighborhoods: [] };
+  const { chartData, seriesKeys, seriesColors, byRoute } = useMemo(() => {
+    if (!data?.length) return { chartData: [], seriesKeys: [], seriesColors: {} as Record<string, string>, byRoute: false };
 
-    const uniqueNeighborhoods = [...new Set(data.map((point) => point.neighborhood))];
+    const isRouteData = Boolean(data[0].route_id);
+    const seriesKeyFn = isRouteData
+      ? (point: (typeof data)[0]) => point.route_id!
+      : (point: (typeof data)[0]) => point.neighborhood!;
+
+    const uniqueKeys = [...new Set(data.map(seriesKeyFn))];
     const slotMap = new Map<string, Record<string, number>>();
 
     for (const point of data) {
       const existing = slotMap.get(point.time_slot) ?? {};
-      existing[point.neighborhood] = point.avg_congestion;
+      existing[seriesKeyFn(point)] = point.avg_congestion;
       slotMap.set(point.time_slot, existing);
     }
 
@@ -31,8 +36,22 @@ export function RushHourChart({ filters }: Props) {
       .map(([time_slot, values]) => ({ time_slot, ...values }))
       .sort((first, second) => first.time_slot.localeCompare(second.time_slot));
 
-    return { chartData: rows, neighborhoods: uniqueNeighborhoods };
+    const colors: Record<string, string> = {};
+    uniqueKeys.forEach((key, index) => {
+      colors[key] = isRouteData ? getRouteColor(index) : getNeighborhoodColor(key);
+    });
+
+    return { chartData: rows, seriesKeys: uniqueKeys, seriesColors: colors, byRoute: isRouteData };
   }, [data]);
+
+  const routeNameMap = useMemo(() => {
+    if (!byRoute || !data?.length) return {};
+    const map: Record<string, string> = {};
+    for (const point of data) {
+      if (point.route_id && point.route_name) map[point.route_id] = point.route_name;
+    }
+    return map;
+  }, [data, byRoute]);
 
   if (loading) return <div className="h-80 flex items-center justify-center text-slate-400">Loading...</div>;
   if (error) return <div className="h-80 flex items-center justify-center text-red-500">{error}</div>;
@@ -45,13 +64,14 @@ export function RushHourChart({ filters }: Props) {
         <XAxis dataKey="time_slot" tick={{ fontSize: 12 }} />
         <YAxis domain={[0, 'auto']} />
         <Tooltip />
-        <Legend />
-        {neighborhoods.map((neighborhood) => (
+        <Legend formatter={(value) => byRoute ? (routeNameMap[value] ?? value) : value} />
+        {seriesKeys.map((key) => (
           <Line
-            key={neighborhood}
+            key={key}
             type="monotone"
-            dataKey={neighborhood}
-            stroke={getNeighborhoodColor(neighborhood)}
+            dataKey={key}
+            name={key}
+            stroke={seriesColors[key]}
             strokeWidth={2}
             dot
             connectNulls
