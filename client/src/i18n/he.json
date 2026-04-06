@@ -69,6 +69,7 @@
     "overview": "\u05e1\u05e7\u05d9\u05e8\u05d4",
     "congestionStructure": "\u05e2\u05d5\u05de\u05e1 \u05de\u05d5\u05dc \u05de\u05d1\u05e0\u05d4",
     "exitAnalysis": "\u05e0\u05d9\u05ea\u05d5\u05d7 \u05d9\u05e6\u05d9\u05d0\u05d5\u05ea",
+    "demographics": "דמוגרפיה",
     "bottlenecks": "\u05e6\u05d5\u05d5\u05d0\u05e8\u05d9 \u05d1\u05e7\u05d1\u05d5\u05e7",
     "graph": "\u05d2\u05e8\u05e3",
     "backToGrid": "\u05d7\u05d6\u05e8\u05d4 \u05dc\u05db\u05dc \u05d4\u05e9\u05db\u05d5\u05e0\u05d5\u05ea",
@@ -146,6 +147,7 @@
     "rushHourCharts": "\u05e4\u05e8\u05d5\u05e4\u05d9\u05dc \u05e2\u05d5\u05de\u05e1 \u05d9\u05d5\u05de\u05d9 \u05d4\u05de\u05e8\u05d0\u05d4 \u05db\u05d9\u05e6\u05d3 \u05d4\u05ea\u05e0\u05d5\u05e2\u05d4 \u05de\u05e9\u05ea\u05e0\u05d4 \u05dc\u05d0\u05d5\u05e8\u05da \u05d4\u05d9\u05d5\u05dd. \u05de\u05e7\u05d5\u05e8 \u05e0\u05ea\u05d5\u05e0\u05d9\u05dd: Google Maps Routes API, \u05e0\u05d3\u05d2\u05dd \u05de\u05d7\u05d6\u05d5\u05e8\u05d9\u05ea \u05d1\u05d0\u05de\u05e6\u05e2\u05d5\u05ea gmaps-scraper.",
     "routeRanking": "\u05de\u05e1\u05dc\u05d5\u05dc\u05d9\u05dd \u05de\u05d3\u05d5\u05e8\u05d2\u05d9\u05dd \u05dc\u05e4\u05d9 \u05d9\u05d7\u05e1 \u05e2\u05d5\u05de\u05e1 \u05de\u05de\u05d5\u05e6\u05e2. \u05de\u05d6\u05d4\u05d4 \u05d0\u05ea \u05d4\u05de\u05e1\u05dc\u05d5\u05dc\u05d9\u05dd \u05d4\u05e2\u05de\u05d5\u05e1\u05d9\u05dd \u05d1\u05d9\u05d5\u05ea\u05e8. \u05de\u05e7\u05d5\u05e8 \u05e0\u05ea\u05d5\u05e0\u05d9\u05dd: Google Maps Routes API, \u05e0\u05d3\u05d2\u05dd \u05de\u05d7\u05d6\u05d5\u05e8\u05d9\u05ea \u05d1\u05d0\u05de\u05e6\u05e2\u05d5\u05ea gmaps-scraper.",
     "distribution": "\u05d4\u05d9\u05e1\u05d8\u05d5\u05d2\u05e8\u05de\u05d4 \u05d4\u05de\u05e8\u05d0\u05d4 \u05db\u05d9\u05e6\u05d3 \u05e2\u05e8\u05db\u05d9 \u05d9\u05d7\u05e1 \u05d4\u05e2\u05d5\u05de\u05e1 \u05de\u05ea\u05e4\u05dc\u05d2\u05d9\u05dd \u05e2\u05dc \u05e4\u05e0\u05d9 \u05db\u05dc \u05d4\u05de\u05d3\u05d9\u05d3\u05d5\u05ea. \u05de\u05e7\u05d5\u05e8 \u05e0\u05ea\u05d5\u05e0\u05d9\u05dd: Google Maps Routes API, \u05e0\u05d3\u05d2\u05dd \u05de\u05d7\u05d6\u05d5\u05e8\u05d9\u05ea \u05d1\u05d0\u05de\u05e6\u05e2\u05d5\u05ea gmaps-scraper.",
+    "demographics": "השוואה דמוגרפית, חברתית-כלכלית ותכנונית של שכונות באר שבע. מראה ששכונות המחקר חולקות מאפיינים דומים, התומכים בניתוח תנועה חוצה-שכונות.\nדמוגרפיה (אוכלוסייה, % מבוגרים, גודל משק בית) — מפקד הלמ\"ס 2022, נתונים נבחרים לפי יישובים ואזורים סטטיסטיים.\nחברתי-כלכלי (אשכול, הכנסה, השכלה) — מדד חברתי-כלכלי של הלמ\"ס 2019, פרסום 1903, לוח 12.\nתחבורה (רכבים ל-100 תושבים) — מדד חברתי-כלכלי של הלמ\"ס 2019; בעלות רכב לפי משק בית — מפקד הלמ\"ס 2022.\nתעסוקה (שיעור תעסוקה) — מדד חברתי-כלכלי של הלמ\"ס 2019, % בעלי הכנסה מעבודה בגילאי 25–54.\nהיסטורי (שנת הקמה ואכלוס) — ויקיפדיה העברית, ערך \"שכונות באר שבע\".",
     "networkOverview": "\u05de\u05d3\u05d3\u05d9 \u05e8\u05e9\u05ea \u05db\u05d1\u05d9\u05e9\u05d9\u05dd \u05dc\u05db\u05dc \u05e9\u05db\u05d5\u05e0\u05d4. \u05de\u05e7\u05d5\u05e8 \u05e0\u05ea\u05d5\u05e0\u05d9\u05dd: OpenStreetMap, \u05de\u05e2\u05d5\u05d1\u05d3 \u05d1\u05d0\u05de\u05e6\u05e2\u05d5\u05ea OSMnx (\u05d7\u05d9\u05dc\u05d5\u05e5 \u05d2\u05e8\u05e3, \u05e0\u05d9\u05ea\u05d5\u05d7 \u05de\u05e8\u05db\u05d6\u05d9\u05d5\u05ea \u05d5\u05e7\u05d9\u05e9\u05d5\u05e8\u05d9\u05d5\u05ea).",
     "congestionStructure": "\u05d2\u05e8\u05e3 \u05e4\u05d9\u05d6\u05d5\u05e8 \u05d4\u05d7\u05d5\u05e7\u05e8 \u05e7\u05e9\u05e8\u05d9\u05dd \u05d1\u05d9\u05df \u05de\u05d3\u05d3\u05d9 \u05de\u05d1\u05e0\u05d4 \u05e8\u05e9\u05ea \u05d4\u05db\u05d1\u05d9\u05e9\u05d9\u05dd \u05dc\u05e8\u05de\u05d5\u05ea \u05e2\u05d5\u05de\u05e1. \u05db\u05dc \u05e0\u05e7\u05d5\u05d3\u05d4 \u05de\u05d9\u05d9\u05e6\u05d2\u05ea \u05e9\u05db\u05d5\u05e0\u05d4. \u05de\u05e7\u05d5\u05e8\u05d5\u05ea \u05e0\u05ea\u05d5\u05e0\u05d9\u05dd: OpenStreetMap/OSMnx (\u05de\u05d3\u05d3\u05d9 \u05e8\u05e9\u05ea) \u05d5-Google Maps Routes API (\u05e2\u05d5\u05de\u05e1).",
     "exitAnalysis": "\u05d9\u05e6\u05d9\u05d0\u05d5\u05ea \u05e9\u05db\u05d5\u05e0\u05d5\u05ea \u05de\u05d5\u05ea\u05d0\u05de\u05d5\u05ea \u05dc\u05de\u05e1\u05dc\u05d5\u05dc\u05d9 \u05ea\u05e0\u05d5\u05e2\u05d4 \u05e1\u05de\u05d5\u05db\u05d9\u05dd, \u05de\u05d3\u05d5\u05e8\u05d2\u05d5\u05ea \u05dc\u05e4\u05d9 \u05e2\u05d5\u05de\u05e1 \u05de\u05de\u05d5\u05e6\u05e2. \u05de\u05e7\u05d5\u05e8\u05d5\u05ea \u05e0\u05ea\u05d5\u05e0\u05d9\u05dd: OpenStreetMap/OSMnx (\u05d6\u05d9\u05d4\u05d5\u05d9 \u05d9\u05e6\u05d9\u05d0\u05d5\u05ea) \u05d5-Google Maps Routes API (\u05e2\u05d5\u05de\u05e1).",
@@ -229,6 +231,40 @@
       "label": "\u05e9\u05d8\u05d7 (\u05e7\u05de\u05f4\u05e8)",
       "description": "\u05e9\u05d8\u05d7 \u05d4\u05e9\u05db\u05d5\u05e0\u05d4 \u05d4\u05db\u05d5\u05dc\u05dc \u05d1\u05e7\u05d9\u05dc\u05d5\u05de\u05d8\u05e8\u05d9\u05dd \u05e8\u05d1\u05d5\u05e2\u05d9\u05dd. \u05de\u05e7\u05d5\u05e8 \u05e0\u05ea\u05d5\u05e0\u05d9\u05dd: OpenStreetMap \u05d1\u05d0\u05de\u05e6\u05e2\u05d5\u05ea OSMnx."
     }
+  },
+  "demographicsTable": {
+    "metric": "מדד",
+    "categories": {
+      "demographics": "דמוגרפיה",
+      "socioeconomic": "חברתי-כלכלי",
+      "transportation": "תחבורה",
+      "publicTransit": "תחבורה ציבורית",
+      "employment": "תעסוקה",
+      "urbanPlanning": "תכנון עירוני",
+      "historical": "היסטורי"
+    },
+    "population": "אוכלוסייה",
+    "area": "שטח (קמ\"ר)",
+    "pctAdults": "מבוגרים (18+) %",
+    "avgHouseholdSize": "גודל משק בית ממוצע",
+    "populationDensity": "צפיפות אוכלוסייה (/קמ\"ר)",
+    "socioeconomicCluster": "אשכול חברתי-כלכלי (1–10)",
+    "avgIncome": "הכנסה ממוצעת לנפש",
+    "pctAcademic": "בעלי תואר אקדמי %",
+    "carsPer100Residents": "רכבים ל-100 תושבים (17+)",
+    "pctNoCars": "משקי בית ללא רכב %",
+    "pct2PlusCars": "משקי בית עם 2+ רכבים %",
+    "busStops": "תחנות אוטובוס לקמ\"ר",
+    "busLines": "קווי אוטובוס",
+    "pctPublicTransit": "שימוש בתחבורה ציבורית %",
+    "employmentRate": "שיעור תעסוקה %",
+    "pctWorkingOutside": "עובדים מחוץ לשכונה %",
+    "housingDensity": "צפיפות דיור (/קמ\"ר)",
+    "pctApartments": "דירות %",
+    "avgFloors": "קומות ממוצע בבניין",
+    "yearEstablished": "שנת הקמה",
+    "yearPopulated": "שנת אכלוס",
+    "showIncomplete": "הצג נתונים חלקיים"
   },
   "nodeClassification": {
     "interior": {

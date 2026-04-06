@@ -248,6 +248,19 @@ def get_network_graph(neighborhood_key):
     }
 
 
+def get_neighborhood_demographics(args):
+    db = get_db()
+    excluded = _excluded_neighborhood_keys(args)
+    docs = list(db["neighborhood_demographics"].find({}, {"_id": 0}))
+    results = []
+    for doc in docs:
+        if doc["neighborhood_key"] in excluded:
+            continue
+        doc["neighborhood_display"] = get_display_name(doc["neighborhood_key"])
+        results.append(doc)
+    return results
+
+
 def _neighborhood_field():
     branches = [
         {"case": {"$eq": [{"$indexOfCP": ["$route_id", prefix]}, 0]}, "then": prefix}

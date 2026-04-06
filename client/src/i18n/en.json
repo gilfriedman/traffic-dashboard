@@ -70,6 +70,7 @@
     "congestionStructure": "Congestion vs Structure",
     "exitAnalysis": "Exit Analysis",
     "bottlenecks": "Bottlenecks",
+    "demographics": "Demographics",
     "graph": "Graph",
     "backToGrid": "Back to all neighborhoods",
     "exits": "exits",
@@ -150,6 +151,7 @@
     "congestionStructure": "Scatter plot exploring relationships between road network structure metrics and traffic congestion levels. Each dot is a neighborhood. Data sources: OpenStreetMap/OSMnx (network metrics) and Google Maps Routes API (congestion).",
     "exitAnalysis": "Neighborhood exits matched to nearby traffic routes, ranked by average congestion. Data sources: OpenStreetMap/OSMnx (exit identification) and Google Maps Routes API (congestion).",
     "bottlenecks": "High-centrality intersections near congested routes. Score = betweenness \u00d7 nearby congestion. Data sources: OpenStreetMap/OSMnx (centrality analysis) and Google Maps Routes API (congestion).",
+    "demographics": "Demographic, socioeconomic, and planning comparison of Beer Sheva neighborhoods. Shows that the studied neighborhoods share similar characteristics, supporting cross-neighborhood traffic analysis.\nDemographics (population, % adults, household size) — CBS Census 2022, Selected Data by Localities and Statistical Areas.\nSocioeconomic (cluster, income, education) — CBS Socioeconomic Index 2019, Publication 1903, Table 12.\nTransportation (cars per 100 residents) — CBS Socioeconomic Index 2019; household car ownership — CBS Census 2022.\nEmployment (employment rate) — CBS Socioeconomic Index 2019, % aged 25–54 with income from work.\nHistorical (year established/populated) — Hebrew Wikipedia, \"Neighborhoods of Beersheba\".",
     "networkGraph": "Visual road network for each neighborhood. Blue = interior nodes, Orange = perimeter nodes, Gray = exterior nodes, Green arrows = exit edges. Red line marks the neighborhood boundary. Data source: OpenStreetMap, processed with OSMnx. Aerial imagery: Esri World Imagery (ArcGIS)."
   },
   "metrics": {
@@ -229,6 +231,40 @@
       "label": "Area (km\u00b2)",
       "description": "Total area of the neighborhood in square kilometers. Data source: OpenStreetMap via OSMnx."
     }
+  },
+  "demographicsTable": {
+    "metric": "Metric",
+    "categories": {
+      "demographics": "Demographics",
+      "socioeconomic": "Socioeconomic",
+      "transportation": "Transportation",
+      "publicTransit": "Public Transit",
+      "employment": "Employment",
+      "urbanPlanning": "Urban Planning",
+      "historical": "Historical"
+    },
+    "population": "Population",
+    "area": "Area (km²)",
+    "pctAdults": "Adults (18+) %",
+    "avgHouseholdSize": "Avg Household Size",
+    "populationDensity": "Population Density (/km²)",
+    "socioeconomicCluster": "Socioeconomic Cluster (1–10)",
+    "avgIncome": "Avg Income Per Capita",
+    "pctAcademic": "Academic Degree %",
+    "carsPer100Residents": "Cars Per 100 Residents (17+)",
+    "pctNoCars": "Households With 0 Cars %",
+    "pct2PlusCars": "Households With 2+ Cars %",
+    "busStops": "Bus Stops Per km²",
+    "busLines": "Bus Lines",
+    "pctPublicTransit": "Public Transit Usage %",
+    "employmentRate": "Employment Rate %",
+    "pctWorkingOutside": "Working Outside Neighborhood %",
+    "housingDensity": "Housing Density (/km²)",
+    "pctApartments": "Apartments %",
+    "avgFloors": "Avg Building Floors",
+    "yearEstablished": "Year Established",
+    "yearPopulated": "Year Populated",
+    "showIncomplete": "Show incomplete data"
   },
   "nodeClassification": {
     "interior": {

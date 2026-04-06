@@ -209,6 +209,64 @@ export interface NetworkGraphData {
   exits: NetworkGraphExit[];
 }
 
+export interface DemographicsData {
+  population: number | null;
+  area_km2: number | null;
+  population_density_per_km2: number | null;
+  pct_adults_18_plus: number | null;
+  avg_household_size: number | null;
+}
+
+export interface SocioeconomicData {
+  socioeconomic_cluster: number | null;
+  avg_income_per_capita: number | null;
+  pct_academic_degree: number | null;
+}
+
+export interface TransportationData {
+  cars_per_100_residents: number | null;
+  pct_households_0_cars: number | null;
+  pct_households_2_plus_cars: number | null;
+}
+
+export interface PublicTransitData {
+  bus_stops_per_km2: number | null;
+  bus_lines_count: number | null;
+  pct_using_public_transit: number | null;
+}
+
+export interface EmploymentData {
+  employment_rate: number | null;
+  pct_working_outside_neighborhood: number | null;
+}
+
+export interface UrbanPlanningData {
+  housing_density_per_km2: number | null;
+  pct_apartments: number | null;
+  avg_building_floors: number | null;
+}
+
+export interface HistoricalData {
+  year_established: number | null;
+  year_populated: number | null;
+}
+
+export interface NeighborhoodDemographics {
+  neighborhood_key: string;
+  neighborhood_display: string;
+  city_key: string;
+  name_en: string;
+  name_he: string;
+  stat_areas: number[];
+  demographics: DemographicsData;
+  socioeconomic: SocioeconomicData;
+  transportation: TransportationData;
+  public_transit: PublicTransitData;
+  employment: EmploymentData;
+  urban_planning: UrbanPlanningData;
+  historical: HistoricalData;
+}
+
 export interface Filters {
   neighborhoods: string[];
   route_ids: string[];

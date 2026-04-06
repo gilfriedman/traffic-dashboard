@@ -5,15 +5,17 @@ import { CongestionStructureScatter } from '../components/charts/CongestionStruc
 import { ExitCongestionChart } from '../components/charts/ExitCongestionChart';
 import { BottleneckTable } from '../components/charts/BottleneckTable';
 import { NetworkGraphTab } from '../components/charts/NetworkGraphTab';
+import { DemographicsTable } from '../components/charts/DemographicsTable';
 import { ChartDescription } from '../components/ChartDescription';
 import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
 import { cn } from '../lib/utils';
 import type { GlobalOverrides } from '../lib/api';
 
-const TAB_KEYS = ['overview', 'congestion-structure', 'exit-analysis', 'bottlenecks', 'graph'] as const;
+const TAB_KEYS = ['demographics', 'overview', 'congestion-structure', 'exit-analysis', 'bottlenecks', 'graph'] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
 const TAB_I18N_KEYS: Record<TabKey, string> = {
+  'demographics': 'network.demographics',
   'overview': 'network.overview',
   'congestion-structure': 'network.congestionStructure',
   'exit-analysis': 'network.exitAnalysis',
@@ -22,6 +24,7 @@ const TAB_I18N_KEYS: Record<TabKey, string> = {
 };
 
 const TAB_DESCRIPTION_KEYS: Record<TabKey, string> = {
+  'demographics': 'chartDescriptions.demographics',
   'overview': 'chartDescriptions.networkOverview',
   'congestion-structure': 'chartDescriptions.congestionStructure',
   'exit-analysis': 'chartDescriptions.exitAnalysis',
@@ -30,7 +33,7 @@ const TAB_DESCRIPTION_KEYS: Record<TabKey, string> = {
 };
 
 export function NetworkPage() {
-  const [activeTab, setActiveTab] = useState<TabKey>('overview');
+  const [activeTab, setActiveTab] = useState<TabKey>('demographics');
   const globalOverrides = useGlobalFilterOverrides();
   const { t } = useTranslation();
 
@@ -62,6 +65,7 @@ export function NetworkPage() {
         </div>
 
         <div className="p-4">
+          {activeTab === 'demographics' && <DemographicsTable overrides={overrides} />}
           {activeTab === 'overview' && <NetworkMetricsTable overrides={overrides} />}
           {activeTab === 'congestion-structure' && <CongestionStructureScatter overrides={overrides} />}
           {activeTab === 'exit-analysis' && <ExitCongestionChart overrides={overrides} />}

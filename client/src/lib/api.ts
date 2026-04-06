@@ -15,6 +15,7 @@ import type {
   ExitCongestionPoint,
   BottleneckPoint,
   NetworkGraphData,
+  NeighborhoodDemographics,
 } from './types';
 import { buildQueryParams } from './utils';
 
@@ -107,6 +108,10 @@ export function getBottlenecks(neighborhood: string, overrides: GlobalOverrides 
   const params = buildGlobalParams(overrides);
   params.set('neighborhood', neighborhood);
   return fetchJson(`/api/network/bottlenecks?${params}`);
+}
+
+export function getNeighborhoodDemographics(overrides: GlobalOverrides = {}): Promise<NeighborhoodDemographics[]> {
+  return fetchJson(`/api/network/demographics?${buildGlobalParams(overrides)}`);
 }
 
 export function getNetworkGraph(neighborhood: string): Promise<NetworkGraphData> {
