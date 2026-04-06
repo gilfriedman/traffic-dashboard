@@ -11,7 +11,7 @@ import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
 import { cn } from '../lib/utils';
 import type { GlobalOverrides } from '../lib/api';
 
-const TAB_KEYS = ['demographics', 'overview', 'congestion-structure', 'exit-analysis', 'bottlenecks', 'graph'] as const;
+const TAB_KEYS = ['overview', 'graph', 'congestion-structure', 'exit-analysis', 'bottlenecks', 'demographics'] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
 const TAB_I18N_KEYS: Record<TabKey, string> = {
@@ -33,7 +33,7 @@ const TAB_DESCRIPTION_KEYS: Record<TabKey, string> = {
 };
 
 export function NetworkPage() {
-  const [activeTab, setActiveTab] = useState<TabKey>('demographics');
+  const [activeTab, setActiveTab] = useState<TabKey>('overview');
   const globalOverrides = useGlobalFilterOverrides();
   const { t } = useTranslation();
 

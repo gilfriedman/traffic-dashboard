@@ -6,9 +6,9 @@
   },
   "nav": {
     "dashboard": "\u05dc\u05d5\u05d7 \u05d1\u05e7\u05e8\u05d4",
-    "charts": "\u05d2\u05e8\u05e4\u05d9\u05dd",
-    "data": "\u05e0\u05ea\u05d5\u05e0\u05d9\u05dd",
-    "network": "\u05e8\u05e9\u05ea"
+    "charts": "נתוני תנועה",
+    "data": "נתונים",
+    "network": "ניתוח רשת"
   },
   "dashboard": {
     "title": "\u05dc\u05d5\u05d7 \u05d1\u05e7\u05e8\u05d4",
@@ -23,7 +23,7 @@
     "lastRecord": "\u05e8\u05e9\u05d5\u05de\u05d4 \u05d0\u05d7\u05e8\u05d5\u05e0\u05d4"
   },
   "charts": {
-    "title": "\u05d2\u05e8\u05e4\u05d9\u05dd",
+    "title": "נתוני תנועה",
     "timeSeries": "\u05e1\u05d3\u05e8\u05d4 \u05d6\u05de\u05e0\u05d9\u05ea",
     "dayOfWeek": "\u05d9\u05d5\u05dd \u05d1\u05e9\u05d1\u05d5\u05e2",
     "rushHour": "\u05e9\u05e2\u05ea \u05e9\u05d9\u05d0",
@@ -65,13 +65,13 @@
     "no": "\u05dc\u05d0"
   },
   "network": {
-    "title": "\u05e0\u05d9\u05ea\u05d5\u05d7 \u05e8\u05e9\u05ea",
+    "title": "ניתוח רשת",
     "overview": "\u05e1\u05e7\u05d9\u05e8\u05d4",
     "congestionStructure": "\u05e2\u05d5\u05de\u05e1 \u05de\u05d5\u05dc \u05de\u05d1\u05e0\u05d4",
     "exitAnalysis": "\u05e0\u05d9\u05ea\u05d5\u05d7 \u05d9\u05e6\u05d9\u05d0\u05d5\u05ea",
     "demographics": "דמוגרפיה",
     "bottlenecks": "\u05e6\u05d5\u05d5\u05d0\u05e8\u05d9 \u05d1\u05e7\u05d1\u05d5\u05e7",
-    "graph": "\u05d2\u05e8\u05e3",
+    "graph": "מפה",
     "backToGrid": "\u05d7\u05d6\u05e8\u05d4 \u05dc\u05db\u05dc \u05d4\u05e9\u05db\u05d5\u05e0\u05d5\u05ea",
     "exits": "\u05d9\u05e6\u05d9\u05d0\u05d5\u05ea",
     "aerialView": "\u05ea\u05e6\u05dc\u05d5\u05dd \u05d0\u05d5\u05d9\u05e8",

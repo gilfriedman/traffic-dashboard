@@ -6,9 +6,9 @@
   },
   "nav": {
     "dashboard": "Dashboard",
-    "charts": "Charts",
+    "charts": "Traffic Data",
     "data": "Data",
-    "network": "Network"
+    "network": "Network Analysis"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -23,7 +23,7 @@
     "lastRecord": "Last Record"
   },
   "charts": {
-    "title": "Charts",
+    "title": "Traffic Data",
     "timeSeries": "Time Series",
     "dayOfWeek": "Day of Week",
     "rushHour": "Rush Hour",
@@ -71,7 +71,7 @@
     "exitAnalysis": "Exit Analysis",
     "bottlenecks": "Bottlenecks",
     "demographics": "Demographics",
-    "graph": "Graph",
+    "graph": "Map",
     "backToGrid": "Back to all neighborhoods",
     "exits": "exits",
     "aerialView": "Aerial view",

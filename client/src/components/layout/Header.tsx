@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { BarChart3, Table, LayoutDashboard, Network } from 'lucide-react';
+import { BarChart3, LayoutDashboard, Network } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../../lib/utils';
 import { useGlobalFilters } from '../../contexts/GlobalFiltersContext';
@@ -54,7 +54,6 @@ export function Header() {
   const navItems = [
     { to: '/', label: t('nav.dashboard'), icon: LayoutDashboard },
     { to: '/charts', label: t('nav.charts'), icon: BarChart3 },
-    { to: '/data', label: t('nav.data'), icon: Table },
     { to: '/network', label: t('nav.network'), icon: Network },
   ];
 

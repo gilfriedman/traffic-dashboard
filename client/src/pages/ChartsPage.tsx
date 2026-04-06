@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { Table } from 'lucide-react';
 import { FilterBar } from '../components/filters/FilterBar';
 import { CongestionOverTimeChart } from '../components/charts/CongestionOverTimeChart';
 import { DayOfWeekChart } from '../components/charts/DayOfWeekChart';
@@ -54,10 +56,20 @@ export function ChartsPage() {
   );
   const [activeTab, setActiveTab] = useState<TabKey>('time-series');
   const [granularity, setGranularity] = useState('day');
+  const navigate = useNavigate();
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-slate-900">{t('charts.title')}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-slate-900">{t('charts.title')}</h1>
+        <button
+          onClick={() => navigate('/data')}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-600 bg-slate-100 rounded-md hover:bg-slate-200 transition-colors"
+        >
+          <Table className="h-4 w-4" />
+          {t('nav.data')}
+        </button>
+      </div>
 
       <FilterBar filters={filters} onChange={setFilters} />
 
