@@ -8,7 +8,8 @@
     "dashboard": "Dashboard",
     "charts": "Traffic Data",
     "data": "Data",
-    "network": "Network Analysis"
+    "network": "Network Analysis",
+    "sources": "Sources"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -139,18 +140,18 @@
     "avgCongestion": "Avg Congestion"
   },
   "chartDescriptions": {
-    "neighborhoodComparison": "Compares average congestion ratios across neighborhoods. Higher values indicate more congested areas. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
-    "rushHourProfile": "Congestion patterns during morning rush hours (6:00\u20139:00), broken down by 15-minute intervals. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
-    "congestionOverTimeDaily": "Daily trend of average congestion ratios. Tracks how traffic conditions change over the data collection period. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
-    "timeSeries": "Congestion trends over time with configurable granularity (15-min, hourly, daily, weekly). Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
-    "dayOfWeek": "Average congestion for each day of the week. Reveals weekly traffic patterns. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
-    "rushHourCharts": "Intra-day congestion profile showing how traffic varies throughout the day. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
-    "routeRanking": "Routes ranked by average congestion ratio. Identifies the most congested routes. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
-    "distribution": "Histogram showing how congestion ratio values are distributed across all measurements. Data source: Google Maps Routes API, sampled periodically via gmaps-scraper.",
+    "neighborhoodComparison": "Compares average congestion ratios across neighborhoods. Higher values indicate more congested areas. Data source: Google Maps Distance Matrix API, sampled periodically via gmaps-scraper.",
+    "rushHourProfile": "Congestion patterns during morning rush hours (6:00\u20139:00), broken down by 15-minute intervals. Data source: Google Maps Distance Matrix API, sampled periodically via gmaps-scraper.",
+    "congestionOverTimeDaily": "Daily trend of average congestion ratios. Tracks how traffic conditions change over the data collection period. Data source: Google Maps Distance Matrix API, sampled periodically via gmaps-scraper.",
+    "timeSeries": "Congestion trends over time with configurable granularity (15-min, hourly, daily, weekly). Data source: Google Maps Distance Matrix API, sampled periodically via gmaps-scraper.",
+    "dayOfWeek": "Average congestion for each day of the week. Reveals weekly traffic patterns. Data source: Google Maps Distance Matrix API, sampled periodically via gmaps-scraper.",
+    "rushHourCharts": "Intra-day congestion profile showing how traffic varies throughout the day. Data source: Google Maps Distance Matrix API, sampled periodically via gmaps-scraper.",
+    "routeRanking": "Routes ranked by average congestion ratio. Identifies the most congested routes. Data source: Google Maps Distance Matrix API, sampled periodically via gmaps-scraper.",
+    "distribution": "Histogram showing how congestion ratio values are distributed across all measurements. Data source: Google Maps Distance Matrix API, sampled periodically via gmaps-scraper.",
     "networkOverview": "Road network metrics for each neighborhood. Data source: OpenStreetMap, processed with OSMnx (graph extraction, centrality and connectivity analysis).",
-    "congestionStructure": "Scatter plot exploring relationships between road network structure metrics and traffic congestion levels. Each dot is a neighborhood. Data sources: OpenStreetMap/OSMnx (network metrics) and Google Maps Routes API (congestion).",
-    "exitAnalysis": "Neighborhood exits matched to nearby traffic routes, ranked by average congestion. Data sources: OpenStreetMap/OSMnx (exit identification) and Google Maps Routes API (congestion).",
-    "bottlenecks": "High-centrality intersections near congested routes. Score = betweenness \u00d7 nearby congestion. Data sources: OpenStreetMap/OSMnx (centrality analysis) and Google Maps Routes API (congestion).",
+    "congestionStructure": "Scatter plot exploring relationships between road network structure metrics and traffic congestion levels. Each dot is a neighborhood. Data sources: OpenStreetMap/OSMnx (network metrics) and Google Maps Distance Matrix API (congestion).",
+    "exitAnalysis": "Neighborhood exits matched to nearby traffic routes, ranked by average congestion. Data sources: OpenStreetMap/OSMnx (exit identification) and Google Maps Distance Matrix API (congestion).",
+    "bottlenecks": "High-centrality intersections near congested routes. Score = betweenness \u00d7 nearby congestion. Data sources: OpenStreetMap/OSMnx (centrality analysis) and Google Maps Distance Matrix API (congestion).",
     "demographics": "Demographic, socioeconomic, and planning comparison of Beer Sheva neighborhoods. Shows that the studied neighborhoods share similar characteristics, supporting cross-neighborhood traffic analysis.\nDemographics (population, % adults, household size) — CBS Census 2022, Selected Data by Localities and Statistical Areas.\nSocioeconomic (cluster, income, education) — CBS Socioeconomic Index 2019, Publication 1903, Table 12.\nTransportation (cars per 100 residents) — CBS Socioeconomic Index 2019; household car ownership — CBS Census 2022.\nEmployment (employment rate) — CBS Socioeconomic Index 2019, % aged 25–54 with income from work.\nHistorical (year established/populated) — Hebrew Wikipedia, \"Neighborhoods of Beersheba\".",
     "networkGraph": "Visual road network for each neighborhood. Blue = interior nodes, Orange = perimeter nodes, Gray = exterior nodes, Green arrows = exit edges. Red line marks the neighborhood boundary. Data source: OpenStreetMap, processed with OSMnx. Aerial imagery: Esri World Imagery (ArcGIS)."
   },
@@ -278,6 +279,88 @@
     "exterior": {
       "label": "Exterior",
       "description": "Nodes outside the neighborhood boundary, included for network completeness. Data source: OpenStreetMap via OSMnx."
+    }
+  },
+  "sources": {
+    "title": "Sources",
+    "subtitle": "All data sources, tools, and libraries used in this project, cited in APA style.",
+    "dataSources": "Data Sources",
+    "projects": "Research Projects",
+    "toolsAndLibraries": "Tools & Libraries",
+    "googleMaps": {
+      "title": "Google Maps Distance Matrix API",
+      "citation": "Google. (2024). Distance Matrix API. Google Maps Platform. https://developers.google.com/maps/documentation/distance-matrix",
+      "description": "How: We queried the Distance Matrix API periodically to collect route duration, duration in traffic, and distance for ~76 routes across 6 neighborhoods (5 in Beer Sheva, 1 in Givatayim). The congestion ratio (traffic duration / normal duration) is the core metric of this dashboard.\nAlternatives considered: Waze API — not publicly available for research use. TomTom Traffic API — viable but requires paid licensing and has lower coverage in Israel. HERE Traffic API — similar coverage limitations in Israel.\nLimitations: The API returns a single duration-in-traffic estimate per query, not a continuous speed profile along the route. Data reflects Google's traffic model, which may not perfectly match ground truth. Sampling every 15 minutes during rush hours captures trends but may miss short-lived spikes."
+    },
+    "osm": {
+      "title": "OpenStreetMap (OSM)",
+      "citation": "OpenStreetMap contributors. (2024). OpenStreetMap. https://www.openstreetmap.org/",
+      "description": "How: We extracted the complete road network graph (nodes, edges, street lengths, intersection types) for each neighborhood using OSMnx. This data powers the network analysis tabs: overview metrics, bottleneck detection, exit analysis, and the visual map.\nAlternatives considered: Google Maps Roads API — does not expose network topology (nodes/edges). Municipal GIS data — not publicly accessible. TIGER/Line (US Census) — US only, not applicable to Israel.\nLimitations: OSM is community-maintained, so data quality varies by area. Some minor streets or recent construction may be missing or outdated. Road classification tags can be inconsistent, and one-way markings are not always accurate in peripheral neighborhoods."
+    },
+    "cbsCensus": {
+      "title": "CBS Census 2022 — Selected Data by Localities and Statistical Areas",
+      "citation": "Israel Central Bureau of Statistics. (2022). Selected data from the 2022 Census, by localities and statistical areas. https://www.cbs.gov.il/he/publications/census2022pub/מפקד-2022.xlsx",
+      "description": "How: We collected demographic data per statistical area: population, percentage of adults (18+), average household size, area in km², household car ownership (0 cars, 2+ cars), and housing characteristics.\nAlternatives considered: Municipal data — inconsistent formatting and missing fields. World Bank data — too coarse (national level only).\nLimitations: Some statistical areas were renumbered between census rounds, making Census 2022 data unavailable for Shchuna He and Ramot Bet (we used 2019 data instead). Data is published at the statistical-area level, which doesn't always align perfectly with neighborhood boundaries."
+    },
+    "cbsSocioeconomic": {
+      "title": "CBS Socioeconomic Index 2019 — Publication 1903, Table 12",
+      "citation": "Israel Central Bureau of Statistics. (2019). Characterization and classification of geographical units by the socio-economic level of the population 2017 (Publication 1903, Table 12). https://www.cbs.gov.il/he/publications/doclib/2023/socio_eco19_1903/t12.pdf",
+      "description": "How: We used Table 12 for socioeconomic cluster (1–10), average income per capita, academic degree percentage, cars per 100 residents, employment rate, and public transit usage percentage.\nAlternatives considered: OECD regional data — not available at the neighborhood level for Israel. Private surveys — lack the statistical rigor and coverage of the CBS index.\nLimitations: The index is based on 2017 data (published 2019), which may not fully reflect current conditions. The socioeconomic cluster is a composite score that can obscure differences in individual dimensions. Some metrics (e.g., income) are averages that hide intra-neighborhood inequality."
+    },
+    "wikipedia": {
+      "title": "Hebrew Wikipedia — \"Neighborhoods of Beersheba\"",
+      "citation": "Wikipedia contributors. (2024). שכונות באר שבע [Neighborhoods of Beersheba]. Hebrew Wikipedia. https://he.wikipedia.org/wiki/שכונות_באר_שבע",
+      "description": "How: We extracted the year each neighborhood was established and the year it was first populated, for the historical context section of the demographics comparison.\nAlternatives considered: Beer Sheva municipality archives — not digitally accessible. Academic papers — found no single source covering all studied neighborhoods.\nLimitations: Wikipedia is community-edited and may contain inaccuracies. Historical dates may reflect different definitions of \"established\" vs. \"populated.\" The article covers Beer Sheva neighborhoods only — Givat Rambam (Givatayim) data was sourced separately."
+    },
+    "esri": {
+      "title": "Esri World Imagery (ArcGIS)",
+      "citation": "Esri. (2024). World Imagery. ArcGIS Online. https://www.arcgis.com/",
+      "description": "How: We use Esri's World Imagery tile service as the aerial photography overlay in the network graph map, and the World Transportation service for street name labels.\nAlternatives considered: Google Maps Static API — requires API key and has usage limits. Mapbox Satellite — requires paid account for high-resolution tiles. Bing Maps Aerial — lower resolution for this region.\nLimitations: Imagery date varies by area — some tiles may be months or years old. The free-use tier has no SLA guarantees. Street name labels from the Transportation layer may not include all local street names in Hebrew."
+    },
+    "madlan": {
+      "title": "Madlan (madlan.co.il)",
+      "citation": "Madlan. (2024). Neighborhood boundaries map data. https://www.madlan.co.il/",
+      "description": "How: We used Madlan's neighborhood boundary maps to manually trace the polygon coordinates (GeoJSON) defining each of the studied neighborhoods. These polygons serve as the foundation for the entire analysis — they determine which OSM nodes belong to each neighborhood, where the boundary lies for exit detection, and how to classify nodes as interior, perimeter, or exterior.\nAlternatives considered: CBS Statistical Area boundaries — do not align with neighborhoods as perceived by residents and municipalities; typically multiple statistical areas map to a single neighborhood, and their borders don't match recognized neighborhood boundaries. Municipal zoning maps — not publicly accessible in a usable digital format. OpenStreetMap admin boundaries — inconsistent and often missing for Israeli neighborhoods.\nLimitations: Boundaries were manually traced from visual maps, introducing some imprecision. Madlan's boundary definitions are not officially documented or versioned — they may change without notice. Different sources may define neighborhood boundaries slightly differently."
+    },
+    "cbsStatAreas": {
+      "title": "CBS Statistical Areas 2022",
+      "citation": "Israel Central Bureau of Statistics. (2022). Statistical areas map. https://www.cbs.gov.il/",
+      "description": "How: Each neighborhood was mapped to its corresponding CBS statistical area codes (e.g., Old City → areas 611, 612, 624). This mapping links the geographic neighborhood boundaries (from Madlan) to the CBS demographic and socioeconomic datasets, enabling per-neighborhood data lookups.\nAlternatives considered: No real alternative — CBS statistical areas are the only geographic unit at which CBS publishes sub-city data.\nLimitations: Statistical areas don't align perfectly with neighborhood boundaries — some overlap or exclude parts of a neighborhood. Areas are occasionally renumbered between census rounds, breaking historical comparisons. When a neighborhood spans multiple statistical areas, we aggregate using population-weighted averages, which may smooth out local variation."
+    },
+    "gmapsScraper": {
+      "title": "gmaps-scraper",
+      "citation": "Friedman, G. (2024). gmaps-scraper [Computer software]. GitHub. https://github.com/gilfriedman/gmaps-scraper",
+      "description": "How: This custom-built Python tool periodically queries the Google Maps Distance Matrix API for predefined origin–destination pairs and stores results (duration, traffic duration, distance, congestion ratio) in MongoDB Atlas. It runs on a cron schedule to build a time-series dataset of ~76 routes across 6 neighborhoods (5 in Beer Sheva, 1 in Givatayim). The routes are based on exit points detected algorithmically by traffic-network-analyzer.\nAlternatives considered: Manual Google Maps queries — not scalable for continuous data collection. Google Maps Directions API — provides route geometry but not the simple duration-in-traffic metric optimized for batch queries.\nLimitations: Depends on Google Maps API availability and pricing (currently within free tier). Collection schedule (every 15 min during rush hours) may miss short-lived congestion events. Routes are fixed origin–destination pairs and don't capture congestion on roads not covered by a defined route."
+    },
+    "networkAnalyzer": {
+      "title": "traffic-network-analyzer",
+      "citation": "Friedman, G. (2024). traffic-network-analyzer [Computer software]. GitHub. https://github.com/gilfriedman/traffic-network-analyzer",
+      "description": "How: This custom-built Python pipeline downloads street network graphs from OpenStreetMap via OSMnx for each neighborhood, computes structural metrics (centrality, connectivity, density, circuity), classifies nodes as interior/perimeter/exterior, detects exit edges at neighborhood boundaries, cross-references exits with nearby traffic routes from gmaps-scraper, and uploads CBS demographic data. All results are stored in MongoDB Atlas collections that this dashboard visualizes.\nAlternatives considered: Manual GIS analysis in QGIS — not reproducible or automatable. ArcGIS Network Analyst — proprietary and expensive. Custom scripts without a pipeline — harder to maintain and re-run when data changes.\nLimitations: Network metrics are computed on a static snapshot of OSM data and don't reflect road construction or closures after extraction. The 50m boundary buffer for edge-case handling is a heuristic that may include or exclude borderline nodes inconsistently. Exit–route cross-referencing uses a 200m proximity threshold, which may produce false matches in dense areas."
+    },
+    "trafficDashboard": {
+      "title": "traffic-dashboard",
+      "citation": "Friedman, G. (2024). traffic-dashboard [Computer software]. GitHub. https://github.com/gilfriedman/traffic-dashboard",
+      "description": "How: This full-stack web application (React + Flask) visualizes and analyzes all the data collected and computed by gmaps-scraper and traffic-network-analyzer. It reads from MongoDB Atlas and presents interactive charts, tables, network maps, and demographic comparisons through a bilingual (Hebrew/English) dashboard.\nAlternatives considered: Jupyter notebooks — suitable for analysis but not for presenting results interactively. Tableau/Power BI — proprietary and less flexible for custom network visualizations. Static reports — lack the interactivity needed to explore relationships between congestion, network structure, and demographics.\nLimitations: The dashboard visualizes pre-computed data and does not perform real-time analysis. Adding new neighborhoods or routes requires updating the upstream projects (gmaps-scraper and traffic-network-analyzer) first."
+    },
+    "osmnx": {
+      "title": "OSMnx",
+      "citation": "Boeing, G. (2017). OSMnx: New methods for acquiring, constructing, analyzing, and visualizing complex street networks. Computers, Environment and Urban Systems, 65, 126–139. https://doi.org/10.1016/j.compenvurbsys.2017.05.004",
+      "description": "How: Used in traffic-network-analyzer to download and construct directed street network graphs from OpenStreetMap for each neighborhood. Handles the full pipeline: downloading OSM data within polygon boundaries, building a NetworkX directed graph, computing basic stats (street density, intersection density, circuity), and calculating centrality metrics (betweenness, closeness).\nAlternatives considered: Overpass Turbo + QGIS — initially attempted for preparing the network maps, but the manual workflow was not reproducible or automatable and lacked built-in graph metric computation. pgRouting — requires PostGIS setup and lacks the built-in urban network analysis features of OSMnx.\nLimitations: Depends on OSM data quality (see OpenStreetMap limitations above). Graph simplification may merge short road segments, slightly altering metric values. The library is Python-only, which may limit performance for very large networks."
+    },
+    "networkx": {
+      "title": "NetworkX",
+      "citation": "Hagberg, A. A., Schult, D. A., & Swart, P. J. (2008). Exploring network structure, dynamics, and function using NetworkX. In Proceedings of the 7th Python in Science Conference (SciPy 2008), 11–15.",
+      "description": "How: NetworkX is the graph library underlying OSMnx. Used in traffic-network-analyzer for computing betweenness centrality, closeness centrality, node connectivity, edge connectivity, and shortest-path analyses on the street network graphs.\nAlternatives considered: igraph — faster for very large graphs but less convenient Python API and weaker OSM integration. graph-tool — C++ backend is fast but complex to install and overkill for our neighborhood-scale graph sizes (~100–500 nodes).\nLimitations: Pure Python implementation is slower than C-based alternatives for large graphs (acceptable for our neighborhood-scale networks). Average node connectivity computation is O(n³), making it the slowest metric to compute."
+    },
+    "shapely": {
+      "title": "Shapely",
+      "citation": "Gillies, S. et al. (2024). Shapely: Manipulation and analysis of geometric objects in the Cartesian plane [Computer software]. https://shapely.readthedocs.io/",
+      "description": "How: Used in traffic-network-analyzer for geospatial operations: defining neighborhood boundary polygons from GeoJSON coordinates, buffering boundaries (50m) for edge-case handling, classifying nodes as interior/perimeter/exterior based on distance to the boundary, computing polygon areas via UTM projection, and detecting which edges cross the neighborhood boundary (exit detection).\nAlternatives considered: GeoPandas — adds DataFrame overhead unnecessary for our point-level operations. Manual coordinate math — error-prone for edge cases like boundary buffering and projections. PostGIS — would require a PostgreSQL setup just for geometry operations.\nLimitations: Operates on a 2D Cartesian plane — distance calculations require UTM projection to be accurate, adding a projection step. The 25m perimeter threshold for node classification is a heuristic that may misclassify nodes in areas where streets run very close to the boundary."
+    },
+    "mongodb": {
+      "title": "MongoDB Atlas",
+      "citation": "MongoDB, Inc. (2024). MongoDB Atlas. https://www.mongodb.com/atlas",
+      "description": "How: All research data is stored in MongoDB Atlas (cloud-hosted) in the traffic_study database: traffic measurements (traffic_data), network graph data (network_neighborhoods, network_nodes, network_edges), exit–route cross-references (cross_references), and demographic data (neighborhood_demographics). Both gmaps-scraper and traffic-network-analyzer write to these collections; the dashboard reads from them using aggregation pipelines.\nAlternatives considered: PostgreSQL — rigid schema would require migrations for each data shape. SQLite — no cloud hosting, single-writer limitation incompatible with scheduled data collection. Firebase — vendor lock-in and less powerful aggregation pipelines.\nLimitations: Free-tier Atlas cluster (M0) has limited storage (512 MB) and no dedicated resources, which may affect query performance for large datasets. No built-in schema validation means data consistency depends entirely on the writing applications."
     }
   }
 }
