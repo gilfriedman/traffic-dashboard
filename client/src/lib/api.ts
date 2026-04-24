@@ -79,15 +79,19 @@ export function getCongestionDistribution(filters: Filters): Promise<Distributio
   return fetchJson(`/api/charts/congestion-distribution?${buildQueryParams(filters)}`);
 }
 
+export type NetworkRepresentation = 'geometric' | 'topologic';
+
 export interface GlobalOverrides {
   exclude_neighborhoods?: string[];
   exclude_hours?: number[];
+  representation?: NetworkRepresentation;
 }
 
 function buildGlobalParams(overrides: GlobalOverrides): URLSearchParams {
   const params = new URLSearchParams();
   overrides.exclude_neighborhoods?.forEach((neighborhood) => params.append('exclude_neighborhoods', neighborhood));
   overrides.exclude_hours?.forEach((hour) => params.append('exclude_hours', String(hour)));
+  if (overrides.representation) params.set('representation', overrides.representation);
   return params;
 }
 
@@ -119,8 +123,9 @@ export function getNeighborhoodDemographics(overrides: GlobalOverrides = {}): Pr
   return fetchJson(`/api/network/demographics?${buildGlobalParams(overrides)}`);
 }
 
-export function getNetworkGraph(neighborhood: string): Promise<NetworkGraphData> {
-  return fetchJson(`/api/network/graph?neighborhood=${encodeURIComponent(neighborhood)}`);
+export function getNetworkGraph(neighborhood: string, representation: NetworkRepresentation = 'topologic'): Promise<NetworkGraphData> {
+  const params = new URLSearchParams({ neighborhood, representation });
+  return fetchJson(`/api/network/graph?${params}`);
 }
 
 export function getExportUrl(filters: Filters, format: 'csv' | 'json'): string {

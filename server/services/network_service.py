@@ -2,6 +2,15 @@ from server.database import get_db, get_collection
 from server.services.query_service import build_filter
 from server.utils.neighborhoods import NEIGHBORHOOD_DISPLAY_NAMES, get_display_name
 
+TOPOLOGIC_REPRESENTATION = "topologic"
+GEOMETRIC_REPRESENTATION = "geometric"
+VALID_REPRESENTATIONS = {GEOMETRIC_REPRESENTATION, TOPOLOGIC_REPRESENTATION}
+
+
+def _resolve_representation(args):
+    representation = args.get("representation", TOPOLOGIC_REPRESENTATION)
+    return representation if representation in VALID_REPRESENTATIONS else TOPOLOGIC_REPRESENTATION
+
 
 def _traffic_match_stage(args):
     query = build_filter(args)
@@ -29,6 +38,7 @@ def congestion_vs_structure(args):
     db = get_db()
     collection = get_collection()
     excluded = _excluded_neighborhood_keys(args)
+    representation = _resolve_representation(args)
 
     pipeline = []
     match = _traffic_match_stage(args)
@@ -52,29 +62,34 @@ def congestion_vs_structure(args):
     network_docs = list(db["network_neighborhoods"].find({}, {"_id": 0}))
 
     results = []
-    for doc in network_docs:
-        key = doc["neighborhood_key"]
+    for network_doc in network_docs:
+        key = network_doc["neighborhood_key"]
         if key in excluded:
             continue
+        representation_doc = network_doc[representation]
+        basic_stats = representation_doc["basic_stats"]
+        connectivity = representation_doc["connectivity"]
+        centrality_summary = representation_doc["centrality_summary"]
         congestion = congestion_by_neighborhood.get(key, {})
         results.append({
             "neighborhood_key": key,
             "neighborhood_display": get_display_name(key),
+            "representation": representation,
             "avg_congestion": round(congestion.get("avg_congestion", 0), 3),
             "max_congestion": round(congestion.get("max_congestion", 0), 3),
             "sample_count": congestion.get("sample_count", 0),
-            "node_count": doc["basic_stats"]["node_count"],
-            "edge_count": doc["basic_stats"]["edge_count"],
-            "street_density": doc["basic_stats"]["street_density_m_per_km2"],
-            "intersection_density": doc["basic_stats"]["intersection_density_per_km2"],
-            "avg_node_degree": doc["basic_stats"]["avg_node_degree"],
-            "circuity": doc["basic_stats"]["circuity"],
-            "avg_street_length": doc["basic_stats"]["avg_street_length_m"],
-            "connectivity": doc["connectivity"]["avg_node_connectivity"],
-            "exit_count": doc["exit_count"],
-            "area_km2": doc["area_km2"],
-            "avg_betweenness": doc["centrality_summary"]["avg_betweenness"],
-            "max_betweenness": doc["centrality_summary"]["max_betweenness"],
+            "node_count": basic_stats["node_count"],
+            "edge_count": basic_stats["edge_count"],
+            "street_density": basic_stats["street_density_m_per_km2"],
+            "intersection_density": basic_stats["intersection_density_per_km2"],
+            "avg_node_degree": basic_stats["avg_node_degree"],
+            "circuity": basic_stats["circuity"],
+            "avg_street_length": basic_stats["avg_street_length_m"],
+            "connectivity": connectivity["avg_node_connectivity"],
+            "exit_count": representation_doc["exit_count"],
+            "area_km2": network_doc["area_km2"],
+            "avg_betweenness": centrality_summary["avg_betweenness"],
+            "max_betweenness": centrality_summary["max_betweenness"],
         })
 
     return results
@@ -270,22 +285,31 @@ def bottleneck_nodes(args):
     return results
 
 
-def get_network_graph(neighborhood_key):
+def get_network_graph(neighborhood_key, representation=TOPOLOGIC_REPRESENTATION):
     db = get_db()
+
+    if representation not in VALID_REPRESENTATIONS:
+        representation = TOPOLOGIC_REPRESENTATION
 
     neighborhood_doc = db["network_neighborhoods"].find_one(
         {"neighborhood_key": neighborhood_key},
-        {"_id": 0, "name_en": 1, "name_he": 1, "exit_count": 1, "boundary": 1, "exits": 1},
+        {"_id": 0, "name_en": 1, "name_he": 1, "boundary": 1,
+         "geometric": 1, "topologic": 1},
     )
     if not neighborhood_doc:
         return {"error": "neighborhood not found"}
 
-    nodes = list(db["network_nodes"].find(
+    is_topologic = representation == TOPOLOGIC_REPRESENTATION
+    nodes_collection = "network_nodes_topologic" if is_topologic else "network_nodes"
+    edges_collection = "network_edges_topologic" if is_topologic else "network_edges"
+    representation_doc = neighborhood_doc.get(representation, {})
+
+    nodes = list(db[nodes_collection].find(
         {"neighborhood_key": neighborhood_key},
         {"_id": 0, "lat": 1, "lng": 1, "classification": 1, "is_exit_node": 1},
     ))
 
-    edges = list(db["network_edges"].find(
+    edges = list(db[edges_collection].find(
         {"neighborhood_key": neighborhood_key},
         {"_id": 0, "from_lat": 1, "from_lng": 1, "to_lat": 1, "to_lng": 1, "is_exit_edge": 1},
     ))
@@ -294,11 +318,12 @@ def get_network_graph(neighborhood_key):
         "neighborhood_key": neighborhood_key,
         "name_en": neighborhood_doc["name_en"],
         "name_he": neighborhood_doc["name_he"],
-        "exit_count": neighborhood_doc["exit_count"],
+        "representation": representation,
+        "exit_count": representation_doc.get("exit_count", 0),
         "boundary": neighborhood_doc.get("boundary", []),
         "nodes": nodes,
         "edges": edges,
-        "exits": neighborhood_doc.get("exits", []),
+        "exits": representation_doc.get("exits", []),
     }
 
 

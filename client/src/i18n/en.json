@@ -77,7 +77,11 @@
     "backToGrid": "Back to all neighborhoods",
     "exits": "exits",
     "aerialView": "Aerial view",
-    "streetNames": "Street names"
+    "streetNames": "Street names",
+    "representation": {
+      "topologic": "Topologic",
+      "geometric": "Geometric"
+    }
   },
   "filters": {
     "neighborhoods": "Neighborhoods",

@@ -9,6 +9,7 @@ interface Props {
 }
 
 export function NetworkMetricsTable({ overrides }: Props) {
+  const representation = overrides.representation ?? 'topologic';
   const { data, loading, error } = useChartData(
     () => getNetworkNeighborhoods(overrides),
     [JSON.stringify(overrides)]
@@ -64,23 +65,37 @@ export function NetworkMetricsTable({ overrides }: Props) {
           </tr>
         </thead>
         <tbody>
-          {data.map((neighborhood) => (
-            <tr key={neighborhood.neighborhood_key} className="border-b border-slate-100 hover:bg-slate-50">
-              <td className="py-2 px-3 font-medium">
-                <span className="inline-block w-2 h-2 rounded-full me-2" style={{ backgroundColor: getNeighborhoodColor(neighborhood.neighborhood_key) }} />
-                {neighborhood.neighborhood_display}
-              </td>
-              <td className="py-2 px-3 text-end">{neighborhood.basic_stats.node_count}</td>
-              <td className="py-2 px-3 text-end">{neighborhood.basic_stats.edge_count}</td>
-              <td className="py-2 px-3 text-end">{neighborhood.basic_stats.street_density_m_per_km2.toLocaleString()}</td>
-              <td className="py-2 px-3 text-end">{neighborhood.basic_stats.avg_node_degree}</td>
-              <td className="py-2 px-3 text-end">{neighborhood.basic_stats.circuity?.toFixed(3) ?? 'N/A'}</td>
-              <td className="py-2 px-3 text-end">{neighborhood.connectivity.avg_node_connectivity.toFixed(3)}</td>
-              <td className="py-2 px-3 text-end">{neighborhood.centrality_summary.avg_betweenness.toFixed(4)}</td>
-              <td className="py-2 px-3 text-end">{neighborhood.exit_count}</td>
-              <td className="py-2 px-3 text-end">{neighborhood.area_km2.toFixed(2)}</td>
-            </tr>
-          ))}
+          {data.map((neighborhood) => {
+            const representationSummary = neighborhood[representation];
+            if (!representationSummary) {
+              return (
+                <tr key={neighborhood.neighborhood_key} className="border-b border-slate-100 text-slate-400 italic">
+                  <td className="py-2 px-3 font-medium">
+                    <span className="inline-block w-2 h-2 rounded-full me-2" style={{ backgroundColor: getNeighborhoodColor(neighborhood.neighborhood_key) }} />
+                    {neighborhood.neighborhood_display}
+                  </td>
+                  <td className="py-2 px-3 text-end" colSpan={9}>{t('common.noData')}</td>
+                </tr>
+              );
+            }
+            return (
+              <tr key={neighborhood.neighborhood_key} className="border-b border-slate-100 hover:bg-slate-50">
+                <td className="py-2 px-3 font-medium">
+                  <span className="inline-block w-2 h-2 rounded-full me-2" style={{ backgroundColor: getNeighborhoodColor(neighborhood.neighborhood_key) }} />
+                  {neighborhood.neighborhood_display}
+                </td>
+                <td className="py-2 px-3 text-end">{representationSummary.basic_stats.node_count}</td>
+                <td className="py-2 px-3 text-end">{representationSummary.basic_stats.edge_count}</td>
+                <td className="py-2 px-3 text-end">{representationSummary.basic_stats.street_density_m_per_km2.toLocaleString()}</td>
+                <td className="py-2 px-3 text-end">{representationSummary.basic_stats.avg_node_degree}</td>
+                <td className="py-2 px-3 text-end">{representationSummary.basic_stats.circuity?.toFixed(3) ?? 'N/A'}</td>
+                <td className="py-2 px-3 text-end">{representationSummary.connectivity.avg_node_connectivity.toFixed(3)}</td>
+                <td className="py-2 px-3 text-end">{representationSummary.centrality_summary.avg_betweenness.toFixed(4)}</td>
+                <td className="py-2 px-3 text-end">{representationSummary.exit_count}</td>
+                <td className="py-2 px-3 text-end">{neighborhood.area_km2.toFixed(2)}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

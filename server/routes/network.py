@@ -39,4 +39,5 @@ def network_graph():
     neighborhood = request.args.get('neighborhood')
     if not neighborhood:
         return jsonify({"error": "neighborhood parameter required"}), 400
-    return jsonify(network_service.get_network_graph(neighborhood))
+    representation = request.args.get('representation', 'topologic')
+    return jsonify(network_service.get_network_graph(neighborhood, representation))

@@ -100,39 +100,58 @@ export interface DistributionPoint {
   count: number;
 }
 
+export interface NetworkBasicStats {
+  node_count: number;
+  edge_count: number;
+  total_street_length_m: number;
+  avg_street_length_m: number;
+  intersection_count: number;
+  intersection_density_per_km2: number;
+  street_density_m_per_km2: number;
+  avg_node_degree: number;
+  circuity: number | null;
+}
+
+export interface NetworkConnectivity {
+  avg_node_connectivity: number;
+  edge_connectivity: number;
+}
+
+export interface NetworkCentralitySummary {
+  avg_betweenness: number;
+  max_betweenness: number;
+  avg_closeness: number;
+  max_closeness: number;
+}
+
+export interface NetworkExitSummary {
+  street_name: string;
+  from_coords: [number, number];
+  to_coords: [number, number];
+}
+
+export interface NetworkRepresentationSummary {
+  basic_stats: NetworkBasicStats;
+  connectivity: NetworkConnectivity;
+  centrality_summary: NetworkCentralitySummary;
+  exit_count: number;
+  exits: NetworkExitSummary[];
+}
+
 export interface NetworkNeighborhoodMetrics {
   neighborhood_key: string;
   neighborhood_display: string;
   name_en: string;
   name_he: string;
-  basic_stats: {
-    node_count: number;
-    edge_count: number;
-    total_street_length_m: number;
-    avg_street_length_m: number;
-    intersection_count: number;
-    intersection_density_per_km2: number;
-    street_density_m_per_km2: number;
-    avg_node_degree: number;
-    circuity: number | null;
-  };
-  connectivity: {
-    avg_node_connectivity: number;
-    edge_connectivity: number;
-  };
-  centrality_summary: {
-    avg_betweenness: number;
-    max_betweenness: number;
-    avg_closeness: number;
-    max_closeness: number;
-  };
-  exit_count: number;
   area_km2: number;
+  geometric: NetworkRepresentationSummary;
+  topologic: NetworkRepresentationSummary;
 }
 
 export interface CongestionVsStructurePoint {
   neighborhood_key: string;
   neighborhood_display: string;
+  representation: 'geometric' | 'topologic';
   avg_congestion: number;
   max_congestion: number;
   sample_count: number;
@@ -217,6 +236,7 @@ export interface NetworkGraphData {
   neighborhood_key: string;
   name_en: string;
   name_he: string;
+  representation: 'geometric' | 'topologic';
   exit_count: number;
   boundary: [number, number][];
   nodes: NetworkGraphNode[];

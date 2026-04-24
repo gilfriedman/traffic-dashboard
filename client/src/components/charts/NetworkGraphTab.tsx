@@ -11,15 +11,17 @@ const NEIGHBORHOOD_KEYS = ['old_city', 'shchuna_bet', 'shchuna_he', 'ramot_bet',
 
 function NetworkGraphCard({
   neighborhoodKey,
+  representation,
   onSelect,
 }: {
   neighborhoodKey: string;
+  representation: 'geometric' | 'topologic';
   onSelect: (data: NetworkGraphData) => void;
 }) {
   const { t, i18n } = useTranslation();
   const { data, loading, error } = useChartData(
-    () => getNetworkGraph(neighborhoodKey),
-    [neighborhoodKey]
+    () => getNetworkGraph(neighborhoodKey, representation),
+    [neighborhoodKey, representation]
   );
 
   if (loading) {
@@ -58,11 +60,16 @@ export function NetworkGraphTab({ overrides }: { overrides: GlobalOverrides }) {
   const [showAerial, setShowAerial] = useState(false);
   const [showStreetNames, setShowStreetNames] = useState(false);
   const { t } = useTranslation();
+  const representation = overrides.representation ?? 'topologic';
 
   const visibleKeys = useMemo(() => {
     const excluded = overrides.exclude_neighborhoods ?? [];
     return NEIGHBORHOOD_KEYS.filter((key) => !excluded.some((ex) => key.startsWith(ex)));
   }, [overrides.exclude_neighborhoods]);
+
+  useEffect(() => {
+    setSelectedGraph(null);
+  }, [representation]);
 
   useEffect(() => {
     if (selectedGraph && !visibleKeys.includes(selectedGraph.neighborhood_key)) {
@@ -121,7 +128,12 @@ export function NetworkGraphTab({ overrides }: { overrides: GlobalOverrides }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
       {visibleKeys.map((key) => (
-        <NetworkGraphCard key={key} neighborhoodKey={key} onSelect={setSelectedGraph} />
+        <NetworkGraphCard
+          key={`${key}-${representation}`}
+          neighborhoodKey={key}
+          representation={representation}
+          onSelect={setSelectedGraph}
+        />
       ))}
     </div>
   );
