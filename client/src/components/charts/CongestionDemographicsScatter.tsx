@@ -6,6 +6,7 @@ import { useChartDirection } from '../../hooks/useChartDirection';
 import { getCongestionVsDemographics, type GlobalOverrides } from '../../lib/api';
 import { getNeighborhoodColor, cn } from '../../lib/utils';
 import { computeLinearRegression } from '../../lib/regression';
+import { RegressionStatsBadge } from './RegressionStatsBadge';
 import type { CongestionVsDemographicsPoint } from '../../lib/types';
 
 const METRIC_KEYS = [
@@ -79,7 +80,8 @@ export function CongestionDemographicsScatter({ overrides }: Props) {
         ))}
       </div>
 
-      <div dir="ltr">
+      <div dir="ltr" className="relative">
+      {regression && <RegressionStatsBadge r2={regression.r2} />}
       <ResponsiveContainer width="100%" height={400}>
         <ScatterChart margin={mirrorMargin({ top: 10, right: 20, bottom: 40, left: 20 })}>
           <CartesianGrid strokeDasharray="3 3" />

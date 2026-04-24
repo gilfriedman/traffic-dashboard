@@ -121,7 +121,9 @@
     "exitCount": "Exit Count",
     "avgCongestion": "Avg Congestion",
     "maxCongestion": "Max Congestion",
-    "samples": "samples"
+    "samples": "samples",
+    "r2": "R²",
+    "r2Tooltip": "R² (coefficient of determination) measures what fraction of the data's variance is explained by the regression line.\n0 — no linear relationship, the line explains nothing\n0.3 — weak trend, mostly noise\n0.5 — moderate, about half the variance is explained\n0.8+ — strong relationship\n1 — perfect fit, every point lies on the line\nValues outside [0, 1] aren't possible with standard linear regression."
   },
   "demographicsScatter": {
     "carsPer100Residents": "Cars Per 100 Residents (17+)",

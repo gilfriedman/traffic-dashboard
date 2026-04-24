@@ -6,6 +6,7 @@ import { useChartDirection } from '../../hooks/useChartDirection';
 import { getCongestionVsStructure, type GlobalOverrides } from '../../lib/api';
 import { getNeighborhoodColor, cn } from '../../lib/utils';
 import { computeLinearRegression } from '../../lib/regression';
+import { RegressionStatsBadge } from './RegressionStatsBadge';
 import type { CongestionVsStructurePoint } from '../../lib/types';
 
 const METRIC_KEYS = ['street_density', 'intersection_density', 'avg_node_degree', 'circuity', 'connectivity', 'avg_betweenness', 'exit_count'] as const;
@@ -68,7 +69,8 @@ export function CongestionStructureScatter({ overrides }: Props) {
         ))}
       </div>
 
-      <div dir="ltr">
+      <div dir="ltr" className="relative">
+      {regression && <RegressionStatsBadge r2={regression.r2} />}
       <ResponsiveContainer width="100%" height={400}>
         <ScatterChart margin={mirrorMargin({ top: 10, right: 20, bottom: 40, left: 20 })}>
           <CartesianGrid strokeDasharray="3 3" />
