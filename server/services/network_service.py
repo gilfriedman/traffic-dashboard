@@ -80,6 +80,60 @@ def congestion_vs_structure(args):
     return results
 
 
+def congestion_vs_demographics(args):
+    db = get_db()
+    collection = get_collection()
+    excluded = _excluded_neighborhood_keys(args)
+
+    pipeline = []
+    match = _traffic_match_stage(args)
+    if match:
+        pipeline.append(match)
+
+    pipeline.extend([
+        {"$addFields": {"neighborhood": _neighborhood_field()}},
+        {"$group": {
+            "_id": "$neighborhood",
+            "avg_congestion": {"$avg": "$congestion_ratio"},
+            "max_congestion": {"$max": "$congestion_ratio"},
+            "sample_count": {"$sum": 1},
+        }},
+    ])
+    congestion_by_neighborhood = {
+        row["_id"]: row
+        for row in collection.aggregate(pipeline)
+    }
+
+    demographics_docs = list(db["neighborhood_demographics"].find({}, {"_id": 0}))
+
+    results = []
+    for doc in demographics_docs:
+        key = doc["neighborhood_key"]
+        if key in excluded:
+            continue
+        congestion = congestion_by_neighborhood.get(key, {})
+        demographics = doc.get("demographics") or {}
+        socioeconomic = doc.get("socioeconomic") or {}
+        transportation = doc.get("transportation") or {}
+        employment = doc.get("employment") or {}
+        results.append({
+            "neighborhood_key": key,
+            "neighborhood_display": get_display_name(key),
+            "avg_congestion": round(congestion.get("avg_congestion", 0), 3),
+            "max_congestion": round(congestion.get("max_congestion", 0), 3),
+            "sample_count": congestion.get("sample_count", 0),
+            "cars_per_100_residents": transportation.get("cars_per_100_residents"),
+            "population_density_per_km2": demographics.get("population_density_per_km2"),
+            "socioeconomic_cluster": socioeconomic.get("socioeconomic_cluster"),
+            "avg_income_per_capita": socioeconomic.get("avg_income_per_capita"),
+            "pct_academic_degree": socioeconomic.get("pct_academic_degree"),
+            "employment_rate": employment.get("employment_rate"),
+            "pct_households_2_plus_cars": transportation.get("pct_households_2_plus_cars"),
+        })
+
+    return results
+
+
 def exit_congestion(args):
     db = get_db()
     collection = get_collection()

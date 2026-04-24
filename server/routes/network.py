@@ -14,6 +14,11 @@ def congestion_vs_structure():
     return jsonify(network_service.congestion_vs_structure(request.args))
 
 
+@network_bp.route('/api/network/congestion-vs-demographics')
+def congestion_vs_demographics():
+    return jsonify(network_service.congestion_vs_demographics(request.args))
+
+
 @network_bp.route('/api/network/exit-congestion')
 def exit_congestion():
     return jsonify(network_service.exit_congestion(request.args))

@@ -69,6 +69,7 @@
     "title": "Network Analysis",
     "overview": "Overview",
     "congestionStructure": "Congestion vs Structure",
+    "congestionDemographics": "Congestion vs Demographics",
     "exitAnalysis": "Exit Analysis",
     "bottlenecks": "Bottlenecks",
     "demographics": "Demographics",
@@ -122,6 +123,15 @@
     "maxCongestion": "Max Congestion",
     "samples": "samples"
   },
+  "demographicsScatter": {
+    "carsPer100Residents": "Cars Per 100 Residents (17+)",
+    "populationDensity": "Population Density (/km\u00b2)",
+    "socioeconomicCluster": "Socioeconomic Cluster",
+    "avgIncome": "Avg Income Per Capita (\u20aa)",
+    "pctAcademic": "% with Academic Degree",
+    "employmentRate": "Employment Rate (%)",
+    "pct2PlusCars": "% Households with 2+ Cars"
+  },
   "exitChart": {
     "all": "All",
     "avgCongestion": "Avg Congestion"
@@ -150,6 +160,7 @@
     "distribution": "Histogram showing how congestion ratio values are distributed across all measurements. Data source: Google Maps Distance Matrix API, sampled periodically via gmaps-scraper.",
     "networkOverview": "Road network metrics for each neighborhood. Data source: OpenStreetMap, processed with OSMnx (graph extraction, centrality and connectivity analysis).",
     "congestionStructure": "Scatter plot exploring relationships between road network structure metrics and traffic congestion levels. Each dot is a neighborhood. Data sources: OpenStreetMap/OSMnx (network metrics) and Google Maps Distance Matrix API (congestion).",
+    "congestionDemographics": "Scatter plot exploring relationships between neighborhood demographic metrics and traffic congestion levels. Each dot is a neighborhood. Data sources: CBS Census 2022 and Socioeconomic Index 2019 (demographics), and Google Maps Distance Matrix API (congestion).",
     "exitAnalysis": "Neighborhood exits matched to nearby traffic routes, ranked by average congestion. Data sources: OpenStreetMap/OSMnx (exit identification) and Google Maps Distance Matrix API (congestion).",
     "bottlenecks": "High-centrality intersections near congested routes. Score = betweenness \u00d7 nearby congestion. Data sources: OpenStreetMap/OSMnx (centrality analysis) and Google Maps Distance Matrix API (congestion).",
     "demographics": "Demographic, socioeconomic, and planning comparison of Beer Sheva neighborhoods. Shows that the studied neighborhoods share similar characteristics, supporting cross-neighborhood traffic analysis.\nDemographics (population, % adults, household size) — CBS Census 2022, Selected Data by Localities and Statistical Areas.\nSocioeconomic (cluster, income, education) — CBS Socioeconomic Index 2019, Publication 1903, Table 12.\nTransportation (cars per 100 residents) — CBS Socioeconomic Index 2019; household car ownership — CBS Census 2022.\nEmployment (employment rate) — CBS Socioeconomic Index 2019, % aged 25–54 with income from work.\nHistorical (year established/populated) — Hebrew Wikipedia, \"Neighborhoods of Beersheba\".",

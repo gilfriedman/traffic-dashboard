@@ -3,45 +3,56 @@ import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Responsive
 import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
-import { getCongestionVsStructure, type GlobalOverrides } from '../../lib/api';
+import { getCongestionVsDemographics, type GlobalOverrides } from '../../lib/api';
 import { getNeighborhoodColor, cn } from '../../lib/utils';
 import { computeLinearRegression } from '../../lib/regression';
-import type { CongestionVsStructurePoint } from '../../lib/types';
+import type { CongestionVsDemographicsPoint } from '../../lib/types';
 
-const METRIC_KEYS = ['street_density', 'intersection_density', 'avg_node_degree', 'circuity', 'connectivity', 'avg_betweenness', 'exit_count'] as const;
+const METRIC_KEYS = [
+  'cars_per_100_residents',
+  'population_density_per_km2',
+  'socioeconomic_cluster',
+  'avg_income_per_capita',
+  'pct_academic_degree',
+  'employment_rate',
+  'pct_households_2_plus_cars',
+] as const;
 
 type MetricKey = (typeof METRIC_KEYS)[number];
 
 const METRIC_I18N_KEYS: Record<MetricKey, string> = {
-  street_density: 'scatter.streetDensity',
-  intersection_density: 'scatter.intersectionDensity',
-  avg_node_degree: 'scatter.avgNodeDegree',
-  circuity: 'scatter.circuity',
-  connectivity: 'scatter.connectivity',
-  avg_betweenness: 'scatter.avgBetweenness',
-  exit_count: 'scatter.exitCount',
+  cars_per_100_residents: 'demographicsScatter.carsPer100Residents',
+  population_density_per_km2: 'demographicsScatter.populationDensity',
+  socioeconomic_cluster: 'demographicsScatter.socioeconomicCluster',
+  avg_income_per_capita: 'demographicsScatter.avgIncome',
+  pct_academic_degree: 'demographicsScatter.pctAcademic',
+  employment_rate: 'demographicsScatter.employmentRate',
+  pct_households_2_plus_cars: 'demographicsScatter.pct2PlusCars',
 };
 
 interface Props {
   overrides: GlobalOverrides;
 }
 
-export function CongestionStructureScatter({ overrides }: Props) {
+export function CongestionDemographicsScatter({ overrides }: Props) {
   const { data, loading, error } = useChartData(
-    () => getCongestionVsStructure(overrides),
+    () => getCongestionVsDemographics(overrides),
     [JSON.stringify(overrides)]
   );
-  const [metricKey, setMetricKey] = useState<MetricKey>('street_density');
+  const [metricKey, setMetricKey] = useState<MetricKey>('cars_per_100_residents');
   const { t } = useTranslation();
   const { yAxisOrientation, xAxisReversed, mirrorMargin } = useChartDirection();
 
+  const filteredData = useMemo(
+    () => data?.filter((point) => point[metricKey] != null) ?? [],
+    [data, metricKey]
+  );
+
   const regression = useMemo(() => {
-    if (!data?.length) return null;
-    const points = data
-      .filter((point) => point[metricKey] != null)
-      .map((point) => ({ x: point[metricKey] as number, y: point.avg_congestion }));
+    if (!filteredData.length) return null;
+    const points = filteredData.map((point) => ({ x: point[metricKey] as number, y: point.avg_congestion }));
     return computeLinearRegression(points);
-  }, [data, metricKey]);
+  }, [filteredData, metricKey]);
 
   if (loading) return <div className="h-96 flex items-center justify-center text-slate-400">{t('common.loading')}</div>;
   if (error) return <div className="h-96 flex items-center justify-center text-red-500">{error}</div>;
@@ -89,7 +100,7 @@ export function CongestionStructureScatter({ overrides }: Props) {
           <Tooltip
             content={({ payload }) => {
               if (!payload?.length) return null;
-              const point = payload[0].payload as CongestionVsStructurePoint;
+              const point = payload[0].payload as CongestionVsDemographicsPoint;
               return (
                 <div className="bg-white border border-slate-200 rounded-lg shadow-lg p-3 text-sm">
                   <p className="font-semibold">{point.neighborhood_display}</p>
@@ -101,8 +112,8 @@ export function CongestionStructureScatter({ overrides }: Props) {
               );
             }}
           />
-          <Scatter data={data}>
-            {data.map((entry) => (
+          <Scatter data={filteredData}>
+            {filteredData.map((entry) => (
               <Cell key={entry.neighborhood_key} fill={getNeighborhoodColor(entry.neighborhood_key)} r={8} />
             ))}
           </Scatter>

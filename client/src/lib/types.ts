@@ -150,6 +150,21 @@ export interface CongestionVsStructurePoint {
   max_betweenness: number;
 }
 
+export interface CongestionVsDemographicsPoint {
+  neighborhood_key: string;
+  neighborhood_display: string;
+  avg_congestion: number;
+  max_congestion: number;
+  sample_count: number;
+  cars_per_100_residents: number | null;
+  population_density_per_km2: number | null;
+  socioeconomic_cluster: number | null;
+  avg_income_per_capita: number | null;
+  pct_academic_degree: number | null;
+  employment_rate: number | null;
+  pct_households_2_plus_cars: number | null;
+}
+
 export interface ExitCongestionPoint {
   neighborhood_key: string;
   neighborhood_display: string;

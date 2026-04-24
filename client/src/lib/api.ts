@@ -12,6 +12,7 @@ import type {
   Filters,
   NetworkNeighborhoodMetrics,
   CongestionVsStructurePoint,
+  CongestionVsDemographicsPoint,
   ExitCongestionPoint,
   BottleneckPoint,
   NetworkGraphData,
@@ -96,6 +97,10 @@ export function getNetworkNeighborhoods(overrides: GlobalOverrides = {}): Promis
 
 export function getCongestionVsStructure(overrides: GlobalOverrides = {}): Promise<CongestionVsStructurePoint[]> {
   return fetchJson(`/api/network/congestion-vs-structure?${buildGlobalParams(overrides)}`);
+}
+
+export function getCongestionVsDemographics(overrides: GlobalOverrides = {}): Promise<CongestionVsDemographicsPoint[]> {
+  return fetchJson(`/api/network/congestion-vs-demographics?${buildGlobalParams(overrides)}`);
 }
 
 export function getExitCongestion(overrides: GlobalOverrides = {}, neighborhood?: string): Promise<ExitCongestionPoint[]> {
