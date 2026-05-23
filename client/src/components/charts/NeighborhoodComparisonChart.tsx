@@ -28,8 +28,18 @@ export function NeighborhoodComparisonChart({ filters }: Props) {
       <BarChart data={data} layout="vertical" margin={mirrorMargin({ left: 80, right: 20, top: 10, bottom: 10 })}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis type="number" domain={[0, 'auto']} reversed={xAxisReversed} />
-        <YAxis type="category" dataKey="neighborhood_display" width={80} tick={{ fontSize: 12 }} orientation={xAxisReversed ? 'right' : 'left'} />
-        <Tooltip formatter={(value) => [Number(value).toFixed(3) + 'x', t('common.avgCongestion')]} />
+        <YAxis
+          type="category"
+          dataKey="neighborhood"
+          width={80}
+          tick={{ fontSize: 12 }}
+          orientation={xAxisReversed ? 'right' : 'left'}
+          tickFormatter={(key) => t(`neighborhoods.${key}`, { defaultValue: key })}
+        />
+        <Tooltip
+          formatter={(value) => [Number(value).toFixed(3) + 'x', t('common.avgCongestion')]}
+          labelFormatter={(key) => t(`neighborhoods.${key}`, { defaultValue: String(key) })}
+        />
         <Bar dataKey="avg_congestion" radius={[0, 4, 4, 0]}>
           {data.map((entry) => (
             <Cell key={entry.neighborhood} fill={getNeighborhoodColor(entry.neighborhood)} />

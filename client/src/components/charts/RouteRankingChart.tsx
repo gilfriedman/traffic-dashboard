@@ -42,7 +42,10 @@ export function RouteRankingChart({ filters }: Props) {
           formatter={(value) => [Number(value).toFixed(3) + 'x', t('common.avgCongestion')]}
           labelFormatter={(label) => {
             const route = top20.find((route) => route.route_name === String(label));
-            return `${label} (${route?.neighborhood_display ?? ''})`;
+            const neighborhoodName = route
+              ? t(`neighborhoods.${route.neighborhood}`, { defaultValue: route.neighborhood_display })
+              : '';
+            return `${label} (${neighborhoodName})`;
           }}
         />
         <Bar dataKey="avg_congestion" radius={[0, 4, 4, 0]}>

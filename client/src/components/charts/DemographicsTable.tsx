@@ -139,7 +139,7 @@ export function DemographicsTable({ overrides }: Props) {
                     className="inline-block w-2 h-2 rounded-full me-2"
                     style={{ backgroundColor: getNeighborhoodColor(neighborhood.neighborhood_key) }}
                   />
-                  {neighborhood.neighborhood_display}
+                  {t(`neighborhoods.${neighborhood.neighborhood_key}`, { defaultValue: neighborhood.neighborhood_display })}
                 </th>
               ))}
             </tr>

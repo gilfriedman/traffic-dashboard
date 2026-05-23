@@ -74,7 +74,7 @@ export function DayOfWeekChart({ filters }: Props) {
           <Bar
             key={key}
             dataKey={key}
-            name={key}
+            name={byRoute ? key : t(`neighborhoods.${key}`, { defaultValue: key })}
             fill={seriesColors[key]}
             radius={[4, 4, 0, 0]}
           />

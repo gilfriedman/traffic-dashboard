@@ -75,7 +75,7 @@ export function RushHourChart({ filters }: Props) {
             key={key}
             type="monotone"
             dataKey={key}
-            name={key}
+            name={byRoute ? key : t(`neighborhoods.${key}`, { defaultValue: key })}
             stroke={seriesColors[key]}
             strokeWidth={2}
             dot
