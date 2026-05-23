@@ -59,13 +59,10 @@ export function NetworkGraphTab({ overrides }: { overrides: GlobalOverrides }) {
   const [selectedGraph, setSelectedGraph] = useState<NetworkGraphData | null>(null);
   const [showAerial, setShowAerial] = useState(false);
   const [showStreetNames, setShowStreetNames] = useState(false);
-  const [colorBy, setColorBy] = useState<'default' | 'integration'>('default');
+  const [colorByPreference, setColorByPreference] = useState<'default' | 'integration'>('default');
   const { t } = useTranslation();
   const representation = overrides.representation ?? 'topologic';
-
-  useEffect(() => {
-    if (representation === 'geometric') setColorBy('default');
-  }, [representation]);
+  const colorBy = representation === 'geometric' ? 'default' : colorByPreference;
 
   const visibleKeys = useMemo(() => {
     const excluded = overrides.exclude_neighborhoods ?? [];
@@ -114,7 +111,7 @@ export function NetworkGraphTab({ overrides }: { overrides: GlobalOverrides }) {
                   return (
                     <button
                       key={option}
-                      onClick={() => setColorBy(option)}
+                      onClick={() => setColorByPreference(option)}
                       disabled={isDisabled}
                       className={`px-2 py-0.5 text-xs rounded transition-colors ${
                         colorBy === option ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
