@@ -131,12 +131,20 @@ export interface NetworkExitSummary {
   to_coords: [number, number];
 }
 
+export interface SpaceSyntaxMetrics {
+  mean_depth: number;
+  integration: number | null;
+  intelligibility: number | null;
+  computed_on_node_count: number;
+}
+
 export interface NetworkRepresentationSummary {
   basic_stats: NetworkBasicStats;
   connectivity: NetworkConnectivity;
   centrality_summary: NetworkCentralitySummary;
   exit_count: number;
   exits: NetworkExitSummary[];
+  space_syntax?: SpaceSyntaxMetrics | null;
 }
 
 export interface NetworkNeighborhoodMetrics {
@@ -223,6 +231,7 @@ export interface NetworkGraphNode {
   lng: number;
   classification: 'interior' | 'perimeter' | 'exterior';
   is_exit_node: boolean;
+  integration?: number | null;
 }
 
 export interface NetworkGraphEdge {
