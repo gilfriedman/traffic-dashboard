@@ -59,8 +59,13 @@ export function NetworkGraphTab({ overrides }: { overrides: GlobalOverrides }) {
   const [selectedGraph, setSelectedGraph] = useState<NetworkGraphData | null>(null);
   const [showAerial, setShowAerial] = useState(false);
   const [showStreetNames, setShowStreetNames] = useState(false);
+  const [colorBy, setColorBy] = useState<'default' | 'integration'>('default');
   const { t } = useTranslation();
   const representation = overrides.representation ?? 'topologic';
+
+  useEffect(() => {
+    if (representation === 'geometric') setColorBy('default');
+  }, [representation]);
 
   const visibleKeys = useMemo(() => {
     const excluded = overrides.exclude_neighborhoods ?? [];
@@ -98,6 +103,29 @@ export function NetworkGraphTab({ overrides }: { overrides: GlobalOverrides }) {
             {t('network.backToGrid')}
           </button>
           <div className="flex items-center gap-4">
+            <div
+              className="flex items-center gap-2 text-sm text-slate-600"
+              title={representation === 'geometric' ? t('network.graphColorBy.tooltipGeometric') : undefined}
+            >
+              <span>{t('network.graphColorBy.label')}:</span>
+              <div className="flex gap-1 bg-slate-100 rounded-md p-0.5">
+                {(['default', 'integration'] as const).map((option) => {
+                  const isDisabled = option === 'integration' && representation === 'geometric';
+                  return (
+                    <button
+                      key={option}
+                      onClick={() => setColorBy(option)}
+                      disabled={isDisabled}
+                      className={`px-2 py-0.5 text-xs rounded transition-colors ${
+                        colorBy === option ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'
+                      } ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+                    >
+                      {t(`network.graphColorBy.${option}`)}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
             <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer select-none">
               <input
                 type="checkbox"
@@ -119,7 +147,7 @@ export function NetworkGraphTab({ overrides }: { overrides: GlobalOverrides }) {
           </div>
         </div>
         <div className="flex justify-center">
-          <NetworkGraph data={selectedGraph} width={700} height={700} showAerial={showAerial} showStreetNames={showStreetNames} />
+          <NetworkGraph data={selectedGraph} width={700} height={700} showAerial={showAerial} showStreetNames={showStreetNames} colorBy={colorBy} />
         </div>
       </div>
     );

@@ -12,6 +12,15 @@ const EXIT_COLOR = '#32CD32';
 const BOUNDARY_COLOR = '#EF4444';
 const EDGE_COLOR = '#AAAAAA';
 
+type ColorBy = 'default' | 'integration';
+
+function integrationColor(value: number, min: number, max: number): string {
+  if (max <= min) return '#FF6B6B';
+  const ratio = Math.max(0, Math.min(1, (value - min) / (max - min)));
+  const hue = 240 - 240 * ratio;
+  return `hsl(${hue}, 80%, 50%)`;
+}
+
 const ESRI_IMAGERY_BASE = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export';
 const ESRI_LABELS_BASE = 'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/export';
 
@@ -22,6 +31,7 @@ interface Props {
   compact?: boolean;
   showAerial?: boolean;
   showStreetNames?: boolean;
+  colorBy?: ColorBy;
 }
 
 function toMercator(lng: number, lat: number): [number, number] {
@@ -183,10 +193,21 @@ function useImageWithCache(url: string | null): { status: 'loading' | 'loaded' |
   return url ? { status: entry.status, href: entry.blobUrl ?? null } : { status: 'loading', href: null };
 }
 
-export function NetworkGraph({ data, width = 500, height = 500, compact = false, showAerial = false, showStreetNames = false }: Props) {
+export function NetworkGraph({ data, width = 500, height = 500, compact = false, showAerial = false, showStreetNames = false, colorBy = 'default' }: Props) {
   const { t, i18n } = useTranslation();
   const isHebrew = i18n.language === 'he';
   const displayName = isHebrew ? data.name_he : data.name_en;
+
+  const integrationRange = useMemo(() => {
+    const values: number[] = [];
+    for (const node of data.nodes) {
+      if (typeof node.integration === 'number') values.push(node.integration);
+    }
+    if (values.length === 0) return null;
+    return { min: Math.min(...values), max: Math.max(...values) };
+  }, [data.nodes]);
+
+  const useIntegration = colorBy === 'integration' && integrationRange !== null;
 
   const { project, mercatorBbox } = useMemo(() => {
     const lngs: number[] = [];
@@ -340,12 +361,15 @@ export function NetworkGraph({ data, width = 500, height = 500, compact = false,
 
       {data.nodes.map((node, index) => {
         const [cx, cy] = project(node.lng, node.lat);
+        const fill = useIntegration && typeof node.integration === 'number' && integrationRange
+          ? integrationColor(node.integration, integrationRange.min, integrationRange.max)
+          : NODE_COLORS[node.classification];
         return (
           <circle
             key={`n-${index}`}
             cx={cx} cy={cy}
             r={nodeSize[node.classification]}
-            fill={NODE_COLORS[node.classification]}
+            fill={fill}
           />
         );
       })}
@@ -360,20 +384,39 @@ export function NetworkGraph({ data, width = 500, height = 500, compact = false,
             {displayName} — {data.exit_count} {t('network.exits')}
           </text>
 
-          <g transform={`translate(${width - 55}, ${height - 42})`}>
-            <rect x={-5} y={-5} width={58} height={40} rx={2} fill="white" fillOpacity={0.92} stroke="#e2e8f0" strokeWidth={0.4} />
-            {([
-              ['interior', t('nodeClassification.interior.label'), NODE_COLORS.interior],
-              ['perimeter', t('nodeClassification.perimeter.label'), NODE_COLORS.perimeter],
-              ['exterior', t('nodeClassification.exterior.label'), NODE_COLORS.exterior],
-              ['exits', t('network.exits'), EXIT_COLOR],
-            ] as const).map(([key, label, color], index) => (
-              <g key={key} transform={`translate(0, ${index * 8.5})`}>
-                <circle cx={3} cy={3} r={1.8} fill={color} />
-                <text x={8} y={4.5} textAnchor="start" direction="ltr" fontSize={5} fill="#475569">{label}</text>
-              </g>
-            ))}
-          </g>
+          {useIntegration && integrationRange ? (
+            <g transform={`translate(${width - 110}, ${height - 22})`}>
+              <rect x={-5} y={-12} width={108} height={20} rx={2} fill="white" fillOpacity={0.92} stroke="#e2e8f0" strokeWidth={0.4} />
+              <text x={48} y={-4} textAnchor="middle" fontSize={5} fill="#475569">{t('network.graphColorBy.integration')}</text>
+              {Array.from({ length: 20 }).map((_, index) => (
+                <rect
+                  key={index}
+                  x={index * 5}
+                  y={1}
+                  width={5}
+                  height={5}
+                  fill={integrationColor(integrationRange.min + (integrationRange.max - integrationRange.min) * index / 19, integrationRange.min, integrationRange.max)}
+                />
+              ))}
+              <text x={0} y={12} fontSize={4} fill="#475569">{integrationRange.min.toFixed(2)}</text>
+              <text x={96} y={12} fontSize={4} fill="#475569" textAnchor="end">{integrationRange.max.toFixed(2)}</text>
+            </g>
+          ) : (
+            <g transform={`translate(${width - 55}, ${height - 42})`}>
+              <rect x={-5} y={-5} width={58} height={40} rx={2} fill="white" fillOpacity={0.92} stroke="#e2e8f0" strokeWidth={0.4} />
+              {([
+                ['interior', t('nodeClassification.interior.label'), NODE_COLORS.interior],
+                ['perimeter', t('nodeClassification.perimeter.label'), NODE_COLORS.perimeter],
+                ['exterior', t('nodeClassification.exterior.label'), NODE_COLORS.exterior],
+                ['exits', t('network.exits'), EXIT_COLOR],
+              ] as const).map(([key, label, color], index) => (
+                <g key={key} transform={`translate(0, ${index * 8.5})`}>
+                  <circle cx={3} cy={3} r={1.8} fill={color} />
+                  <text x={8} y={4.5} textAnchor="start" direction="ltr" fontSize={5} fill="#475569">{label}</text>
+                </g>
+              ))}
+            </g>
+          )}
         </>
       )}
     </svg>
