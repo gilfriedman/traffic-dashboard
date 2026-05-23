@@ -9,19 +9,27 @@ import { computeLinearRegression } from '../../lib/regression';
 import { RegressionStatsBadge } from './RegressionStatsBadge';
 import type { CongestionVsStructurePoint } from '../../lib/types';
 
-const METRIC_KEYS = ['street_density', 'intersection_density', 'avg_node_degree', 'circuity', 'connectivity', 'avg_betweenness', 'exit_count'] as const;
+const METRIC_KEYS = [
+  'node_count',
+  'edge_count',
+  'intersection_count',
+  'total_street_length_m',
+  'avg_street_length_m',
+  'street_density_m_per_km2',
+  'intersection_density_per_km2',
+  'avg_node_degree',
+  'circuity',
+  'avg_betweenness',
+  'max_betweenness',
+  'avg_closeness',
+  'max_closeness',
+  'avg_node_connectivity',
+  'edge_connectivity',
+  'exit_count',
+  'area_km2',
+] as const satisfies ReadonlyArray<keyof CongestionVsStructurePoint>;
 
 type MetricKey = (typeof METRIC_KEYS)[number];
-
-const METRIC_I18N_KEYS: Record<MetricKey, string> = {
-  street_density: 'scatter.streetDensity',
-  intersection_density: 'scatter.intersectionDensity',
-  avg_node_degree: 'scatter.avgNodeDegree',
-  circuity: 'scatter.circuity',
-  connectivity: 'scatter.connectivity',
-  avg_betweenness: 'scatter.avgBetweenness',
-  exit_count: 'scatter.exitCount',
-};
 
 interface Props {
   overrides: GlobalOverrides;
@@ -32,9 +40,24 @@ export function CongestionStructureScatter({ overrides }: Props) {
     () => getCongestionVsStructure(overrides),
     [JSON.stringify(overrides)]
   );
-  const [metricKey, setMetricKey] = useState<MetricKey>('street_density');
+  const [selectedKey, setSelectedKey] = useState<MetricKey | null>(null);
   const { t } = useTranslation();
   const { yAxisOrientation, xAxisReversed, mirrorMargin } = useChartDirection();
+
+  const orderedKeys = useMemo(() => {
+    if (!data?.length) return [...METRIC_KEYS];
+    const r2ByKey = new Map<MetricKey, number>();
+    for (const key of METRIC_KEYS) {
+      const points = data
+        .filter((point) => point[key] != null)
+        .map((point) => ({ x: point[key] as number, y: point.avg_congestion }));
+      const fit = computeLinearRegression(points);
+      r2ByKey.set(key, fit?.r2 ?? -Infinity);
+    }
+    return [...METRIC_KEYS].sort((a, b) => (r2ByKey.get(b) ?? -Infinity) - (r2ByKey.get(a) ?? -Infinity));
+  }, [data]);
+
+  const metricKey = selectedKey ?? orderedKeys[0];
 
   const regression = useMemo(() => {
     if (!data?.length) return null;
@@ -48,15 +71,15 @@ export function CongestionStructureScatter({ overrides }: Props) {
   if (error) return <div className="h-96 flex items-center justify-center text-red-500">{error}</div>;
   if (!data?.length) return <div className="h-96 flex items-center justify-center text-slate-400">{t('common.noData')}</div>;
 
-  const selectedLabel = t(METRIC_I18N_KEYS[metricKey]);
+  const selectedLabel = t(`metrics.${metricKey}.label`);
 
   return (
     <div>
       <div className="flex flex-wrap gap-2 mb-4">
-        {METRIC_KEYS.map((key) => (
+        {orderedKeys.map((key) => (
           <button
             key={key}
-            onClick={() => setMetricKey(key)}
+            onClick={() => setSelectedKey(key)}
             className={cn(
               'px-3 py-1 text-xs font-medium rounded-full transition-colors',
               metricKey === key
@@ -64,7 +87,7 @@ export function CongestionStructureScatter({ overrides }: Props) {
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             )}
           >
-            {t(METRIC_I18N_KEYS[key])}
+            {t(`metrics.${key}.label`)}
           </button>
         ))}
       </div>

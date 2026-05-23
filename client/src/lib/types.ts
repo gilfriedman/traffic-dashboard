@@ -157,16 +157,21 @@ export interface CongestionVsStructurePoint {
   sample_count: number;
   node_count: number;
   edge_count: number;
-  street_density: number;
-  intersection_density: number;
+  intersection_count: number;
+  total_street_length_m: number;
+  avg_street_length_m: number;
+  street_density_m_per_km2: number;
+  intersection_density_per_km2: number;
   avg_node_degree: number;
   circuity: number | null;
-  avg_street_length: number;
-  connectivity: number;
+  avg_node_connectivity: number;
+  edge_connectivity: number;
   exit_count: number;
   area_km2: number;
   avg_betweenness: number;
   max_betweenness: number;
+  avg_closeness: number;
+  max_closeness: number;
 }
 
 export interface CongestionVsDemographicsPoint {

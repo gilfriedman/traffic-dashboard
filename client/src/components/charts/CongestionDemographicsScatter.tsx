@@ -40,9 +40,24 @@ export function CongestionDemographicsScatter({ overrides }: Props) {
     () => getCongestionVsDemographics(overrides),
     [JSON.stringify(overrides)]
   );
-  const [metricKey, setMetricKey] = useState<MetricKey>('cars_per_100_residents');
+  const [selectedKey, setSelectedKey] = useState<MetricKey | null>(null);
   const { t } = useTranslation();
   const { yAxisOrientation, xAxisReversed, mirrorMargin } = useChartDirection();
+
+  const orderedKeys = useMemo(() => {
+    if (!data?.length) return [...METRIC_KEYS];
+    const r2ByKey = new Map<MetricKey, number>();
+    for (const key of METRIC_KEYS) {
+      const points = data
+        .filter((point) => point[key] != null)
+        .map((point) => ({ x: point[key] as number, y: point.avg_congestion }));
+      const fit = computeLinearRegression(points);
+      r2ByKey.set(key, fit?.r2 ?? -Infinity);
+    }
+    return [...METRIC_KEYS].sort((a, b) => (r2ByKey.get(b) ?? -Infinity) - (r2ByKey.get(a) ?? -Infinity));
+  }, [data]);
+
+  const metricKey = selectedKey ?? orderedKeys[0];
 
   const filteredData = useMemo(
     () => data?.filter((point) => point[metricKey] != null) ?? [],
@@ -64,10 +79,10 @@ export function CongestionDemographicsScatter({ overrides }: Props) {
   return (
     <div>
       <div className="flex flex-wrap gap-2 mb-4">
-        {METRIC_KEYS.map((key) => (
+        {orderedKeys.map((key) => (
           <button
             key={key}
-            onClick={() => setMetricKey(key)}
+            onClick={() => setSelectedKey(key)}
             className={cn(
               'px-3 py-1 text-xs font-medium rounded-full transition-colors',
               metricKey === key
