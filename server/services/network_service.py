@@ -310,9 +310,12 @@ def get_network_graph(neighborhood_key, representation=TOPOLOGIC_REPRESENTATION)
     edges_collection = "network_edges_topologic" if is_topologic else "network_edges"
     representation_doc = neighborhood_doc.get(representation, {})
 
+    node_projection = {"_id": 0, "lat": 1, "lng": 1, "classification": 1, "is_exit_node": 1}
+    if is_topologic:
+        node_projection["integration"] = 1
     nodes = list(db[nodes_collection].find(
         {"neighborhood_key": neighborhood_key},
-        {"_id": 0, "lat": 1, "lng": 1, "classification": 1, "is_exit_node": 1},
+        node_projection,
     ))
 
     edges = list(db[edges_collection].find(
