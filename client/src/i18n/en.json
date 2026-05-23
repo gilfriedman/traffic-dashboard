@@ -68,6 +68,7 @@
   "network": {
     "title": "Network Analysis",
     "overview": "Overview",
+    "spaceSyntax": "Space Syntax",
     "congestionStructure": "Congestion vs Structure",
     "congestionDemographics": "Congestion vs Demographics",
     "exitAnalysis": "Exit Analysis",
@@ -80,7 +81,14 @@
     "streetNames": "Street names",
     "representation": {
       "topologic": "Topologic",
-      "geometric": "Geometric"
+      "geometric": "Geometric",
+      "tooltipSpaceSyntax": "Space Syntax is defined on the topologic representation only"
+    },
+    "graphColorBy": {
+      "label": "Color by",
+      "default": "Default",
+      "integration": "Integration",
+      "tooltipGeometric": "Available only in topologic representation"
     }
   },
   "filters": {
@@ -103,6 +111,12 @@
     "avgBetweenness": "Avg Betweenness",
     "exits": "Exits",
     "area": "Area (km\u00b2)"
+  },
+  "spaceSyntaxTable": {
+    "neighborhood": "Neighborhood",
+    "meanDepth": "Mean Depth",
+    "integration": "Integration",
+    "intelligibility": "Intelligibility (R\u00b2)"
   },
   "bottleneckTable": {
     "bottleneckScore": "Bottleneck Score",
@@ -163,7 +177,8 @@
     "exitAnalysis": "Neighborhood exits matched to nearby traffic routes, ranked by average congestion. Data sources: OpenStreetMap/OSMnx (exit identification) and Google Maps Distance Matrix API (congestion).",
     "bottlenecks": "High-centrality intersections near congested routes. Score = betweenness \u00d7 nearby congestion. Data sources: OpenStreetMap/OSMnx (centrality analysis) and Google Maps Distance Matrix API (congestion).",
     "demographics": "Demographic, socioeconomic, and planning comparison of Beer Sheva neighborhoods. Shows that the studied neighborhoods share similar characteristics, supporting cross-neighborhood traffic analysis.\nDemographics (population, % adults, household size) — CBS Census 2022, Selected Data by Localities and Statistical Areas.\nSocioeconomic (cluster, income, education) — CBS Socioeconomic Index 2019, Publication 1903, Table 12.\nTransportation (cars per 100 residents) — CBS Socioeconomic Index 2019; household car ownership — CBS Census 2022.\nEmployment (employment rate) — CBS Socioeconomic Index 2019, % aged 25–54 with income from work.\nHistorical (year established/populated) — Hebrew Wikipedia, \"Neighborhoods of Beersheba\".",
-    "networkGraph": "Visual road network for each neighborhood. Blue = interior nodes, Orange = perimeter nodes, Gray = exterior nodes, Green arrows = exit edges. Red line marks the neighborhood boundary. Data source: OpenStreetMap, processed with OSMnx. Aerial imagery: Esri World Imagery (ArcGIS)."
+    "networkGraph": "Visual road network for each neighborhood. Blue = interior nodes, Orange = perimeter nodes, Gray = exterior nodes, Green arrows = exit edges. Red line marks the neighborhood boundary. Data source: OpenStreetMap, processed with OSMnx. Aerial imagery: Esri World Imagery (ArcGIS).",
+    "spaceSyntax": "Space Syntax (Hillier, 1984) treats the street network as a topologic graph and measures how 'deep' each street is from all others. Mean Depth is the average shortest-path distance from a street; Integration (1/RRA) is the normalised inverse — high values mean accessible streets; Intelligibility is the R² between local Connectivity and global Integration — high values mean the local structure correctly predicts the global one. Data source: OpenStreetMap via OSMnx, computed with NetworkX."
   },
   "metrics": {
     "node_count": {
@@ -245,6 +260,18 @@
     "area_km2": {
       "label": "Area (km\u00b2)",
       "description": "Total area of the neighborhood in square kilometers. Data source: OpenStreetMap via OSMnx."
+    },
+    "mean_depth": {
+      "label": "Mean Depth",
+      "description": "Average shortest-path length (in edges) from a node to all others in the topologic graph. Lower means more central. Data source: OpenStreetMap via OSMnx, computed with NetworkX."
+    },
+    "integration": {
+      "label": "Integration",
+      "description": "1 / RRA. High integration means low mean depth \u2014 the street is well-integrated and accessible from the rest of the network. Data source: OpenStreetMap via OSMnx, computed with NetworkX."
+    },
+    "intelligibility": {
+      "label": "Intelligibility",
+      "description": "R\u00b2 of the linear relation between local Connectivity (degree) and global Integration. High intelligibility means a person can correctly infer the global structure from local properties. Data source: OpenStreetMap via OSMnx, computed with NetworkX."
     }
   },
   "demographicsTable": {
