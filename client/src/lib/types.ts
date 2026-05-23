@@ -114,7 +114,8 @@ export interface NetworkBasicStats {
 
 export interface NetworkConnectivity {
   avg_node_connectivity: number;
-  edge_connectivity: number;
+  bridge_count: number;
+  bridge_ratio: number;
 }
 
 export interface NetworkCentralitySummary {
@@ -165,7 +166,8 @@ export interface CongestionVsStructurePoint {
   avg_node_degree: number;
   circuity: number | null;
   avg_node_connectivity: number;
-  edge_connectivity: number;
+  bridge_count: number;
+  bridge_ratio: number;
   exit_count: number;
   area_km2: number;
   avg_betweenness: number;

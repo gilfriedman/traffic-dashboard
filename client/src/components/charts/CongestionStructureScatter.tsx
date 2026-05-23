@@ -24,7 +24,8 @@ const METRIC_KEYS = [
   'avg_closeness',
   'max_closeness',
   'avg_node_connectivity',
-  'edge_connectivity',
+  'bridge_count',
+  'bridge_ratio',
   'exit_count',
   'area_km2',
 ] as const satisfies ReadonlyArray<keyof CongestionVsStructurePoint>;
