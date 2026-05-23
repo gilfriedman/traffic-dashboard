@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { NetworkMetricsTable } from '../components/charts/NetworkMetricsTable';
+import { SpaceSyntaxTable } from '../components/charts/SpaceSyntaxTable';
 import { CongestionStructureScatter } from '../components/charts/CongestionStructureScatter';
 import { CongestionDemographicsScatter } from '../components/charts/CongestionDemographicsScatter';
 import { ExitCongestionChart } from '../components/charts/ExitCongestionChart';
@@ -12,12 +13,13 @@ import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
 import { cn } from '../lib/utils';
 import type { GlobalOverrides, NetworkRepresentation } from '../lib/api';
 
-const TAB_KEYS = ['overview', 'graph', 'congestion-structure', 'congestion-demographics', 'exit-analysis', 'bottlenecks', 'demographics'] as const;
+const TAB_KEYS = ['overview', 'space-syntax', 'graph', 'congestion-structure', 'congestion-demographics', 'exit-analysis', 'bottlenecks', 'demographics'] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
 const TAB_I18N_KEYS: Record<TabKey, string> = {
   'demographics': 'network.demographics',
   'overview': 'network.overview',
+  'space-syntax': 'network.spaceSyntax',
   'congestion-structure': 'network.congestionStructure',
   'congestion-demographics': 'network.congestionDemographics',
   'exit-analysis': 'network.exitAnalysis',
@@ -28,6 +30,7 @@ const TAB_I18N_KEYS: Record<TabKey, string> = {
 const TAB_DESCRIPTION_KEYS: Record<TabKey, string> = {
   'demographics': 'chartDescriptions.demographics',
   'overview': 'chartDescriptions.networkOverview',
+  'space-syntax': 'chartDescriptions.spaceSyntax',
   'congestion-structure': 'chartDescriptions.congestionStructure',
   'congestion-demographics': 'chartDescriptions.congestionDemographics',
   'exit-analysis': 'chartDescriptions.exitAnalysis',
@@ -43,26 +46,34 @@ export function NetworkPage() {
   const globalOverrides = useGlobalFilterOverrides();
   const { t } = useTranslation();
 
+  const isSpaceSyntaxTab = activeTab === 'space-syntax';
+  const effectiveRepresentation: NetworkRepresentation = isSpaceSyntaxTab ? 'topologic' : representation;
+
   const overrides: GlobalOverrides = {
     exclude_neighborhoods: globalOverrides.exclude_neighborhoods,
     exclude_hours: globalOverrides.exclude_hours,
-    representation,
+    representation: effectiveRepresentation,
   };
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-900">{t('network.title')}</h1>
-        <div className="flex gap-1 bg-slate-100 rounded-md p-1">
+        <div
+          className="flex gap-1 bg-slate-100 rounded-md p-1"
+          title={isSpaceSyntaxTab ? t('network.representation.tooltipSpaceSyntax') : undefined}
+        >
           {REPRESENTATIONS.map((key) => (
             <button
               key={key}
               onClick={() => setRepresentation(key)}
+              disabled={isSpaceSyntaxTab}
               className={cn(
                 'px-3 py-1.5 text-sm font-medium rounded transition-colors',
                 representation === key
                   ? 'bg-white text-slate-900 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900'
+                  : 'text-slate-600 hover:text-slate-900',
+                isSpaceSyntaxTab && 'opacity-40 cursor-not-allowed'
               )}
             >
               {t(`network.representation.${key}`)}
@@ -92,6 +103,7 @@ export function NetworkPage() {
         <div className="p-4">
           {activeTab === 'demographics' && <DemographicsTable overrides={overrides} />}
           {activeTab === 'overview' && <NetworkMetricsTable overrides={overrides} />}
+          {activeTab === 'space-syntax' && <SpaceSyntaxTable overrides={overrides} />}
           {activeTab === 'congestion-structure' && <CongestionStructureScatter overrides={overrides} />}
           {activeTab === 'congestion-demographics' && <CongestionDemographicsScatter overrides={overrides} />}
           {activeTab === 'exit-analysis' && <ExitCongestionChart overrides={overrides} />}
