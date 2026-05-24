@@ -185,7 +185,9 @@ export interface CongestionVsStructurePoint {
   mean_depth: number | null;
   integration: number | null;
   intelligibility: number | null;
-  combined_predictor: number | null;
+  predictor_space_syntax: number | null;
+  predictor_capacity: number | null;
+  predictor_geometry: number | null;
 }
 
 export interface CongestionVsDemographicsPoint {

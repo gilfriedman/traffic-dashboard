@@ -275,9 +275,17 @@
       "label": "Intelligibility",
       "description": "R\u00b2 of the linear relation between local Connectivity (degree) and global Integration. High intelligibility means a person can correctly infer the global structure from local properties. Data source: OpenStreetMap via OSMnx, computed with NetworkX."
     },
-    "combined_predictor": {
-      "label": "Combined predictor (Int. + Intel.)",
-      "description": "OLS prediction of avg_congestion from a two-feature linear combination of Integration and Intelligibility, computed as \u0177 = \u03b2\u2080 + \u03b2\u2081\u00b7integration + \u03b2\u2082\u00b7intelligibility (numpy.linalg.lstsq). Plotting \u0177 vs actual avg_congestion shows the best linear fit using this theoretically-grounded Space Syntax pair. Data sources: OpenStreetMap/OSMnx + NetworkX (features), Google Maps Distance Matrix API via gmaps-scraper (target). With only n=6 neighborhoods, look at R\u00b2_adj rather than R\u00b2 to avoid overfitting."
+    "predictor_space_syntax": {
+      "label": "Space Syntax pair (Int. + Intel.)",
+      "description": "OLS prediction of avg_congestion from a two-feature linear combination of Integration and Intelligibility \u2014 the canonical Hillier (1984) pair: \u0177 = \u03b2\u2080 + \u03b2\u2081\u00b7integration + \u03b2\u2082\u00b7intelligibility, fit with numpy.linalg.lstsq. Tests whether Space Syntax theory predicts traffic in this dataset. Data sources: OpenStreetMap/OSMnx + NetworkX (features), Google Maps Distance Matrix API via gmaps-scraper (target). With only n=6 neighborhoods, read R\u00b2_adj \u2014 not R\u00b2 \u2014 to avoid overfitting."
+    },
+    "predictor_capacity": {
+      "label": "Capacity pair (exits + bridges)",
+      "description": "OLS prediction of avg_congestion from exit_count and bridge_ratio: \u0177 = \u03b2\u2080 + \u03b2\u2081\u00b7exit_count + \u03b2\u2082\u00b7bridge_ratio. Capacity-and-fragility hypothesis \u2014 external capacity (how many ways out) plus internal single-points-of-failure (bridge_ratio). The most mechanistic of the three predictors for congestion. Data sources: OpenStreetMap/OSMnx + NetworkX (features), Google Maps Distance Matrix API via gmaps-scraper (target)."
+    },
+    "predictor_geometry": {
+      "label": "Geometry pair (circuity + density)",
+      "description": "OLS prediction of avg_congestion from circuity and street_density_m_per_km2: \u0177 = \u03b2\u2080 + \u03b2\u2081\u00b7circuity + \u03b2\u2082\u00b7street_density. Pure geometric efficiency \u2014 how indirect routes are \u00d7 how much road supply exists per km\u00b2. Data sources: OpenStreetMap/OSMnx (features), Google Maps Distance Matrix API via gmaps-scraper (target)."
     }
   },
   "demographicsTable": {

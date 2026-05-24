@@ -31,12 +31,18 @@ const METRIC_KEYS = [
   'mean_depth',
   'integration',
   'intelligibility',
-  'combined_predictor',
+  'predictor_space_syntax',
+  'predictor_capacity',
+  'predictor_geometry',
 ] as const satisfies ReadonlyArray<keyof CongestionVsStructurePoint>;
 
 type MetricKey = (typeof METRIC_KEYS)[number];
 
-const COMBINED_PREDICTOR_FEATURE_COUNT = 2;
+const PREDICTOR_KEYS = new Set<MetricKey>([
+  'predictor_space_syntax',
+  'predictor_capacity',
+  'predictor_geometry',
+]);
 
 interface Props {
   overrides: GlobalOverrides;
@@ -104,7 +110,7 @@ export function CongestionStructureScatter({ overrides }: Props) {
         <RegressionStatsBadge
           r2={regression.r2}
           sampleCount={data.length}
-          featureCount={metricKey === 'combined_predictor' ? COMBINED_PREDICTOR_FEATURE_COUNT : 1}
+          featureCount={PREDICTOR_KEYS.has(metricKey) ? 2 : 1}
         />
       )}
       <ResponsiveContainer width="100%" height={400}>

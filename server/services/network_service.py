@@ -102,44 +102,60 @@ def congestion_vs_structure(args):
             "mean_depth": space_syntax.get("mean_depth"),
             "integration": space_syntax.get("integration"),
             "intelligibility": space_syntax.get("intelligibility"),
-            "combined_predictor": None,
         })
 
-    _attach_combined_predictor(results)
+    _attach_combined_predictors(results)
     return results
 
 
-def _attach_combined_predictor(rows):
-    """
-    Fit OLS: avg_congestion ~ integration + intelligibility on rows that have both,
-    then write the predicted value back to each row's `combined_predictor` field.
-    Pair chosen for theoretical grounding (Space Syntax, Hillier 1984): Integration
-    is a global accessibility measure; Intelligibility tells you whether local
-    Connectivity predicts global Integration.
-    """
-    fittable = [
-        row for row in rows
-        if row["integration"] is not None
-        and row["intelligibility"] is not None
-        and row["sample_count"] > 0
-    ]
+# Three OLS predictor pairs, each grounded in a distinct theoretical frame:
+#   space_syntax — Hillier's canonical pair: global accessibility (integration)
+#                  and local-to-global legibility (intelligibility).
+#   capacity     — Capacity-and-fragility: how many ways out × how many internal
+#                  single points of failure.
+#   geometry     — Pure geometric efficiency: route directness × street supply.
+PREDICTOR_PAIRS = (
+    ("predictor_space_syntax", ("integration", "intelligibility")),
+    ("predictor_capacity", ("exit_count", "bridge_ratio")),
+    ("predictor_geometry", ("circuity", "street_density_m_per_km2")),
+)
+
+
+def _attach_combined_predictors(rows):
+    for predictor_name, features in PREDICTOR_PAIRS:
+        _attach_single_predictor(rows, predictor_name, features)
+
+
+def _attach_single_predictor(rows, predictor_name, features):
+    feature_a, feature_b = features
+
+    def has_features(row):
+        return row.get(feature_a) is not None and row.get(feature_b) is not None
+
+    fittable = [row for row in rows if has_features(row) and row["sample_count"] > 0]
+
     if len(fittable) < 3:
+        for row in rows:
+            row[predictor_name] = None
         return
 
     feature_matrix = np.array(
-        [[row["integration"], row["intelligibility"], 1.0] for row in fittable],
+        [[row[feature_a], row[feature_b], 1.0] for row in fittable],
         dtype=float,
     )
     target_vector = np.array([row["avg_congestion"] for row in fittable], dtype=float)
     coefficients, *_ = np.linalg.lstsq(feature_matrix, target_vector, rcond=None)
 
-    for row in fittable:
+    for row in rows:
+        if not has_features(row):
+            row[predictor_name] = None
+            continue
         prediction = (
-            coefficients[0] * row["integration"]
-            + coefficients[1] * row["intelligibility"]
+            coefficients[0] * row[feature_a]
+            + coefficients[1] * row[feature_b]
             + coefficients[2]
         )
-        row["combined_predictor"] = round(float(prediction), 4)
+        row[predictor_name] = round(float(prediction), 4)
 
 
 def congestion_vs_demographics(args):
