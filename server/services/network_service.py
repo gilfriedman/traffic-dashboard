@@ -1,3 +1,5 @@
+import numpy as np
+
 from server.database import get_db, get_collection
 from server.services.query_service import build_filter
 from server.utils.neighborhoods import NEIGHBORHOOD_DISPLAY_NAMES, get_display_name
@@ -70,6 +72,7 @@ def congestion_vs_structure(args):
         basic_stats = representation_doc["basic_stats"]
         connectivity = representation_doc["connectivity"]
         centrality_summary = representation_doc["centrality_summary"]
+        space_syntax = representation_doc.get("space_syntax") or {}
         congestion = congestion_by_neighborhood.get(key, {})
         results.append({
             "neighborhood_key": key,
@@ -96,9 +99,47 @@ def congestion_vs_structure(args):
             "max_betweenness": centrality_summary["max_betweenness"],
             "avg_closeness": centrality_summary["avg_closeness"],
             "max_closeness": centrality_summary["max_closeness"],
+            "mean_depth": space_syntax.get("mean_depth"),
+            "integration": space_syntax.get("integration"),
+            "intelligibility": space_syntax.get("intelligibility"),
+            "combined_predictor": None,
         })
 
+    _attach_combined_predictor(results)
     return results
+
+
+def _attach_combined_predictor(rows):
+    """
+    Fit OLS: avg_congestion ~ integration + intelligibility on rows that have both,
+    then write the predicted value back to each row's `combined_predictor` field.
+    Pair chosen for theoretical grounding (Space Syntax, Hillier 1984): Integration
+    is a global accessibility measure; Intelligibility tells you whether local
+    Connectivity predicts global Integration.
+    """
+    fittable = [
+        row for row in rows
+        if row["integration"] is not None
+        and row["intelligibility"] is not None
+        and row["sample_count"] > 0
+    ]
+    if len(fittable) < 3:
+        return
+
+    feature_matrix = np.array(
+        [[row["integration"], row["intelligibility"], 1.0] for row in fittable],
+        dtype=float,
+    )
+    target_vector = np.array([row["avg_congestion"] for row in fittable], dtype=float)
+    coefficients, *_ = np.linalg.lstsq(feature_matrix, target_vector, rcond=None)
+
+    for row in fittable:
+        prediction = (
+            coefficients[0] * row["integration"]
+            + coefficients[1] * row["intelligibility"]
+            + coefficients[2]
+        )
+        row["combined_predictor"] = round(float(prediction), 4)
 
 
 def congestion_vs_demographics(args):

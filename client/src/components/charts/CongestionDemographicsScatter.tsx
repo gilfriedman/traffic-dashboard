@@ -96,7 +96,7 @@ export function CongestionDemographicsScatter({ overrides }: Props) {
       </div>
 
       <div dir="ltr" className="relative">
-      {regression && <RegressionStatsBadge r2={regression.r2} />}
+      {regression && <RegressionStatsBadge r2={regression.r2} sampleCount={data.length} />}
       <ResponsiveContainer width="100%" height={400}>
         <ScatterChart margin={mirrorMargin({ top: 10, right: 20, bottom: 40, left: 20 })}>
           <CartesianGrid strokeDasharray="3 3" />

@@ -182,6 +182,10 @@ export interface CongestionVsStructurePoint {
   max_betweenness: number;
   avg_closeness: number;
   max_closeness: number;
+  mean_depth: number | null;
+  integration: number | null;
+  intelligibility: number | null;
+  combined_predictor: number | null;
 }
 
 export interface CongestionVsDemographicsPoint {

@@ -134,7 +134,9 @@
     "maxCongestion": "Max Congestion",
     "samples": "samples",
     "r2": "R²",
-    "r2Tooltip": "R² (coefficient of determination) measures what fraction of the data's variance is explained by the regression line.\n0 — no linear relationship, the line explains nothing\n0.3 — weak trend, mostly noise\n0.5 — moderate, about half the variance is explained\n0.8+ — strong relationship\n1 — perfect fit, every point lies on the line\nValues outside [0, 1] aren't possible with standard linear regression."
+    "r2Adj": "R²_adj",
+    "r2Tooltip": "R² (coefficient of determination) measures what fraction of the data's variance is explained by the regression line.\n0 — no linear relationship, the line explains nothing\n0.3 — weak trend, mostly noise\n0.5 — moderate, about half the variance is explained\n0.8+ — strong relationship\n1 — perfect fit, every point lies on the line\nValues outside [0, 1] aren't possible with standard linear regression.",
+    "r2AdjTooltip": "Adjusted R² penalises adding features that don't earn their keep. Computed with n={{n}} neighborhoods and k={{k}} feature(s). Negative values mean a constant mean would predict better than the model."
   },
   "demographicsScatter": {
     "carsPer100Residents": "Cars Per 100 Residents (17+)",
@@ -272,6 +274,10 @@
     "intelligibility": {
       "label": "Intelligibility",
       "description": "R\u00b2 of the linear relation between local Connectivity (degree) and global Integration. High intelligibility means a person can correctly infer the global structure from local properties. Data source: OpenStreetMap via OSMnx, computed with NetworkX."
+    },
+    "combined_predictor": {
+      "label": "Combined predictor (Int. + Intel.)",
+      "description": "OLS prediction of avg_congestion from a two-feature linear combination of Integration and Intelligibility, computed as \u0177 = \u03b2\u2080 + \u03b2\u2081\u00b7integration + \u03b2\u2082\u00b7intelligibility (numpy.linalg.lstsq). Plotting \u0177 vs actual avg_congestion shows the best linear fit using this theoretically-grounded Space Syntax pair. Data sources: OpenStreetMap/OSMnx + NetworkX (features), Google Maps Distance Matrix API via gmaps-scraper (target). With only n=6 neighborhoods, look at R\u00b2_adj rather than R\u00b2 to avoid overfitting."
     }
   },
   "demographicsTable": {
