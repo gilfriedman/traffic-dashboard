@@ -1,5 +1,5 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useUrlState } from '../hooks/useUrlState';
 import { NetworkMetricsTable } from '../components/charts/NetworkMetricsTable';
 import { SpaceSyntaxTable } from '../components/charts/SpaceSyntaxTable';
 import { CongestionStructureScatter } from '../components/charts/CongestionStructureScatter';
@@ -41,8 +41,8 @@ const TAB_DESCRIPTION_KEYS: Record<TabKey, string> = {
 const REPRESENTATIONS: NetworkRepresentation[] = ['topologic', 'geometric'];
 
 export function NetworkPage() {
-  const [activeTab, setActiveTab] = useState<TabKey>('overview');
-  const [representation, setRepresentation] = useState<NetworkRepresentation>('topologic');
+  const [activeTab, setActiveTab] = useUrlState<TabKey>('tab', 'overview', TAB_KEYS);
+  const [representation, setRepresentation] = useUrlState<NetworkRepresentation>('rep', 'topologic', REPRESENTATIONS);
   const globalOverrides = useGlobalFilterOverrides();
   const { t } = useTranslation();
 

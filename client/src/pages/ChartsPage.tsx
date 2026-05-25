@@ -10,6 +10,7 @@ import { RouteRankingChart } from '../components/charts/RouteRankingChart';
 import { DistributionChart } from '../components/charts/DistributionChart';
 import { ChartDescription } from '../components/ChartDescription';
 import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
+import { useUrlState } from '../hooks/useUrlState';
 import { cn } from '../lib/utils';
 import type { Filters } from '../lib/types';
 
@@ -54,8 +55,8 @@ export function ChartsPage() {
     () => ({ ...filters, ...globalOverrides }),
     [filters, globalOverrides]
   );
-  const [activeTab, setActiveTab] = useState<TabKey>('time-series');
-  const [granularity, setGranularity] = useState('day');
+  const [activeTab, setActiveTab] = useUrlState<TabKey>('tab', 'time-series', TAB_KEYS);
+  const [granularity, setGranularity] = useUrlState('granularity', 'day', GRANULARITY_OPTIONS);
   const navigate = useNavigate();
 
   return (
