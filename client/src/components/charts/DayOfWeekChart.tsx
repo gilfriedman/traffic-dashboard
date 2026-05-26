@@ -3,6 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
+import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
 import { getDayOfWeek } from '../../lib/api';
 import { getNeighborhoodColor, getRouteColor, DAYS_OF_WEEK } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
@@ -67,9 +68,10 @@ export function DayOfWeekChart({ filters }: Props) {
       <BarChart data={chartData} margin={mirrorMargin({ left: 10, right: 20, top: 10, bottom: 10 })}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="day" tick={{ fontSize: 12 }} reversed={xAxisReversed} />
-        <YAxis domain={[0, 'auto']} orientation={yAxisOrientation} />
+        <YAxis domain={congestionAxisDomain} orientation={yAxisOrientation} />
         <Tooltip />
         <Legend formatter={(value) => byRoute ? (routeNameMap[value] ?? value) : value} />
+        {congestionBaselineLine('y')}
         {seriesKeys.map((key) => (
           <Bar
             key={key}

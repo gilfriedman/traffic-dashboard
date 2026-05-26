@@ -3,6 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
+import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
 import { getCongestionOverTime } from '../../lib/api';
 import { getNeighborhoodColor, getRouteColor } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
@@ -128,9 +129,10 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
           reversed={xAxisReversed}
           tickFormatter={(value) => isGapRow(value) ? '' : value}
         />
-        <YAxis domain={[0, 'auto']} orientation={yAxisOrientation} />
+        <YAxis domain={congestionAxisDomain} orientation={yAxisOrientation} />
         <Tooltip filterNull />
         <Legend formatter={(value) => byRoute ? (routeNameMap[value] ?? value) : value} />
+        {congestionBaselineLine('y')}
         {dayBoundaries.map((boundary) => (
           <ReferenceLine
             key={boundary.time}

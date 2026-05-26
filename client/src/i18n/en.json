@@ -14,7 +14,7 @@
   "dashboard": {
     "title": "Dashboard",
     "neighborhoodComparison": "Neighborhood Comparison",
-    "rushHourProfile": "Rush Hour Profile (6:00-9:00)",
+    "rushHourProfile": "Hourly Congestion Profile - Average (6:00-9:00)",
     "congestionOverTime": "Congestion Over Time (Daily)"
   },
   "stats": {
@@ -27,7 +27,9 @@
     "title": "Traffic Data",
     "timeSeries": "Time Series",
     "dayOfWeek": "Day of Week",
-    "rushHour": "Rush Hour",
+    "rushHour": "Hourly Congestion Profile - Average",
+    "rushHourMax": "Hourly Congestion Profile - Maximum",
+    "rushHourMin": "Hourly Congestion Profile - Minimum",
     "routeRanking": "Route Ranking",
     "distribution": "Distribution",
     "days": {

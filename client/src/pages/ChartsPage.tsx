@@ -14,13 +14,15 @@ import { useUrlState } from '../hooks/useUrlState';
 import { cn } from '../lib/utils';
 import type { Filters } from '../lib/types';
 
-const TAB_KEYS = ['time-series', 'day-of-week', 'rush-hour', 'route-ranking', 'distribution'] as const;
+const TAB_KEYS = ['time-series', 'day-of-week', 'rush-hour', 'rush-hour-max', 'rush-hour-min', 'route-ranking', 'distribution'] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
 const TAB_I18N_KEYS: Record<TabKey, string> = {
   'time-series': 'charts.timeSeries',
   'day-of-week': 'charts.dayOfWeek',
   'rush-hour': 'charts.rushHour',
+  'rush-hour-max': 'charts.rushHourMax',
+  'rush-hour-min': 'charts.rushHourMin',
   'route-ranking': 'charts.routeRanking',
   'distribution': 'charts.distribution',
 };
@@ -29,6 +31,8 @@ const TAB_DESCRIPTION_KEYS: Record<TabKey, string> = {
   'time-series': 'chartDescriptions.timeSeries',
   'day-of-week': 'chartDescriptions.dayOfWeek',
   'rush-hour': 'chartDescriptions.rushHourCharts',
+  'rush-hour-max': 'chartDescriptions.rushHourCharts',
+  'rush-hour-min': 'chartDescriptions.rushHourCharts',
   'route-ranking': 'chartDescriptions.routeRanking',
   'distribution': 'chartDescriptions.distribution',
 };
@@ -115,7 +119,9 @@ export function ChartsPage() {
             </div>
           )}
           {activeTab === 'day-of-week' && <DayOfWeekChart filters={effectiveFilters} />}
-          {activeTab === 'rush-hour' && <RushHourChart filters={effectiveFilters} />}
+          {activeTab === 'rush-hour' && <RushHourChart filters={effectiveFilters} metric="avg" />}
+          {activeTab === 'rush-hour-max' && <RushHourChart filters={effectiveFilters} metric="max" />}
+          {activeTab === 'rush-hour-min' && <RushHourChart filters={effectiveFilters} metric="min" />}
           {activeTab === 'route-ranking' && <RouteRankingChart filters={effectiveFilters} />}
           {activeTab === 'distribution' && <DistributionChart filters={effectiveFilters} />}
 

@@ -3,6 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
+import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
 import { getExitCongestion, type GlobalOverrides } from '../../lib/api';
 import { getNeighborhoodColor, cn } from '../../lib/utils';
 
@@ -51,7 +52,7 @@ export function ExitCongestionChart({ overrides }: Props) {
       <ResponsiveContainer width="100%" height={chartHeight}>
         <BarChart data={top30} layout="vertical" margin={mirrorMargin({ left: 140, right: 20, top: 10, bottom: 10 })}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" domain={[0, 'auto']} reversed={xAxisReversed} />
+          <XAxis type="number" domain={congestionAxisDomain} reversed={xAxisReversed} />
           <YAxis
             type="category"
             dataKey="exit_street_name"
@@ -73,6 +74,7 @@ export function ExitCongestionChart({ overrides }: Props) {
               );
             }}
           />
+          {congestionBaselineLine('x')}
           <Bar dataKey="avg_congestion" radius={[0, 4, 4, 0]}>
             {top30.map((entry, index) => (
               <Cell key={index} fill={getNeighborhoodColor(entry.neighborhood_key)} />

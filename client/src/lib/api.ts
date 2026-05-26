@@ -6,7 +6,7 @@ import type {
   CongestionOverTimePoint,
   NeighborhoodComparisonPoint,
   DayOfWeekPoint,
-  RushHourPoint,
+  RushHourProfile,
   RouteRankingPoint,
   DistributionPoint,
   Filters,
@@ -67,7 +67,7 @@ export function getDayOfWeek(filters: Filters): Promise<DayOfWeekPoint[]> {
   return fetchJson(`/api/charts/day-of-week?${buildQueryParams(filters)}`);
 }
 
-export function getRushHourProfile(filters: Filters): Promise<RushHourPoint[]> {
+export function getRushHourProfile(filters: Filters): Promise<RushHourProfile> {
   return fetchJson(`/api/charts/rush-hour-profile?${buildQueryParams(filters)}`);
 }
 

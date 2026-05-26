@@ -74,6 +74,8 @@ export interface DayOfWeekPoint {
   count: number;
 }
 
+export type CongestionMetric = 'avg' | 'max' | 'min';
+
 export interface RushHourPoint {
   time_slot: string;
   neighborhood?: string;
@@ -81,7 +83,20 @@ export interface RushHourPoint {
   route_id?: string;
   route_name?: string;
   avg_congestion: number;
+  max_congestion: number;
+  min_congestion: number;
   count: number;
+}
+
+export interface CongestionStats {
+  avg: number;
+  max: number;
+  min: number;
+}
+
+export interface RushHourProfile {
+  slots: RushHourPoint[];
+  baselines: Record<string, CongestionStats>;
 }
 
 export interface RouteRankingPoint {

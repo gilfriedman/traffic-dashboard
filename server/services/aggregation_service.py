@@ -1,3 +1,5 @@
+from werkzeug.datastructures import MultiDict
+
 from server.database import get_collection
 from server.services.query_service import build_filter
 from server.utils.neighborhoods import NEIGHBORHOOD_DISPLAY_NAMES, get_display_name
@@ -6,6 +8,14 @@ from server.utils.neighborhoods import NEIGHBORHOOD_DISPLAY_NAMES, get_display_n
 def _match_stage(args):
     query = build_filter(args)
     return {'$match': query} if query else None
+
+
+def _args_without(args, *keys_to_drop):
+    """Return a MultiDict copy of args with the given keys removed."""
+    copy = MultiDict(args)
+    for key in keys_to_drop:
+        copy.poplist(key)
+    return copy
 
 
 def _has_route_ids(args):
@@ -176,14 +186,21 @@ def day_of_week(args):
 
 
 def rush_hour_profile(args):
-    collection = get_collection()
     by_route = _has_route_ids(args)
+    return {
+        'slots': _rush_hour_slots(args, by_route),
+        'baselines': _midnight_baselines(args, by_route),
+    }
+
+
+def _rush_hour_slots(args, by_route):
+    collection = get_collection()
     pipeline = []
     match = _match_stage(args)
     if match:
         pipeline.append(match)
 
-    pipeline.append({'$match': {'is_rush_hour': True}})
+    pipeline.append({'$match': {'local_time': {'$regex': r' (06|07|08|09):'}}})
     pipeline.append({'$addFields': {
         'parsed_time': {'$dateFromString': {'dateString': '$local_time', 'format': '%Y-%m-%d %H:%M:%S'}},
     }})
@@ -196,6 +213,8 @@ def rush_hour_profile(args):
             {'$group': {
                 '_id': {'slot': '$time_slot', 'route_id': '$route_id', 'route_name': '$route_name'},
                 'avg_congestion': {'$avg': '$congestion_ratio'},
+                'max_congestion': {'$max': '$congestion_ratio'},
+                'min_congestion': {'$min': '$congestion_ratio'},
                 'count': {'$sum': 1},
             }},
             {'$sort': {'_id.slot': 1}},
@@ -206,6 +225,8 @@ def rush_hour_profile(args):
             'route_id': r['_id']['route_id'],
             'route_name': r['_id']['route_name'],
             'avg_congestion': round(r['avg_congestion'], 3),
+            'max_congestion': round(r['max_congestion'], 3),
+            'min_congestion': round(r['min_congestion'], 3),
             'count': r['count'],
         } for r in results]
 
@@ -217,6 +238,8 @@ def rush_hour_profile(args):
         {'$group': {
             '_id': {'slot': '$time_slot', 'neighborhood': '$neighborhood'},
             'avg_congestion': {'$avg': '$congestion_ratio'},
+            'max_congestion': {'$max': '$congestion_ratio'},
+            'min_congestion': {'$min': '$congestion_ratio'},
             'count': {'$sum': 1},
         }},
         {'$sort': {'_id.slot': 1}},
@@ -228,8 +251,50 @@ def rush_hour_profile(args):
         'neighborhood': r['_id']['neighborhood'],
         'neighborhood_display': get_display_name(r['_id']['neighborhood']),
         'avg_congestion': round(r['avg_congestion'], 3),
+        'max_congestion': round(r['max_congestion'], 3),
+        'min_congestion': round(r['min_congestion'], 3),
         'count': r['count'],
     } for r in results]
+
+
+def _midnight_baselines(args, by_route):
+    """Avg / max / min congestion during the midnight hour (00:00-00:59) per neighborhood / route.
+
+    Ignores `exclude_hours` and `rush_hour_only` so the baseline is always available even when
+    the chart globally hides midnight or is filtered to rush hours only.
+    """
+    collection = get_collection()
+    args_for_baseline = _args_without(args, 'exclude_hours', 'rush_hour_only')
+    query = build_filter(args_for_baseline)
+
+    pipeline = []
+    if query:
+        pipeline.append({'$match': query})
+    pipeline.append({'$match': {'local_time': {'$regex': r' 00:'}}})
+
+    group_metrics = {
+        'avg': {'$avg': '$congestion_ratio'},
+        'max': {'$max': '$congestion_ratio'},
+        'min': {'$min': '$congestion_ratio'},
+    }
+
+    if by_route:
+        pipeline.append({'$group': {'_id': {'route_id': '$route_id'}, **group_metrics}})
+        return {r['_id']['route_id']: _baseline_stats(r) for r in collection.aggregate(pipeline)}
+
+    pipeline.extend([
+        {'$addFields': {'neighborhood': _neighborhood_field()}},
+        {'$group': {'_id': {'neighborhood': '$neighborhood'}, **group_metrics}},
+    ])
+    return {r['_id']['neighborhood']: _baseline_stats(r) for r in collection.aggregate(pipeline)}
+
+
+def _baseline_stats(row):
+    return {
+        'avg': round(row['avg'], 3),
+        'max': round(row['max'], 3),
+        'min': round(row['min'], 3),
+    }
 
 
 def route_ranking(args):

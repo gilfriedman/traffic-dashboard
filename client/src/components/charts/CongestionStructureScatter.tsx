@@ -3,6 +3,7 @@ import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Responsive
 import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
+import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
 import { getCongestionVsStructure, type GlobalOverrides } from '../../lib/api';
 import { getNeighborhoodColor, cn } from '../../lib/utils';
 import { computeLinearRegression } from '../../lib/regression';
@@ -127,6 +128,7 @@ export function CongestionStructureScatter({ overrides }: Props) {
             type="number"
             dataKey="avg_congestion"
             name={t('scatter.avgCongestion')}
+            domain={congestionAxisDomain}
             orientation={yAxisOrientation}
             label={{ value: t('scatter.avgCongestion'), angle: yAxisOrientation === 'right' ? 90 : -90, position: yAxisOrientation === 'right' ? 'insideRight' : 'insideLeft' }}
           />
@@ -145,6 +147,7 @@ export function CongestionStructureScatter({ overrides }: Props) {
               );
             }}
           />
+          {congestionBaselineLine('y')}
           <Scatter data={data}>
             {data.map((entry) => (
               <Cell key={entry.neighborhood_key} fill={getNeighborhoodColor(entry.neighborhood_key)} r={8} />
