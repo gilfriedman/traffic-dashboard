@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
 import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
+import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { getExitCongestion, type GlobalOverrides } from '../../lib/api';
 import { getNeighborhoodColor, cn } from '../../lib/utils';
 
@@ -48,7 +49,7 @@ export function ExitCongestionChart({ overrides }: Props) {
         ))}
       </div>
 
-      <div dir="ltr">
+      <ChartCopyWrapper fileName={`exit-congestion${neighborhood ? `-${neighborhood}` : ''}`}>
       <ResponsiveContainer width="100%" height={chartHeight}>
         <BarChart data={top30} layout="vertical" margin={mirrorMargin({ left: 140, right: 20, top: 10, bottom: 10 })}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -82,7 +83,7 @@ export function ExitCongestionChart({ overrides }: Props) {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
-      </div>
+      </ChartCopyWrapper>
     </div>
   );
 }

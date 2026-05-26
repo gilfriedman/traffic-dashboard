@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
 import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
+import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { getCongestionOverTime } from '../../lib/api';
 import { getNeighborhoodColor, getRouteColor } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
@@ -116,7 +117,7 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
   if (!chartData.length) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.noData')}</div>;
 
   return (
-    <div dir="ltr">
+    <ChartCopyWrapper fileName={`congestion-over-time-${granularity}`}>
     <ResponsiveContainer width="100%" height={350}>
       <LineChart data={chartData} margin={mirrorMargin({ left: 10, right: 20, top: 10, bottom: 10 })}>
         <CartesianGrid strokeDasharray="3 3" />
@@ -156,6 +157,6 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
         ))}
       </LineChart>
     </ResponsiveContainer>
-    </div>
+    </ChartCopyWrapper>
   );
 }

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
 import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
+import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { getRouteRanking } from '../../lib/api';
 import { getNeighborhoodColor } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
@@ -27,7 +28,7 @@ export function RouteRankingChart({ filters }: Props) {
   const height = Math.max(400, top20.length * 28);
 
   return (
-    <div dir="ltr">
+    <ChartCopyWrapper fileName="route-ranking">
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={top20} layout="vertical" margin={mirrorMargin({ left: 120, right: 20, top: 10, bottom: 10 })}>
         <CartesianGrid strokeDasharray="3 3" />
@@ -57,6 +58,6 @@ export function RouteRankingChart({ filters }: Props) {
         </Bar>
       </BarChart>
     </ResponsiveContainer>
-    </div>
+    </ChartCopyWrapper>
   );
 }

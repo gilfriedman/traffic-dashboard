@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
 import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
+import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { getCongestionVsDemographics, type GlobalOverrides } from '../../lib/api';
 import { getNeighborhoodColor, cn } from '../../lib/utils';
 import { computeLinearRegression } from '../../lib/regression';
@@ -96,7 +97,7 @@ export function CongestionDemographicsScatter({ overrides }: Props) {
         ))}
       </div>
 
-      <div dir="ltr" className="relative">
+      <ChartCopyWrapper fileName={`congestion-vs-${metricKey}`}>
       {regression && <RegressionStatsBadge r2={regression.r2} sampleCount={data.length} />}
       <ResponsiveContainer width="100%" height={400}>
         <ScatterChart margin={mirrorMargin({ top: 10, right: 20, bottom: 40, left: 20 })}>
@@ -151,7 +152,7 @@ export function CongestionDemographicsScatter({ overrides }: Props) {
           )}
         </ScatterChart>
       </ResponsiveContainer>
-      </div>
+      </ChartCopyWrapper>
     </div>
   );
 }

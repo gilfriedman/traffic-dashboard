@@ -2,6 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { NetworkGraph } from './NetworkGraph';
+import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { useChartData } from '../../hooks/useChartData';
 import { useUrlBoolean, useUrlNullableState, useUrlState } from '../../hooks/useUrlState';
 import { getNetworkGraph } from '../../lib/api';
@@ -13,6 +14,24 @@ type NeighborhoodKey = (typeof NEIGHBORHOOD_KEYS)[number];
 
 const COLOR_BY_OPTIONS = ['default', 'integration'] as const;
 type ColorByOption = (typeof COLOR_BY_OPTIONS)[number];
+
+function buildNetworkFileName(options: {
+  neighborhoodKey: NeighborhoodKey;
+  representation: NetworkRepresentation;
+  colorBy: ColorByOption;
+  showAerial: boolean;
+  showStreetNames: boolean;
+}): string {
+  const parts = [
+    'network',
+    options.neighborhoodKey,
+    options.representation,
+    `color-${options.colorBy}`,
+  ];
+  if (options.showAerial) parts.push('aerial');
+  if (options.showStreetNames) parts.push('streets');
+  return parts.join('-');
+}
 
 function NetworkGraphCard({
   neighborhoodKey,
@@ -148,14 +167,25 @@ function NetworkGraphDetail({
           <span className="text-red-400 text-sm py-12">{error ?? t('common.noData')}</span>
         )}
         {!loading && data && (
-          <NetworkGraph
-            data={data}
-            width={700}
-            height={700}
-            showAerial={showAerial}
-            showStreetNames={showStreetNames}
-            colorBy={colorBy}
-          />
+          <ChartCopyWrapper
+            fileName={buildNetworkFileName({
+              neighborhoodKey,
+              representation,
+              colorBy,
+              showAerial,
+              showStreetNames,
+            })}
+            className="w-full max-w-[700px]"
+          >
+            <NetworkGraph
+              data={data}
+              width={700}
+              height={700}
+              showAerial={showAerial}
+              showStreetNames={showStreetNames}
+              colorBy={colorBy}
+            />
+          </ChartCopyWrapper>
         )}
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
 import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
+import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { getDayOfWeek } from '../../lib/api';
 import { getNeighborhoodColor, getRouteColor, DAYS_OF_WEEK } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
@@ -63,7 +64,7 @@ export function DayOfWeekChart({ filters }: Props) {
   if (!chartData.length) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.noData')}</div>;
 
   return (
-    <div dir="ltr">
+    <ChartCopyWrapper fileName="congestion-day-of-week">
     <ResponsiveContainer width="100%" height={350}>
       <BarChart data={chartData} margin={mirrorMargin({ left: 10, right: 20, top: 10, bottom: 10 })}>
         <CartesianGrid strokeDasharray="3 3" />
@@ -83,6 +84,6 @@ export function DayOfWeekChart({ filters }: Props) {
         ))}
       </BarChart>
     </ResponsiveContainer>
-    </div>
+    </ChartCopyWrapper>
   );
 }

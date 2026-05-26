@@ -166,6 +166,15 @@
     "noData": "No data",
     "avgCongestion": "Avg Congestion"
   },
+  "chartExport": {
+    "copy": "Copy",
+    "download": "Download",
+    "copied": "Copied to clipboard",
+    "downloaded": "Image downloaded",
+    "copyFailed": "Copy failed",
+    "downloadFailed": "Download failed",
+    "errorNotReady": "Chart not ready yet"
+  },
   "chartDescriptions": {
     "neighborhoodComparison": "Compares average congestion ratios across neighborhoods. Higher values indicate more congested areas. Data source: Google Maps Distance Matrix API, sampled periodically via gmaps-scraper.",
     "rushHourProfile": "Congestion patterns during morning rush hours (6:00\u20139:00), broken down by 15-minute intervals. Data source: Google Maps Distance Matrix API, sampled periodically via gmaps-scraper.",

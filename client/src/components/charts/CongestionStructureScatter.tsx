@@ -8,6 +8,7 @@ import { getCongestionVsStructure, type GlobalOverrides } from '../../lib/api';
 import { getNeighborhoodColor, cn } from '../../lib/utils';
 import { computeLinearRegression } from '../../lib/regression';
 import { RegressionStatsBadge } from './RegressionStatsBadge';
+import { ChartCopyWrapper } from './ChartCopyWrapper';
 import type { CongestionVsStructurePoint } from '../../lib/types';
 
 const METRIC_KEYS = [
@@ -106,7 +107,7 @@ export function CongestionStructureScatter({ overrides }: Props) {
         ))}
       </div>
 
-      <div dir="ltr" className="relative">
+      <ChartCopyWrapper fileName={`congestion-structure-${metricKey}`}>
       {regression && (
         <RegressionStatsBadge
           r2={regression.r2}
@@ -167,7 +168,7 @@ export function CongestionStructureScatter({ overrides }: Props) {
           )}
         </ScatterChart>
       </ResponsiveContainer>
-      </div>
+      </ChartCopyWrapper>
     </div>
   );
 }

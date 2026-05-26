@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
 import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
+import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { getNeighborhoodComparison } from '../../lib/api';
 import { getNeighborhoodColor } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
@@ -24,7 +25,7 @@ export function NeighborhoodComparisonChart({ filters }: Props) {
   if (!data?.length) return <div className="h-64 flex items-center justify-center text-slate-400">{t('common.noData')}</div>;
 
   return (
-    <div dir="ltr">
+    <ChartCopyWrapper fileName="neighborhood-comparison">
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data} layout="vertical" margin={mirrorMargin({ left: 80, right: 20, top: 10, bottom: 10 })}>
         <CartesianGrid strokeDasharray="3 3" />
@@ -49,6 +50,6 @@ export function NeighborhoodComparisonChart({ filters }: Props) {
         </Bar>
       </BarChart>
     </ResponsiveContainer>
-    </div>
+    </ChartCopyWrapper>
   );
 }
