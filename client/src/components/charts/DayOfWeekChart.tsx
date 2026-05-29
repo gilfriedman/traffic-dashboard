@@ -6,7 +6,7 @@ import { useChartDirection } from '../../hooks/useChartDirection';
 import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
 import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { getDayOfWeek } from '../../lib/api';
-import { getNeighborhoodColor, getRouteColor, DAYS_OF_WEEK } from '../../lib/utils';
+import { getNeighborhoodColor, getRouteColor, sortKeysByDisplayName, DAYS_OF_WEEK } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
 
 interface Props {
@@ -29,7 +29,17 @@ export function DayOfWeekChart({ filters }: Props) {
       ? (point: (typeof data)[0]) => point.route_id!
       : (point: (typeof data)[0]) => point.neighborhood!;
 
-    const uniqueKeys = [...new Set(data.map(seriesKeyFn))];
+    const displayNameByKey = new Map<string, string>();
+    for (const point of data) {
+      const key = seriesKeyFn(point);
+      if (!displayNameByKey.has(key)) {
+        displayNameByKey.set(key, isRouteData ? point.route_name ?? key : t(`neighborhoods.${key}`, { defaultValue: key }));
+      }
+    }
+    const uniqueKeys = sortKeysByDisplayName(
+      [...new Set(data.map(seriesKeyFn))],
+      (key) => displayNameByKey.get(key) ?? key
+    );
     const dayMap = new Map<string, Record<string, number>>();
 
     for (const point of data) {
@@ -48,7 +58,7 @@ export function DayOfWeekChart({ filters }: Props) {
     });
 
     return { chartData: rows, seriesKeys: uniqueKeys, seriesColors: colors, byRoute: isRouteData };
-  }, [data]);
+  }, [data, t]);
 
   const routeNameMap = useMemo(() => {
     if (!byRoute || !data?.length) return {};

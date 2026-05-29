@@ -71,3 +71,14 @@ export function getRouteLineStyle(index: number): RouteLineStyle {
     strokeDasharray: ROUTE_DASH_PATTERNS[cycle % ROUTE_DASH_PATTERNS.length],
   };
 }
+
+// Ordering series by their displayed name keeps color assignment stable across
+// refreshes (colors are assigned by position), regardless of server row order.
+export function sortKeysByDisplayName(
+  keys: string[],
+  getDisplayName: (key: string) => string
+): string[] {
+  return [...keys].sort((first, second) =>
+    getDisplayName(first).localeCompare(getDisplayName(second))
+  );
+}

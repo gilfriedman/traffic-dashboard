@@ -7,7 +7,7 @@ import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaseli
 import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { ChartLegend } from './ChartLegend';
 import { getCongestionOverTime } from '../../lib/api';
-import { getNeighborhoodColor, getRouteLineStyle, type RouteLineStyle } from '../../lib/utils';
+import { getNeighborhoodColor, getRouteLineStyle, sortKeysByDisplayName, type RouteLineStyle } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
 
 interface Props {
@@ -63,7 +63,17 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
       ? (point: (typeof data)[0]) => point.route_id!
       : (point: (typeof data)[0]) => point.neighborhood!;
 
-    const uniqueKeys = [...new Set(data.map(seriesKeyFn))];
+    const displayNameByKey = new Map<string, string>();
+    for (const point of data) {
+      const key = seriesKeyFn(point);
+      if (!displayNameByKey.has(key)) {
+        displayNameByKey.set(key, isRouteData ? point.route_name ?? key : t(`neighborhoods.${key}`, { defaultValue: key }));
+      }
+    }
+    const uniqueKeys = sortKeysByDisplayName(
+      [...new Set(data.map(seriesKeyFn))],
+      (key) => displayNameByKey.get(key) ?? key
+    );
     const timeMap = new Map<string, Record<string, number>>();
 
     for (const point of data) {
@@ -84,7 +94,7 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
     });
 
     return { chartData: rows, seriesKeys: uniqueKeys, seriesStyles: styles, byRoute: isRouteData };
-  }, [data]);
+  }, [data, t]);
 
   const routeNameMap = useMemo(() => {
     if (!byRoute || !data?.length) return {};

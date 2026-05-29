@@ -7,7 +7,7 @@ import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaseli
 import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { ChartLegend } from './ChartLegend';
 import { getRushHourProfile } from '../../lib/api';
-import { getNeighborhoodColor, getRouteLineStyle, type RouteLineStyle } from '../../lib/utils';
+import { getNeighborhoodColor, getRouteLineStyle, sortKeysByDisplayName, type RouteLineStyle } from '../../lib/utils';
 import type { CongestionMetric, Filters, RushHourPoint } from '../../lib/types';
 
 interface Props {
@@ -41,7 +41,17 @@ export function RushHourChart({ filters, metric = 'avg' }: Props) {
       ? (point: RushHourPoint) => point.route_id!
       : (point: RushHourPoint) => point.neighborhood!;
 
-    const uniqueKeys = [...new Set(slots.map(seriesKeyFn))];
+    const displayNameByKey = new Map<string, string>();
+    for (const point of slots) {
+      const key = seriesKeyFn(point);
+      if (!displayNameByKey.has(key)) {
+        displayNameByKey.set(key, isRouteData ? point.route_name ?? key : t(`neighborhoods.${key}`, { defaultValue: key }));
+      }
+    }
+    const uniqueKeys = sortKeysByDisplayName(
+      [...new Set(slots.map(seriesKeyFn))],
+      (key) => displayNameByKey.get(key) ?? key
+    );
     const slotMap = new Map<string, Record<string, number>>();
 
     for (const point of slots) {
@@ -60,7 +70,7 @@ export function RushHourChart({ filters, metric = 'avg' }: Props) {
     });
 
     return { chartData: rows, seriesKeys: uniqueKeys, seriesStyles: styles, byRoute: isRouteData };
-  }, [slots, valueField]);
+  }, [slots, valueField, t]);
 
   const routeNameMap = useMemo(() => {
     if (!byRoute || !slots.length) return {};
