@@ -66,46 +66,81 @@ function measureLegendText(text: string): number {
   return text.length * (LEGEND_FONT_SIZE * 0.6);
 }
 
+interface MeasuredLegendItem {
+  item: LegendItem;
+  width: number;
+}
+
+function groupLegendItemsIntoRows(items: MeasuredLegendItem[], maxRowWidth: number): MeasuredLegendItem[][] {
+  const rows: MeasuredLegendItem[][] = [];
+  let currentRow: MeasuredLegendItem[] = [];
+  let currentRowWidth = 0;
+
+  for (const entry of items) {
+    const addedWidth = currentRow.length === 0 ? entry.width : LEGEND_ITEM_SPACING + entry.width;
+    const overflows = currentRow.length > 0 && currentRowWidth + addedWidth > maxRowWidth;
+    if (overflows) {
+      rows.push(currentRow);
+      currentRow = [entry];
+      currentRowWidth = entry.width;
+    } else {
+      currentRow.push(entry);
+      currentRowWidth += addedWidth;
+    }
+  }
+  if (currentRow.length > 0) rows.push(currentRow);
+
+  return rows;
+}
+
+function drawLegendItem(group: SVGGElement, entry: MeasuredLegendItem, x: number, y: number): void {
+  const circle = document.createElementNS(SVG_NS, 'circle');
+  circle.setAttribute('cx', String(x + LEGEND_MARKER_RADIUS));
+  circle.setAttribute('cy', String(y));
+  circle.setAttribute('r', String(LEGEND_MARKER_RADIUS));
+  circle.setAttribute('fill', entry.item.color);
+  group.appendChild(circle);
+
+  const text = document.createElementNS(SVG_NS, 'text');
+  text.setAttribute('x', String(x + LEGEND_MARKER_RADIUS * 2 + LEGEND_MARKER_TEXT_SPACING));
+  text.setAttribute('y', String(y));
+  text.setAttribute('dominant-baseline', 'middle');
+  text.setAttribute('text-anchor', 'start');
+  text.setAttribute('fill', entry.item.textColor);
+  text.textContent = entry.item.text;
+  group.appendChild(text);
+}
+
+function measureRowWidth(row: MeasuredLegendItem[]): number {
+  return row.reduce((sum, entry) => sum + entry.width, 0) +
+    LEGEND_ITEM_SPACING * Math.max(0, row.length - 1);
+}
+
 function appendSvgLegend(svg: SVGSVGElement, items: LegendItem[], chartWidth: number, chartHeight: number): number {
   if (items.length === 0) return chartHeight;
 
-  const itemsWithWidth = items.map((item) => ({
+  const itemsWithWidth: MeasuredLegendItem[] = items.map((item) => ({
     item,
     width: LEGEND_MARKER_RADIUS * 2 + LEGEND_MARKER_TEXT_SPACING + measureLegendText(item.text),
   }));
 
-  const totalWidth = itemsWithWidth.reduce((sum, entry) => sum + entry.width, 0) +
-    LEGEND_ITEM_SPACING * Math.max(0, items.length - 1);
-
-  const legendY = chartHeight + LEGEND_GAP + LEGEND_ROW_HEIGHT / 2;
-  let cursorX = Math.max(0, (chartWidth - totalWidth) / 2);
+  const rows = groupLegendItemsIntoRows(itemsWithWidth, chartWidth);
 
   const group = document.createElementNS(SVG_NS, 'g');
   group.setAttribute('font-family', EXPORT_FONT_FAMILY);
   group.setAttribute('font-size', String(LEGEND_FONT_SIZE));
 
-  for (const { item, width } of itemsWithWidth) {
-    const circle = document.createElementNS(SVG_NS, 'circle');
-    circle.setAttribute('cx', String(cursorX + LEGEND_MARKER_RADIUS));
-    circle.setAttribute('cy', String(legendY));
-    circle.setAttribute('r', String(LEGEND_MARKER_RADIUS));
-    circle.setAttribute('fill', item.color);
-    group.appendChild(circle);
-
-    const text = document.createElementNS(SVG_NS, 'text');
-    text.setAttribute('x', String(cursorX + LEGEND_MARKER_RADIUS * 2 + LEGEND_MARKER_TEXT_SPACING));
-    text.setAttribute('y', String(legendY));
-    text.setAttribute('dominant-baseline', 'middle');
-    text.setAttribute('text-anchor', 'start');
-    text.setAttribute('fill', item.textColor);
-    text.textContent = item.text;
-    group.appendChild(text);
-
-    cursorX += width + LEGEND_ITEM_SPACING;
-  }
+  rows.forEach((row, rowIndex) => {
+    const rowY = chartHeight + LEGEND_GAP + LEGEND_ROW_HEIGHT * rowIndex + LEGEND_ROW_HEIGHT / 2;
+    let cursorX = Math.max(0, (chartWidth - measureRowWidth(row)) / 2);
+    for (const entry of row) {
+      drawLegendItem(group, entry, cursorX, rowY);
+      cursorX += entry.width + LEGEND_ITEM_SPACING;
+    }
+  });
 
   svg.appendChild(group);
-  return chartHeight + LEGEND_GAP + LEGEND_ROW_HEIGHT;
+  return chartHeight + LEGEND_GAP + LEGEND_ROW_HEIGHT * rows.length;
 }
 
 async function prepareSvgForExport(source: SVGSVGElement, container: HTMLElement | null): Promise<{ svgString: string; width: number; height: number }> {
