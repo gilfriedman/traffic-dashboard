@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Table } from 'lucide-react';
@@ -11,6 +11,7 @@ import { DistributionChart } from '../components/charts/DistributionChart';
 import { ChartDescription } from '../components/ChartDescription';
 import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
 import { useUrlState } from '../hooks/useUrlState';
+import { useUrlFilters } from '../hooks/useUrlFilters';
 import { cn } from '../lib/utils';
 import type { Filters } from '../lib/types';
 
@@ -39,20 +40,9 @@ const TAB_DESCRIPTION_KEYS: Record<TabKey, string> = {
 
 const GRANULARITY_OPTIONS = ['15min', 'hour', 'day', 'week'] as const;
 
-const DEFAULT_FILTERS: Filters = {
-  neighborhoods: [],
-  route_ids: [],
-  start_date: '',
-  end_date: '',
-  rush_hour_only: false,
-  day_of_week: [],
-  exclude_neighborhoods: [],
-  exclude_hours: [],
-};
-
 export function ChartsPage() {
   const globalOverrides = useGlobalFilterOverrides();
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [filters, setFilters] = useUrlFilters();
   const { t } = useTranslation();
 
   const effectiveFilters = useMemo<Filters>(

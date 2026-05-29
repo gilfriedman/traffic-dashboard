@@ -4,19 +4,9 @@ import { FilterBar } from '../components/filters/FilterBar';
 import { getTrafficData, getExportUrl } from '../lib/api';
 import { formatCongestion } from '../lib/utils';
 import { useGlobalFilterOverrides } from '../hooks/useGlobalFilterOverrides';
+import { useUrlFilters } from '../hooks/useUrlFilters';
 import { Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Filters, TrafficRecord } from '../lib/types';
-
-const DEFAULT_FILTERS: Filters = {
-  neighborhoods: [],
-  route_ids: [],
-  start_date: '',
-  end_date: '',
-  rush_hour_only: false,
-  day_of_week: [],
-  exclude_neighborhoods: [],
-  exclude_hours: [],
-};
 
 const PAGE_SIZE_OPTIONS = [25, 50, 100];
 
@@ -35,7 +25,7 @@ const COLUMN_KEYS = ['local_time', 'route_id', 'route_name', 'day_of_week', 'is_
 
 export function DataPage() {
   const globalOverrides = useGlobalFilterOverrides();
-  const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+  const [filters, setFilters] = useUrlFilters();
   const { t } = useTranslation();
 
   const effectiveFilters = useMemo<Filters>(
