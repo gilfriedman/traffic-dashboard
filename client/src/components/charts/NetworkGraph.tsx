@@ -108,6 +108,19 @@ function spreadLabels(labels: LabelPosition[], charWidth: number, lineHeight: nu
   return result;
 }
 
+const UNNAMED_EXIT = 'unnamed';
+
+function resolveExitNames(exits: NetworkGraphData['exits']): string[] {
+  const occurrencesByName = new Map<string, number>();
+  return exits.map((exit) => {
+    const baseName = exit.street_name && exit.street_name !== UNNAMED_EXIT ? exit.street_name : UNNAMED_EXIT;
+    const occurrence = (occurrencesByName.get(baseName) ?? 0) + 1;
+    occurrencesByName.set(baseName, occurrence);
+    if (baseName === UNNAMED_EXIT) return `${UNNAMED_EXIT} ${occurrence}`;
+    return occurrence === 1 ? baseName : `${baseName} ${occurrence}`;
+  });
+}
+
 function ExitLabels({
   exits,
   project,
@@ -118,17 +131,11 @@ function ExitLabels({
   isHebrew: boolean;
 }) {
   const labels = useMemo(() => {
-    const raw: LabelPosition[] = [];
-    let unnamedCount = 0;
-    for (const exit of exits) {
-      let name = exit.street_name;
-      if (!name || name === 'unnamed') {
-        unnamedCount++;
-        name = `unnamed #${unnamedCount}`;
-      }
+    const names = resolveExitNames(exits);
+    const raw: LabelPosition[] = exits.map((exit, index) => {
       const [x, y] = project(exit.to_coords[1], exit.to_coords[0]);
-      raw.push({ x, y: y - 10, text: name });
-    }
+      return { x, y: y - 10, text: names[index] };
+    });
     return spreadLabels(raw, 4.5, 10);
   }, [exits, project]);
 
