@@ -49,6 +49,15 @@ interface LegendItem {
   dash?: string;
 }
 
+// The marker class can sit on the stroked element itself (native Recharts) or on
+// an <svg> wrapper whose child <line>/<path> carries the stroke (our ChartLegend).
+function resolveStrokedElement(marker: Element | null): Element | null {
+  if (!marker) return null;
+  const ownStroke = marker.getAttribute('stroke');
+  if (ownStroke && ownStroke !== 'none') return marker;
+  return marker.querySelector('line, path') ?? marker;
+}
+
 function readMarkerColor(marker: Element | null): string {
   const stroke = marker?.getAttribute('stroke');
   if (stroke && stroke !== 'none') return stroke;
@@ -64,7 +73,7 @@ function extractLegendItems(container: HTMLElement): LegendItem[] {
   const items = Array.from(container.querySelectorAll('.recharts-legend-item'));
   return items
     .map((item): LegendItem | null => {
-      const marker = item.querySelector('.recharts-legend-icon');
+      const marker = resolveStrokedElement(item.querySelector('.recharts-legend-icon'));
       const color = readMarkerColor(marker);
       const dash = readMarkerDash(marker);
       const textSpan = item.querySelector('.recharts-legend-item-text') as HTMLElement | null;
