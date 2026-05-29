@@ -6,7 +6,7 @@ import { useChartDirection } from '../../hooks/useChartDirection';
 import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
 import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { getRushHourProfile } from '../../lib/api';
-import { getNeighborhoodColor, getRouteColor } from '../../lib/utils';
+import { getNeighborhoodColor, getRouteLineStyle, type RouteLineStyle } from '../../lib/utils';
 import type { CongestionMetric, Filters, RushHourPoint } from '../../lib/types';
 
 interface Props {
@@ -32,8 +32,8 @@ export function RushHourChart({ filters, metric = 'avg' }: Props) {
   const baselines = data?.baselines ?? {};
   const valueField = METRIC_TO_FIELD[metric];
 
-  const { chartData, seriesKeys, seriesColors, byRoute } = useMemo(() => {
-    if (!slots.length) return { chartData: [], seriesKeys: [], seriesColors: {} as Record<string, string>, byRoute: false };
+  const { chartData, seriesKeys, seriesStyles, byRoute } = useMemo(() => {
+    if (!slots.length) return { chartData: [], seriesKeys: [], seriesStyles: {} as Record<string, RouteLineStyle>, byRoute: false };
 
     const isRouteData = Boolean(slots[0].route_id);
     const seriesKeyFn = isRouteData
@@ -53,12 +53,12 @@ export function RushHourChart({ filters, metric = 'avg' }: Props) {
       .map(([time_slot, values]) => ({ time_slot, ...values }))
       .sort((first, second) => first.time_slot.localeCompare(second.time_slot));
 
-    const colors: Record<string, string> = {};
+    const styles: Record<string, RouteLineStyle> = {};
     uniqueKeys.forEach((key, index) => {
-      colors[key] = isRouteData ? getRouteColor(index) : getNeighborhoodColor(key);
+      styles[key] = isRouteData ? getRouteLineStyle(index) : { color: getNeighborhoodColor(key) };
     });
 
-    return { chartData: rows, seriesKeys: uniqueKeys, seriesColors: colors, byRoute: isRouteData };
+    return { chartData: rows, seriesKeys: uniqueKeys, seriesStyles: styles, byRoute: isRouteData };
   }, [slots, valueField]);
 
   const routeNameMap = useMemo(() => {
@@ -118,7 +118,7 @@ export function RushHourChart({ filters, metric = 'avg' }: Props) {
             );
           }}
         />
-        <Legend formatter={(value) => resolveLabel(String(value))} />
+        <Legend iconType="plainline" formatter={(value) => resolveLabel(String(value))} />
         {congestionBaselineLine('y')}
         {seriesKeys.map((key) => (
           <Line
@@ -126,7 +126,8 @@ export function RushHourChart({ filters, metric = 'avg' }: Props) {
             type="monotone"
             dataKey={key}
             name={resolveLabel(key)}
-            stroke={seriesColors[key]}
+            stroke={seriesStyles[key].color}
+            strokeDasharray={seriesStyles[key].strokeDasharray}
             strokeWidth={2}
             dot
             connectNulls

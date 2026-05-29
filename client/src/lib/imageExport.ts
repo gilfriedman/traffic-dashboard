@@ -6,7 +6,8 @@ const XLINK_NS = 'http://www.w3.org/1999/xlink';
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const LEGEND_FONT_SIZE = 13;
 const LEGEND_GAP = 8;
-const LEGEND_MARKER_RADIUS = 5;
+const LEGEND_MARKER_LENGTH = 16;
+const LEGEND_MARKER_STROKE_WIDTH = 2.5;
 const LEGEND_MARKER_TEXT_SPACING = 6;
 const LEGEND_ITEM_SPACING = 18;
 const LEGEND_ROW_HEIGHT = LEGEND_FONT_SIZE + 6;
@@ -45,19 +46,32 @@ interface LegendItem {
   color: string;
   text: string;
   textColor: string;
+  dash?: string;
+}
+
+function readMarkerColor(marker: Element | null): string {
+  const stroke = marker?.getAttribute('stroke');
+  if (stroke && stroke !== 'none') return stroke;
+  return marker?.getAttribute('fill') ?? '#64748b';
+}
+
+function readMarkerDash(marker: Element | null): string | undefined {
+  const dash = marker?.getAttribute('stroke-dasharray');
+  return dash && /\d/.test(dash) ? dash : undefined;
 }
 
 function extractLegendItems(container: HTMLElement): LegendItem[] {
   const items = Array.from(container.querySelectorAll('.recharts-legend-item'));
   return items
     .map((item): LegendItem | null => {
-      const markerPath = item.querySelector('svg.recharts-surface path');
-      const color = markerPath?.getAttribute('stroke') ?? markerPath?.getAttribute('fill') ?? '#64748b';
+      const marker = item.querySelector('.recharts-legend-icon');
+      const color = readMarkerColor(marker);
+      const dash = readMarkerDash(marker);
       const textSpan = item.querySelector('.recharts-legend-item-text') as HTMLElement | null;
       const text = textSpan?.textContent?.trim() ?? '';
       const textColor = textSpan?.style.color || '#1e293b';
       if (!text) return null;
-      return { color, text, textColor };
+      return { color, text, textColor, dash };
     })
     .filter((item): item is LegendItem => item !== null);
 }
@@ -94,15 +108,18 @@ function groupLegendItemsIntoRows(items: MeasuredLegendItem[], maxRowWidth: numb
 }
 
 function drawLegendItem(group: SVGGElement, entry: MeasuredLegendItem, x: number, y: number): void {
-  const circle = document.createElementNS(SVG_NS, 'circle');
-  circle.setAttribute('cx', String(x + LEGEND_MARKER_RADIUS));
-  circle.setAttribute('cy', String(y));
-  circle.setAttribute('r', String(LEGEND_MARKER_RADIUS));
-  circle.setAttribute('fill', entry.item.color);
-  group.appendChild(circle);
+  const marker = document.createElementNS(SVG_NS, 'line');
+  marker.setAttribute('x1', String(x));
+  marker.setAttribute('y1', String(y));
+  marker.setAttribute('x2', String(x + LEGEND_MARKER_LENGTH));
+  marker.setAttribute('y2', String(y));
+  marker.setAttribute('stroke', entry.item.color);
+  marker.setAttribute('stroke-width', String(LEGEND_MARKER_STROKE_WIDTH));
+  if (entry.item.dash) marker.setAttribute('stroke-dasharray', entry.item.dash);
+  group.appendChild(marker);
 
   const text = document.createElementNS(SVG_NS, 'text');
-  text.setAttribute('x', String(x + LEGEND_MARKER_RADIUS * 2 + LEGEND_MARKER_TEXT_SPACING));
+  text.setAttribute('x', String(x + LEGEND_MARKER_LENGTH + LEGEND_MARKER_TEXT_SPACING));
   text.setAttribute('y', String(y));
   text.setAttribute('dominant-baseline', 'middle');
   text.setAttribute('text-anchor', 'start');
@@ -121,7 +138,7 @@ function appendSvgLegend(svg: SVGSVGElement, items: LegendItem[], chartWidth: nu
 
   const itemsWithWidth: MeasuredLegendItem[] = items.map((item) => ({
     item,
-    width: LEGEND_MARKER_RADIUS * 2 + LEGEND_MARKER_TEXT_SPACING + measureLegendText(item.text),
+    width: LEGEND_MARKER_LENGTH + LEGEND_MARKER_TEXT_SPACING + measureLegendText(item.text),
   }));
 
   const rows = groupLegendItemsIntoRows(itemsWithWidth, chartWidth);

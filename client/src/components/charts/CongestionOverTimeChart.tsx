@@ -6,7 +6,7 @@ import { useChartDirection } from '../../hooks/useChartDirection';
 import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
 import { ChartCopyWrapper } from './ChartCopyWrapper';
 import { getCongestionOverTime } from '../../lib/api';
-import { getNeighborhoodColor, getRouteColor } from '../../lib/utils';
+import { getNeighborhoodColor, getRouteLineStyle, type RouteLineStyle } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
 
 interface Props {
@@ -54,8 +54,8 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
   const { t } = useTranslation();
   const { yAxisOrientation, xAxisReversed, mirrorMargin } = useChartDirection();
 
-  const { chartData, seriesKeys, seriesColors, byRoute } = useMemo(() => {
-    if (!data?.length) return { chartData: [] as ChartRow[], seriesKeys: [], seriesColors: {} as Record<string, string>, byRoute: false };
+  const { chartData, seriesKeys, seriesStyles, byRoute } = useMemo(() => {
+    if (!data?.length) return { chartData: [] as ChartRow[], seriesKeys: [], seriesStyles: {} as Record<string, RouteLineStyle>, byRoute: false };
 
     const isRouteData = Boolean(data[0].route_id);
     const seriesKeyFn = isRouteData
@@ -77,12 +77,12 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
 
     const rows = insertNightGaps(sorted, granularity);
 
-    const colors: Record<string, string> = {};
+    const styles: Record<string, RouteLineStyle> = {};
     uniqueKeys.forEach((key, index) => {
-      colors[key] = isRouteData ? getRouteColor(index) : getNeighborhoodColor(key);
+      styles[key] = isRouteData ? getRouteLineStyle(index) : { color: getNeighborhoodColor(key) };
     });
 
-    return { chartData: rows, seriesKeys: uniqueKeys, seriesColors: colors, byRoute: isRouteData };
+    return { chartData: rows, seriesKeys: uniqueKeys, seriesStyles: styles, byRoute: isRouteData };
   }, [data]);
 
   const routeNameMap = useMemo(() => {
@@ -132,7 +132,7 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
         />
         <YAxis domain={congestionAxisDomain} orientation={yAxisOrientation} />
         <Tooltip filterNull />
-        <Legend formatter={(value) => byRoute ? (routeNameMap[value] ?? value) : value} />
+        <Legend iconType="plainline" formatter={(value) => byRoute ? (routeNameMap[value] ?? value) : value} />
         {congestionBaselineLine('y')}
         {dayBoundaries.map((boundary) => (
           <ReferenceLine
@@ -150,7 +150,8 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
             type="monotone"
             dataKey={key}
             name={byRoute ? key : t(`neighborhoods.${key}`, { defaultValue: key })}
-            stroke={seriesColors[key]}
+            stroke={seriesStyles[key].color}
+            strokeDasharray={seriesStyles[key].strokeDasharray}
             strokeWidth={2}
             dot={false}
           />

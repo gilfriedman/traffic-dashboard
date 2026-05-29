@@ -43,11 +43,31 @@ export function isExcludedNeighborhood(neighborhood: string): boolean {
   return EXCLUDED_NEIGHBORHOODS.some((excluded) => neighborhood.startsWith(excluded));
 }
 
+// Hues are interleaved around the color wheel so consecutively-assigned routes
+// land on contrasting colors rather than neighboring shades.
 const ROUTE_COLORS = [
-  '#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6', '#ec4899',
-  '#06b6d4', '#f97316', '#84cc16', '#6366f1', '#14b8a6', '#e11d48',
+  '#ef4444', '#3b82f6', '#84cc16', '#d946ef', '#14b8a6', '#f97316',
+  '#6366f1', '#22c55e', '#ec4899', '#06b6d4', '#eab308', '#8b5cf6',
+  '#10b981', '#f43f5e', '#0ea5e9', '#f59e0b', '#a855f7', '#64748b',
 ];
+
+// Once colors are exhausted, the line style cycles so a repeated color is still
+// distinguishable: solid, then dashed, then dotted.
+const ROUTE_DASH_PATTERNS: (string | undefined)[] = [undefined, '8 4', '2 4'];
 
 export function getRouteColor(index: number): string {
   return ROUTE_COLORS[index % ROUTE_COLORS.length];
+}
+
+export interface RouteLineStyle {
+  color: string;
+  strokeDasharray?: string;
+}
+
+export function getRouteLineStyle(index: number): RouteLineStyle {
+  const cycle = Math.floor(index / ROUTE_COLORS.length);
+  return {
+    color: getRouteColor(index),
+    strokeDasharray: ROUTE_DASH_PATTERNS[cycle % ROUTE_DASH_PATTERNS.length],
+  };
 }
