@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
 import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
 import { ChartCopyWrapper } from './ChartCopyWrapper';
+import { ChartLegend } from './ChartLegend';
 import { getRushHourProfile } from '../../lib/api';
 import { getNeighborhoodColor, getRouteLineStyle, type RouteLineStyle } from '../../lib/utils';
 import type { CongestionMetric, Filters, RushHourPoint } from '../../lib/types';
@@ -73,13 +74,20 @@ export function RushHourChart({ filters, metric = 'avg' }: Props) {
   const resolveLabel = (key: string) =>
     byRoute ? (routeNameMap[key] ?? key) : t(`neighborhoods.${key}`, { defaultValue: key });
 
+  const legendEntries = seriesKeys.map((key) => ({
+    key,
+    label: resolveLabel(key),
+    color: seriesStyles[key].color,
+    dash: seriesStyles[key].strokeDasharray,
+  }));
+
   if (loading) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.loading')}</div>;
   if (error) return <div className="h-80 flex items-center justify-center text-red-500">{error}</div>;
   if (!chartData.length) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.noData')}</div>;
 
   return (
     <ChartCopyWrapper fileName={`rush-hour-${metric}`}>
-    <ResponsiveContainer width="100%" height={350}>
+    <ResponsiveContainer width="100%" height={500}>
       <LineChart data={chartData} margin={mirrorMargin({ left: 10, right: 20, top: 10, bottom: 10 })}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="time_slot" tick={{ fontSize: 12 }} reversed={xAxisReversed} />
@@ -118,7 +126,6 @@ export function RushHourChart({ filters, metric = 'avg' }: Props) {
             );
           }}
         />
-        <Legend iconType="plainline" formatter={(value) => resolveLabel(String(value))} />
         {congestionBaselineLine('y')}
         {seriesKeys.map((key) => (
           <Line
@@ -135,6 +142,7 @@ export function RushHourChart({ filters, metric = 'avg' }: Props) {
         ))}
       </LineChart>
     </ResponsiveContainer>
+    <ChartLegend entries={legendEntries} />
     </ChartCopyWrapper>
   );
 }

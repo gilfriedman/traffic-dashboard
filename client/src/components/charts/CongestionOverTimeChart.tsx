@@ -1,10 +1,11 @@
 import { useMemo } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { useChartDirection } from '../../hooks/useChartDirection';
 import { congestionBaselineLine, congestionAxisDomain } from './CongestionBaselineLine';
 import { ChartCopyWrapper } from './ChartCopyWrapper';
+import { ChartLegend } from './ChartLegend';
 import { getCongestionOverTime } from '../../lib/api';
 import { getNeighborhoodColor, getRouteLineStyle, type RouteLineStyle } from '../../lib/utils';
 import type { Filters } from '../../lib/types';
@@ -112,13 +113,20 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
     return boundaries;
   }, [chartData, granularity]);
 
+  const legendEntries = seriesKeys.map((key) => ({
+    key,
+    label: byRoute ? (routeNameMap[key] ?? key) : t(`neighborhoods.${key}`, { defaultValue: key }),
+    color: seriesStyles[key].color,
+    dash: seriesStyles[key].strokeDasharray,
+  }));
+
   if (loading) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.loading')}</div>;
   if (error) return <div className="h-80 flex items-center justify-center text-red-500">{error}</div>;
   if (!chartData.length) return <div className="h-80 flex items-center justify-center text-slate-400">{t('common.noData')}</div>;
 
   return (
     <ChartCopyWrapper fileName={`congestion-over-time-${granularity}`}>
-    <ResponsiveContainer width="100%" height={350}>
+    <ResponsiveContainer width="100%" height={500}>
       <LineChart data={chartData} margin={mirrorMargin({ left: 10, right: 20, top: 10, bottom: 10 })}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
@@ -132,7 +140,6 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
         />
         <YAxis domain={congestionAxisDomain} orientation={yAxisOrientation} />
         <Tooltip filterNull />
-        <Legend iconType="plainline" formatter={(value) => byRoute ? (routeNameMap[value] ?? value) : value} />
         {congestionBaselineLine('y')}
         {dayBoundaries.map((boundary) => (
           <ReferenceLine
@@ -158,6 +165,7 @@ export function CongestionOverTimeChart({ filters, granularity = 'day' }: Props)
         ))}
       </LineChart>
     </ResponsiveContainer>
+    <ChartLegend entries={legendEntries} />
     </ChartCopyWrapper>
   );
 }
