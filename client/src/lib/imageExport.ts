@@ -11,6 +11,14 @@ const LEGEND_MARKER_STROKE_WIDTH = 2.5;
 const LEGEND_MARKER_TEXT_SPACING = 6;
 const LEGEND_ITEM_SPACING = 18;
 const LEGEND_ROW_HEIGHT = LEGEND_FONT_SIZE + 6;
+const STAT_FONT_SIZE = 12;
+const STAT_PADDING_X = 8;
+const STAT_PADDING_Y = 4;
+const STAT_MARGIN = 8;
+const STAT_CORNER_RADIUS = 6;
+const STAT_TEXT_COLOR = '#334155';
+const STAT_BACKGROUND = '#ffffff';
+const STAT_BORDER = '#e2e8f0';
 
 function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -169,6 +177,60 @@ function appendSvgLegend(svg: SVGSVGElement, items: LegendItem[], chartWidth: nu
   return chartHeight + LEGEND_GAP + LEGEND_ROW_HEIGHT * rows.length;
 }
 
+interface RegressionStat {
+  text: string;
+  width: number;
+  anchorRight: boolean;
+}
+
+// The R²/R²_adj badge is an HTML overlay, so it never reaches the chart SVG.
+// Pull its text from the DOM and redraw it into the exported SVG, mirroring the
+// on-screen side (right for LTR, left for RTL).
+function extractRegressionStat(container: HTMLElement, svgRect: DOMRect): RegressionStat | null {
+  const statElement = container.querySelector('[data-chart-export-stat]') as HTMLElement | null;
+  const text = statElement?.textContent?.trim();
+  if (!statElement || !text) return null;
+  const rect = statElement.getBoundingClientRect();
+  const statCenter = rect.left + rect.width / 2;
+  const svgCenter = svgRect.left + svgRect.width / 2;
+  return { text, width: rect.width, anchorRight: statCenter >= svgCenter };
+}
+
+function appendRegressionStat(svg: SVGSVGElement, stat: RegressionStat | null, chartWidth: number): void {
+  if (!stat) return;
+
+  const boxWidth = stat.width + STAT_PADDING_X * 2;
+  const boxHeight = STAT_FONT_SIZE + STAT_PADDING_Y * 2;
+  const boxX = stat.anchorRight ? chartWidth - STAT_MARGIN - boxWidth : STAT_MARGIN;
+  const boxY = STAT_MARGIN;
+
+  const group = document.createElementNS(SVG_NS, 'g');
+
+  const background = document.createElementNS(SVG_NS, 'rect');
+  background.setAttribute('x', String(boxX));
+  background.setAttribute('y', String(boxY));
+  background.setAttribute('width', String(boxWidth));
+  background.setAttribute('height', String(boxHeight));
+  background.setAttribute('rx', String(STAT_CORNER_RADIUS));
+  background.setAttribute('fill', STAT_BACKGROUND);
+  background.setAttribute('stroke', STAT_BORDER);
+  group.appendChild(background);
+
+  const text = document.createElementNS(SVG_NS, 'text');
+  text.setAttribute('x', String(boxX + boxWidth / 2));
+  text.setAttribute('y', String(boxY + boxHeight / 2));
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('dominant-baseline', 'middle');
+  text.setAttribute('font-family', EXPORT_FONT_FAMILY);
+  text.setAttribute('font-size', String(STAT_FONT_SIZE));
+  text.setAttribute('font-weight', '500');
+  text.setAttribute('fill', STAT_TEXT_COLOR);
+  text.textContent = stat.text;
+  group.appendChild(text);
+
+  svg.appendChild(group);
+}
+
 async function prepareSvgForExport(source: SVGSVGElement, container: HTMLElement | null): Promise<{ svgString: string; width: number; height: number }> {
   const rect = source.getBoundingClientRect();
   const width = Math.max(1, Math.round(rect.width));
@@ -183,6 +245,9 @@ async function prepareSvgForExport(source: SVGSVGElement, container: HTMLElement
 
   const legendItems = container ? extractLegendItems(container) : [];
   const totalHeight = appendSvgLegend(clone, legendItems, width, chartHeight);
+
+  const regressionStat = container ? extractRegressionStat(container, rect) : null;
+  appendRegressionStat(clone, regressionStat, width);
 
   clone.setAttribute('width', String(width));
   clone.setAttribute('height', String(totalHeight));

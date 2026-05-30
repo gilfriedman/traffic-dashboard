@@ -16,29 +16,34 @@ function computeAdjustedR2(r2: number, n: number, k: number): number | null {
 export function RegressionStatsBadge({ r2, sampleCount, featureCount = 1 }: Props) {
   const { t } = useTranslation();
   const { isRtl } = useChartDirection();
-  const adjustedR2 = computeAdjustedR2(r2, sampleCount, featureCount);
+  const isPair = featureCount > 1;
+  const adjustedR2 = isPair ? computeAdjustedR2(r2, sampleCount, featureCount) : null;
 
   return (
-    <div className={cn('group absolute top-2 z-10', isRtl ? 'left-2' : 'right-2')}>
+    <div className={cn('group/stat absolute top-2 z-10', isRtl ? 'left-2' : 'right-2')}>
       <div className="flex items-center gap-1 bg-white/90 border border-slate-200 rounded-md px-2 py-1 text-xs font-medium text-slate-700 shadow-sm cursor-help">
-        <span>{t('scatter.r2')} = {r2.toFixed(3)}</span>
-        {adjustedR2 !== null && (
-          <span className="text-slate-500">
-            · {t('scatter.r2Adj')} = {adjustedR2.toFixed(3)}
-          </span>
-        )}
+        <span data-chart-export-stat>
+          {t('scatter.r2')} = {r2.toFixed(3)}
+          {adjustedR2 !== null && (
+            <span className="text-slate-500"> · {t('scatter.r2Adj')} = {adjustedR2.toFixed(3)}</span>
+          )}
+        </span>
         <span className="text-slate-400 text-[10px]">ⓘ</span>
       </div>
       <div
         className={cn(
-          'invisible group-hover:visible absolute top-full mt-1 w-72 bg-slate-800 text-white text-xs leading-relaxed p-2 rounded-md shadow-lg whitespace-pre-line',
+          'invisible group-hover/stat:visible absolute top-full mt-1 w-72 bg-slate-800 text-white text-xs leading-relaxed p-2 rounded-md shadow-lg whitespace-pre-line',
           isRtl ? 'left-0 text-right' : 'right-0 text-left'
         )}
         style={{ direction: isRtl ? 'rtl' : 'ltr' }}
       >
         {t('scatter.r2Tooltip')}
-        {'\n\n'}
-        {t('scatter.r2AdjTooltip', { n: sampleCount, k: featureCount })}
+        {adjustedR2 !== null && (
+          <>
+            {'\n\n'}
+            {t('scatter.r2AdjTooltip', { n: sampleCount, k: featureCount })}
+          </>
+        )}
       </div>
     </div>
   );
