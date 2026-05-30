@@ -32,6 +32,7 @@
     "rushHourMin": "Hourly Congestion Profile - Minimum",
     "routeRanking": "Route Ranking",
     "distribution": "Distribution",
+    "baselineNote": "Value in parentheses is the midnight baseline (00:00)",
     "days": {
       "Sunday": "Sunday",
       "Monday": "Monday",

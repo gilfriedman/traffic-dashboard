@@ -119,6 +119,7 @@ export function RushHourChart({ filters, metric = 'avg' }: Props) {
               })
               .sort((first, second) => second.value - first.value);
             if (!rows.length) return null;
+            const hasBaseline = rows.some((row) => Number.isFinite(row.baseline));
             return (
               <div className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs shadow-md">
                 <div className="mb-1 font-medium text-slate-700">{label}</div>
@@ -132,6 +133,9 @@ export function RushHourChart({ filters, metric = 'avg' }: Props) {
                     )}
                   </div>
                 ))}
+                {hasBaseline && (
+                  <div className="mt-1.5 border-t border-slate-100 pt-1 text-slate-400">{t('charts.baselineNote')}</div>
+                )}
               </div>
             );
           }}
