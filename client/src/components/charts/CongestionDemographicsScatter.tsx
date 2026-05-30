@@ -44,7 +44,7 @@ export function CongestionDemographicsScatter({ overrides }: Props) {
   );
   const [selectedKey, setSelectedKey] = useState<MetricKey | null>(null);
   const { t } = useTranslation();
-  const { yAxisOrientation, xAxisReversed, mirrorMargin } = useChartDirection();
+  const { isRtl, yAxisOrientation, xAxisReversed, mirrorMargin } = useChartDirection();
 
   const orderedKeys = useMemo(() => {
     if (!data?.length) return [...METRIC_KEYS];
@@ -107,7 +107,7 @@ export function CongestionDemographicsScatter({ overrides }: Props) {
             dataKey={metricKey}
             name={selectedLabel}
             reversed={xAxisReversed}
-            label={{ value: selectedLabel, position: 'bottom', offset: 20 }}
+            label={{ value: selectedLabel, position: 'bottom', offset: 20, direction: isRtl ? 'rtl' : 'ltr' }}
           />
           <YAxis
             type="number"
