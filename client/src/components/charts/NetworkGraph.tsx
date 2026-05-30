@@ -121,23 +121,48 @@ function resolveExitNames(exits: NetworkGraphData['exits']): string[] {
   });
 }
 
+function buildExitId(neighborhoodKey: string, index: number): string {
+  return `${neighborhoodKey}${index + 1}`;
+}
+
+function formatCoords(coords: [number, number]): string {
+  return `${coords[0].toFixed(5)}, ${coords[1].toFixed(5)}`;
+}
+
+function buildExitTooltip(
+  id: string,
+  name: string,
+  exit: NetworkGraphData['exits'][number],
+  coordLabels: { from: string; to: string }
+): string {
+  return [
+    id,
+    name,
+    `${coordLabels.from}: ${formatCoords(exit.from_coords)}`,
+    `${coordLabels.to}: ${formatCoords(exit.to_coords)}`,
+  ].join('\n');
+}
+
 function ExitLabels({
   exits,
+  names,
+  tooltips,
   project,
   isHebrew,
 }: {
   exits: NetworkGraphData['exits'];
+  names: string[];
+  tooltips: string[];
   project: (lng: number, lat: number) => [number, number];
   isHebrew: boolean;
 }) {
   const labels = useMemo(() => {
-    const names = resolveExitNames(exits);
     const raw: LabelPosition[] = exits.map((exit, index) => {
       const [x, y] = project(exit.to_coords[1], exit.to_coords[0]);
       return { x, y: y - 10, text: names[index] };
     });
     return spreadLabels(raw, 4.5, 10);
-  }, [exits, project]);
+  }, [exits, names, project]);
 
   return (
     <>
@@ -155,6 +180,7 @@ function ExitLabels({
           paintOrder="stroke"
           direction={isHebrew ? 'rtl' : 'ltr'}
         >
+          <title>{tooltips[index]}</title>
           {label.text}
         </text>
       ))}
@@ -279,6 +305,18 @@ export function NetworkGraph({ data, width = 500, height = 500, compact = false,
     [data.boundary, project]
   );
 
+  const exitNames = useMemo(() => resolveExitNames(data.exits), [data.exits]);
+  const exitTooltips = useMemo(
+    () =>
+      data.exits.map((exit, index) =>
+        buildExitTooltip(buildExitId(data.neighborhood_key, index), exitNames[index], exit, {
+          from: t('network.exitTooltip.from'),
+          to: t('network.exitTooltip.to'),
+        })
+      ),
+    [data.exits, data.neighborhood_key, exitNames, t]
+  );
+
   const nodeSize = compact ? { interior: 1.8, perimeter: 3, exterior: 1.2 } : { interior: 2.5, perimeter: 4, exterior: 1.5 };
   const edgeWidth = compact ? 0.3 : 0.5;
   const edgeColor = showAerial ? '#DDDDDD' : EDGE_COLOR;
@@ -362,7 +400,9 @@ export function NetworkGraph({ data, width = 500, height = 500, compact = false,
             stroke={EXIT_COLOR}
             strokeWidth={exitArrowWidth}
             markerEnd={`url(#${arrowId})`}
-          />
+          >
+            {!compact && <title>{exitTooltips[index]}</title>}
+          </line>
         );
       })}
 
@@ -381,7 +421,15 @@ export function NetworkGraph({ data, width = 500, height = 500, compact = false,
         );
       })}
 
-      {!compact && <ExitLabels exits={data.exits} project={project} isHebrew={isHebrew} />}
+      {!compact && (
+        <ExitLabels
+          exits={data.exits}
+          names={exitNames}
+          tooltips={exitTooltips}
+          project={project}
+          isHebrew={isHebrew}
+        />
+      )}
 
       {!compact && (
         <>

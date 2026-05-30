@@ -82,6 +82,10 @@
     "exits": "exits",
     "aerialView": "Aerial view",
     "streetNames": "Street names",
+    "exitTooltip": {
+      "from": "From",
+      "to": "To"
+    },
     "representation": {
       "topologic": "Topologic",
       "geometric": "Geometric",
