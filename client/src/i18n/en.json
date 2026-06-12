@@ -108,16 +108,13 @@
     "clear": "Clear"
   },
   "networkTable": {
-    "neighborhood": "Neighborhood",
-    "nodes": "Nodes",
-    "edges": "Edges",
-    "streetDensity": "Street Density",
-    "avgDegree": "Avg Degree",
-    "circuity": "Circuity",
-    "connectivity": "Connectivity",
-    "avgBetweenness": "Avg Betweenness",
-    "exits": "Exits",
-    "area": "Area (km\u00b2)"
+    "metric": "Metric",
+    "groups": {
+      "basicStats": "Basic Stats",
+      "centrality": "Centrality",
+      "connectivity": "Connectivity & Bridges",
+      "spaceSyntax": "Space Syntax"
+    }
   },
   "spaceSyntaxTable": {
     "neighborhood": "Neighborhood",
