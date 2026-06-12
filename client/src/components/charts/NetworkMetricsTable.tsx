@@ -4,6 +4,7 @@ import { useChartData } from '../../hooks/useChartData';
 import { getNetworkNeighborhoods, type GlobalOverrides } from '../../lib/api';
 import { getNeighborhoodColor } from '../../lib/utils';
 import { MetricTooltip } from '../MetricTooltip';
+import { TableCopyWrapper } from './TableCopyWrapper';
 import { NETWORK_METRIC_GROUPS, formatMetricValue } from './networkMetricsTableConfig';
 
 interface Props {
@@ -25,6 +26,7 @@ export function NetworkMetricsTable({ overrides }: Props) {
   const columnCount = data.length + 1;
 
   return (
+    <TableCopyWrapper fileName="network-metrics">
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
@@ -33,7 +35,7 @@ export function NetworkMetricsTable({ overrides }: Props) {
             {data.map((neighborhood) => (
               <th key={neighborhood.neighborhood_key} className="py-2 px-3 font-medium text-end">
                 <span className="inline-block w-2 h-2 rounded-full me-2" style={{ backgroundColor: getNeighborhoodColor(neighborhood.neighborhood_key) }} />
-                {neighborhood.neighborhood_display}
+                {t(`neighborhoods.${neighborhood.neighborhood_key}`, { defaultValue: neighborhood.neighborhood_display })}
               </th>
             ))}
           </tr>
@@ -68,5 +70,6 @@ export function NetworkMetricsTable({ overrides }: Props) {
         </tbody>
       </table>
     </div>
+    </TableCopyWrapper>
   );
 }

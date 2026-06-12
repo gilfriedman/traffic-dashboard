@@ -5,6 +5,7 @@ import { useToast } from '../../contexts/ToastContext';
 import { useChartDirection } from '../../hooks/useChartDirection';
 import { copyChartToClipboard, downloadChartAsPng } from '../../lib/imageExport';
 import { cn } from '../../lib/utils';
+import { ExportButton } from './ExportButton';
 
 interface Props {
   children: ReactNode;
@@ -55,26 +56,8 @@ export function ChartCopyWrapper({ children, fileName, className }: Props) {
           isRtl ? 'right-2' : 'left-2'
         )}
       >
-        <button
-          type="button"
-          onClick={handleCopy}
-          title={t('chartExport.copy')}
-          aria-label={t('chartExport.copy')}
-          className="flex items-center gap-1 px-2 py-1 text-xs bg-white/90 border border-slate-200 rounded-md shadow-sm hover:bg-white text-slate-700"
-        >
-          <Copy className="h-3.5 w-3.5" />
-          {t('chartExport.copy')}
-        </button>
-        <button
-          type="button"
-          onClick={handleDownload}
-          title={t('chartExport.download')}
-          aria-label={t('chartExport.download')}
-          className="flex items-center gap-1 px-2 py-1 text-xs bg-white/90 border border-slate-200 rounded-md shadow-sm hover:bg-white text-slate-700"
-        >
-          <Download className="h-3.5 w-3.5" />
-          {t('chartExport.download')}
-        </button>
+        <ExportButton icon={Copy} label={t('chartExport.copy')} onClick={handleCopy} />
+        <ExportButton icon={Download} label={t('chartExport.download')} onClick={handleDownload} />
       </div>
     </div>
   );

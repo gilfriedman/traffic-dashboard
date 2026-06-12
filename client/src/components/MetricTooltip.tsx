@@ -1,12 +1,14 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Info } from 'lucide-react';
+import { useMetricTooltipVisible } from '../contexts/MetricTooltipContext';
 
 interface MetricTooltipProps {
   description: string;
 }
 
 export function MetricTooltip({ description }: MetricTooltipProps) {
+  const visible = useMetricTooltipVisible();
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
@@ -33,6 +35,8 @@ export function MetricTooltip({ description }: MetricTooltipProps) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open, updatePosition]);
+
+  if (!visible) return null;
 
   return (
     <span className="inline-flex items-center">

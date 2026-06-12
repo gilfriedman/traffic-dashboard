@@ -4,6 +4,7 @@ import { useChartData } from '../../hooks/useChartData';
 import { getBottlenecks, type GlobalOverrides } from '../../lib/api';
 import { cn } from '../../lib/utils';
 import { MetricTooltip } from '../MetricTooltip';
+import { TableCopyWrapper } from './TableCopyWrapper';
 
 const NEIGHBORHOOD_KEYS = ['old_city', 'shchuna_bet', 'shchuna_he', 'ramot_bet', 'neve_zeev', 'rambam'] as const;
 
@@ -45,6 +46,7 @@ export function BottleneckTable({ overrides }: Props) {
       )}
 
       {data && data.length > 0 && (
+        <TableCopyWrapper fileName={`bottlenecks-${neighborhood}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -87,6 +89,7 @@ export function BottleneckTable({ overrides }: Props) {
             </tbody>
           </table>
         </div>
+        </TableCopyWrapper>
       )}
     </div>
   );

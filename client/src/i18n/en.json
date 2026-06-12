@@ -71,7 +71,7 @@
   "network": {
     "title": "Network Analysis",
     "overview": "Overview",
-    "spaceSyntax": "Space Syntax",
+    "tooltips": "Explanations",
     "congestionStructure": "Congestion vs Structure",
     "congestionDemographics": "Congestion vs Demographics",
     "exitAnalysis": "Exit Analysis",
@@ -88,8 +88,7 @@
     },
     "representation": {
       "topologic": "Topologic",
-      "geometric": "Geometric",
-      "tooltipSpaceSyntax": "Space Syntax is defined on the topologic representation only"
+      "geometric": "Geometric"
     },
     "graphColorBy": {
       "label": "Color by",
@@ -115,12 +114,6 @@
       "connectivity": "Connectivity & Bridges",
       "spaceSyntax": "Space Syntax"
     }
-  },
-  "spaceSyntaxTable": {
-    "neighborhood": "Neighborhood",
-    "meanDepth": "Mean Depth",
-    "integration": "Integration",
-    "intelligibility": "Intelligibility (R\u00b2)"
   },
   "bottleneckTable": {
     "bottleneckScore": "Bottleneck Score",
@@ -170,8 +163,11 @@
   },
   "chartExport": {
     "copy": "Copy",
+    "copyText": "Copy text",
+    "copyImage": "Copy image",
     "download": "Download",
     "copied": "Copied to clipboard",
+    "textCopied": "Text copied",
     "downloaded": "Image downloaded",
     "copyFailed": "Copy failed",
     "downloadFailed": "Download failed",
@@ -192,8 +188,7 @@
     "exitAnalysis": "Neighborhood exits matched to nearby traffic routes, ranked by average congestion. Data sources: OpenStreetMap/OSMnx (exit identification) and Google Maps Distance Matrix API (congestion).",
     "bottlenecks": "High-centrality intersections near congested routes. Score = betweenness \u00d7 nearby congestion. Data sources: OpenStreetMap/OSMnx (centrality analysis) and Google Maps Distance Matrix API (congestion).",
     "demographics": "Demographic, socioeconomic, and planning comparison of Beer Sheva neighborhoods. Shows that the studied neighborhoods share similar characteristics, supporting cross-neighborhood traffic analysis.\nDemographics (population, % adults, household size) — CBS Census 2022, Selected Data by Localities and Statistical Areas.\nSocioeconomic (cluster, income, education) — CBS Socioeconomic Index 2019, Publication 1903, Table 12.\nTransportation (cars per 100 residents) — CBS Socioeconomic Index 2019; household car ownership — CBS Census 2022.\nEmployment (employment rate) — CBS Socioeconomic Index 2019, % aged 25–54 with income from work.\nHistorical (year established/populated) — Hebrew Wikipedia, \"Neighborhoods of Beersheba\".",
-    "networkGraph": "Visual road network for each neighborhood. Blue = interior nodes, Orange = perimeter nodes, Gray = exterior nodes, Green arrows = exit edges. Red line marks the neighborhood boundary. Data source: OpenStreetMap, processed with OSMnx. Aerial imagery: Esri World Imagery (ArcGIS).",
-    "spaceSyntax": "Space Syntax (Hillier, 1984) treats the street network as a topologic graph and measures how 'deep' each street is from all others. Mean Depth is the average shortest-path distance from a street; Integration (1/RRA) is the normalised inverse — high values mean accessible streets; Intelligibility is the R² between local Connectivity and global Integration — high values mean the local structure correctly predicts the global one. Data source: OpenStreetMap via OSMnx, computed with NetworkX."
+    "networkGraph": "Visual road network for each neighborhood. Blue = interior nodes, Orange = perimeter nodes, Gray = exterior nodes, Green arrows = exit edges. Red line marks the neighborhood boundary. Data source: OpenStreetMap, processed with OSMnx. Aerial imagery: Esri World Imagery (ArcGIS)."
   },
   "metrics": {
     "node_count": {

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useChartData } from '../../hooks/useChartData';
 import { getNeighborhoodDemographics, type GlobalOverrides } from '../../lib/api';
 import { getNeighborhoodColor } from '../../lib/utils';
+import { TableCopyWrapper } from './TableCopyWrapper';
 import type { NeighborhoodDemographics } from '../../lib/types';
 
 interface Props {
@@ -128,6 +129,7 @@ export function DemographicsTable({ overrides }: Props) {
         </label>
       </div>
 
+      <TableCopyWrapper fileName="demographics">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -185,6 +187,7 @@ export function DemographicsTable({ overrides }: Props) {
           </tbody>
         </table>
       </div>
+      </TableCopyWrapper>
     </div>
   );
 }
